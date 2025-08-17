@@ -1,0 +1,219 @@
+import type { 
+  Employee, 
+  Department, 
+  Accrual, 
+  AccrualType, 
+  Position 
+} from '$lib/types';
+
+export const mockOrganization = {
+  org_guid: "8753101a-4fb8-11ed-9d6f-00155dd75c64"
+};
+
+export const mockDepartments: Department[] = [
+  {
+    org_guid: "8753101a-4fb8-11ed-9d6f-00155dd75c64",
+    department: "Цех теплогазоснабжения",
+    department_guid: "86253ef6-4e33-11ee-9d85-00155de8647c",
+    department_code: "1750200",
+    parentdep_guid: "862539c4-4e33-11ee-9d85-00155de8647c",
+    datecreate: "01.05.2024",
+    datedisband: "",
+    headofdep_guid: "e46ff3e0-a0c4-11ef-9dad-00155de8647c"
+  },
+  {
+    org_guid: "8753101a-4fb8-11ed-9d6f-00155dd75c64",
+    department: "Участок внутриплощадочного водоснабжения и химводоподготовки",
+    department_guid: "86253b1a-4e33-11ee-9d85-00155de8647c",
+    department_code: "1755200",
+    parentdep_guid: "86253a36-4e33-11ee-9d85-00155de8647c",
+    datecreate: "01.01.2024",
+    datedisband: "",
+    headofdep_guid: ""
+  },
+  {
+    org_guid: "8753101a-4fb8-11ed-9d6f-00155dd75c64",
+    department: "Цех химводоподготовки",
+    department_guid: "86253e12-4e33-11ee-9d85-00155de8647c",
+    department_code: "1760200",
+    datecreate: "01.01.2024",
+    datedisband: "",
+    headofdep_guid: ""
+  }
+];
+
+export const mockPositions: Position[] = [
+  {
+    position_guid: "pos1",
+    position_name: "Старший мастер по ремонту и обслуживанию оборудования",
+    department_guid: "86253ef6-4e33-11ee-9d85-00155de8647c"
+  },
+  {
+    position_guid: "pos2", 
+    position_name: "Участок внутриплощадочного водоснабжения и химводоподготовки",
+    department_guid: "86253b1a-4e33-11ee-9d85-00155de8647c"
+  },
+  {
+    position_guid: "pos3",
+    position_name: "Машинист насосных установок ВОЦ", 
+    department_guid: "86253e12-4e33-11ee-9d85-00155de8647c"
+  },
+  {
+    position_guid: "pos4",
+    position_name: "Специалист по договорной работе",
+    department_guid: "86253ef6-4e33-11ee-9d85-00155de8647c"
+  }
+];
+
+export const mockEmployees: Employee[] = [
+  {
+    org_guid: "8753101a-4fb8-11ed-9d6f-00155dd75c64",
+    post_guid: "add09c40-a0c4-11ef-9dad-00155de8647c",
+    ident: "0000-00283",
+    employee: "Колногорова Олеся Александровна",
+    employee_guid: "6b68a3b2-a041-11ef-9dad-00155de8647c",
+    dateemploy: "27.01.2014",
+    datedismis: "",
+    email: "kolnogorova.o@ammoni.ru",
+    sex: "Ж",
+    person_guid: "c9bc282f-a02c-11ef-9dad-00155de8647c",
+    department_guid: "86253b53-4e33-11ee-9d85-00155de8647c"
+  },
+  {
+    org_guid: "8753101a-4fb8-11ed-9d6f-00155dd75c64",
+    post_guid: "11dbba8e-a0c4-11ef-9dad-00155de8647c",
+    ident: "0000-00468",
+    employee: "Абрахманов Ильшат Ришатович",
+    employee_guid: "c604d015-a041-11ef-9dad-00155de8647c",
+    dateemploy: "16.02.2015",
+    datedismis: "",
+    email: "",
+    sex: "М",
+    person_guid: "05546027-a025-11ef-9dad-00155de8647c",
+    department_guid: "86253ef6-4e33-11ee-9d85-00155de8647c"
+  },
+  {
+    org_guid: "8753101a-4fb8-11ed-9d6f-00155dd75c64",
+    post_guid: "22ccab9e-a0c4-11ef-9dad-00155de8647c",
+    ident: "0000-01860",
+    employee: "Абдулганеев Ильназар Альфредович",
+    employee_guid: "d705e016-a041-11ef-9dad-00155de8647c",
+    dateemploy: "20.03.2018",
+    datedismis: "",
+    email: "",
+    sex: "М",
+    person_guid: "16547028-a025-11ef-9dad-00155de8647c",
+    department_guid: "86253b1a-4e33-11ee-9d85-00155de8647c"
+  },
+  {
+    org_guid: "8753101a-4fb8-11ed-9d6f-00155dd75c64", 
+    post_guid: "33ddbc8f-a0c4-11ef-9dad-00155de8647c",
+    ident: "0000-01656",
+    employee: "Абдуллина Надежа Маскутовна",
+    employee_guid: "e806f017-a041-11ef-9dad-00155de8647c",
+    dateemploy: "12.12.2016",
+    datedismis: "",
+    email: "abdullina.n@ammoni.ru",
+    sex: "Ж",
+    person_guid: "27658029-a025-11ef-9dad-00155de8647c",
+    department_guid: "86253ef6-4e33-11ee-9d85-00155de8647c"
+  },
+  {
+    org_guid: "8753101a-4fb8-11ed-9d6f-00155dd75c64",
+    post_guid: "44eecda0-a0c4-11ef-9dad-00155de8647c",
+    ident: "0000-02347",
+    employee: "Абдуллин Алмаз Ришатович",
+    employee_guid: "f907a018-a041-11ef-9dad-00155de8647c",
+    dateemploy: "21.06.2025",
+    datedismis: "",
+    email: "",
+    sex: "М", 
+    person_guid: "3876902a-a025-11ef-9dad-00155de8647c",
+    department_guid: "86253e12-4e33-11ee-9d85-00155de8647c"
+  }
+];
+
+export const mockAccrualTypes: AccrualType[] = [
+  {
+    type_guid: "type1",
+    type_name: "Тестовая награда 2 (300 АК)",
+    amount: 300
+  },
+  {
+    type_guid: "type2", 
+    type_name: "Тестовая награда 3 (60 АК)",
+    amount: 60
+  },
+  {
+    type_guid: "type3",
+    type_name: "Тестовая награда (100 АК)",
+    amount: 100
+  },
+  {
+    type_guid: "type4",
+    type_name: "Премия за выслугу лет",
+    amount: 500
+  },
+  {
+    type_guid: "type5",
+    type_name: "Бонус за качественную работу",
+    amount: 200
+  }
+];
+
+export const mockAccruals: Accrual[] = [
+  {
+    org_guid: "8753101a-4fb8-11ed-9d6f-00155dd75c64",
+    post_guid: "004a0126-0ee3-11f0-9db3-00155de8647c",
+    post: "Тестовая награда 2",
+    department_guid: "86253ef6-4e33-11ee-9d85-00155de8647c",
+    datecreate: "03.03.2025",
+    datedisband: ""
+  },
+  {
+    org_guid: "8753101a-4fb8-11ed-9d6f-00155dd75c64",
+    post_guid: "59f4672c-a0c4-11ef-9dad-00155de8647c",
+    post: "Участок внутриплощадочного водоснабжения и химводоподготовки",
+    department_guid: "86253e71-4e33-11ee-9d85-00155de8647c",
+    datecreate: "01.01.2024",
+    datedisband: ""
+  }
+];
+
+// Вспомогательные функции для работы с данными
+export function getEmployeesByDepartment(departmentGuid: string): Employee[] {
+  return mockEmployees.filter(emp => emp.department_guid === departmentGuid);
+}
+
+export function getDepartmentName(departmentGuid: string): string {
+  const dept = mockDepartments.find(d => d.department_guid === departmentGuid);
+  return dept?.department || 'Неизвестное подразделение';
+}
+
+export function getPositionName(positionGuid: string): string {
+  const pos = mockPositions.find(p => p.position_guid === positionGuid);
+  return pos?.position_name || 'Неизвестная должность';
+}
+
+export function getAccrualTypeName(typeGuid: string): string {
+  const type = mockAccrualTypes.find(t => t.type_guid === typeGuid);
+  return type?.type_name || 'Неизвестный тип начисления';
+}
+
+// Генерация случайных балансов для демонстрации
+export function generateRandomBalance(): number {
+  return Math.floor(Math.random() * 10000);
+}
+
+// Функция для получения топ сотрудников по балансу
+export function getTopEmployeesByBalance(limit: number = 10) {
+  return mockEmployees
+    .map(emp => ({
+      ...emp,
+      balance: generateRandomBalance(),
+      department_name: getDepartmentName(emp.department_guid)
+    }))
+    .sort((a, b) => b.balance - a.balance)
+    .slice(0, limit);
+}
+
