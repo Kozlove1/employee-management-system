@@ -35,26 +35,26 @@
   <div class="flex items-start space-x-4">
     <div class="flex-shrink-0">
       <div
-        class="h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center"
+        class="h-16 w-16 rounded-full bg-info-100 flex items-center justify-center"
       >
-        <span class="text-xl font-medium text-blue-700">
+        <span class="text-xl font-medium text-info-700">
           {getInitials(employee.employee)}
         </span>
       </div>
     </div>
 
     <div class="flex-1 min-w-0">
-      <h2 class="text-xl font-semibold text-gray-900 break-words">
+      <h2 class="text-xl font-semibold text-neutral-900 break-words">
         {employee.employee}
       </h2>
-      <p class="text-sm text-gray-500 mt-1">
+      <p class="text-sm text-neutral-500 mt-1">
         ID: {employee.ident}
       </p>
       <div class="mt-2">
         <span
           class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {employee.datedismis
-            ? 'bg-red-100 text-red-800'
-            : 'bg-green-100 text-green-800'}"
+            ? 'bg-danger-100 text-danger-800'
+            : 'bg-success-100 text-success-800'}"
         >
           {getStatusBadge(employee)}
         </span>
@@ -66,17 +66,21 @@
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <!-- Personal Info -->
     <div>
-      <h3 class="text-lg font-medium text-gray-900 mb-4">Личная информация</h3>
+      <h3 class="text-lg font-medium text-neutral-900 mb-4">
+        Личная информация
+      </h3>
       <div class="space-y-3">
         <div>
-          <label class="block text-sm font-medium text-gray-500">Пол</label>
-          <p class="mt-1 text-sm text-gray-900">{employee.sex}</p>
+          <label class="block text-sm font-medium text-neutral-500">Пол</label>
+          <p class="mt-1 text-sm text-neutral-900">{employee.sex}</p>
         </div>
 
         {#if employee.email}
           <div>
-            <label class="block text-sm font-medium text-gray-500">Email</label>
-            <p class="mt-1 text-sm text-gray-900">{employee.email}</p>
+            <label class="block text-sm font-medium text-neutral-500"
+              >Email</label
+            >
+            <p class="mt-1 text-sm text-neutral-900">{employee.email}</p>
           </div>
         {/if}
       </div>
@@ -84,37 +88,41 @@
 
     <!-- Work Info -->
     <div>
-      <h3 class="text-lg font-medium text-gray-900 mb-4">Рабочая информация</h3>
+      <h3 class="text-lg font-medium text-neutral-900 mb-4">
+        Рабочая информация
+      </h3>
       <div class="space-y-3">
         <div>
-          <label class="block text-sm font-medium text-gray-500"
+          <label class="block text-sm font-medium text-neutral-500"
             >Подразделение</label
           >
-          <p class="mt-1 text-sm text-gray-900">{employee.department_name}</p>
+          <p class="mt-1 text-sm text-neutral-900">
+            {employee.department_name}
+          </p>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-500"
+          <label class="block text-sm font-medium text-neutral-500"
             >Должность</label
           >
-          <p class="mt-1 text-sm text-gray-900">{employee.position_name}</p>
+          <p class="mt-1 text-sm text-neutral-900">{employee.position_name}</p>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-500"
+          <label class="block text-sm font-medium text-neutral-500"
             >Дата приема</label
           >
-          <p class="mt-1 text-sm text-gray-900">
+          <p class="mt-1 text-sm text-neutral-900">
             {formatDate(employee.dateemploy)}
           </p>
         </div>
 
         {#if employee.datedismis}
           <div>
-            <label class="block text-sm font-medium text-gray-500"
+            <label class="block text-sm font-medium text-neutral-500"
               >Дата увольнения</label
             >
-            <p class="mt-1 text-sm text-gray-900">
+            <p class="mt-1 text-sm text-neutral-900">
               {formatDate(employee.datedismis)}
             </p>
           </div>
@@ -124,12 +132,12 @@
   </div>
 
   <!-- Balance Section -->
-  <div class="border-t border-gray-200 pt-6">
-    <h3 class="text-lg font-medium text-gray-900 mb-4">Баланс АммоКоинов</h3>
-    <div class="bg-gray-50 rounded-lg p-4">
+  <div class="border-t border-neutral-200 pt-6">
+    <h3 class="text-lg font-medium text-neutral-900 mb-4">Баланс АммоКоинов</h3>
+    <div class="bg-neutral-100 rounded-lg p-4">
       <div class="flex items-center justify-between">
-        <span class="text-sm text-gray-600">Текущий баланс</span>
-        <span class="text-2xl font-bold text-green-600"
+        <span class="text-sm text-neutral-600">Текущий баланс</span>
+        <span class="text-2xl font-bold text-success-600"
           >{employee.balance} АК</span
         >
       </div>
@@ -137,39 +145,41 @@
   </div>
 
   <!-- IDs Section -->
-  <div class="border-t border-gray-200 pt-6">
-    <h3 class="text-lg font-medium text-gray-900 mb-4">Системная информация</h3>
+  <div class="border-t border-neutral-200 pt-6">
+    <h3 class="text-lg font-medium text-neutral-900 mb-4">
+      Системная информация
+    </h3>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
-        <label class="block text-sm font-medium text-gray-500"
+        <label class="block text-sm font-medium text-neutral-500"
           >ID сотрудника</label
         >
-        <p class="mt-1 text-sm text-gray-900 font-mono">{employee.ident}</p>
+        <p class="mt-1 text-sm text-neutral-900 font-mono">{employee.ident}</p>
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-500"
+        <label class="block text-sm font-medium text-neutral-500"
           >GUID сотрудника</label
         >
-        <p class="mt-1 text-xs text-gray-900 font-mono break-all">
+        <p class="mt-1 text-xs text-neutral-900 font-mono break-all">
           {employee.employee_guid}
         </p>
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-500"
+        <label class="block text-sm font-medium text-neutral-500"
           >GUID подразделения</label
         >
-        <p class="mt-1 text-xs text-gray-900 font-mono break-all">
+        <p class="mt-1 text-xs text-neutral-900 font-mono break-all">
           {employee.department_guid}
         </p>
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-500"
+        <label class="block text-sm font-medium text-neutral-500"
           >GUID должности</label
         >
-        <p class="mt-1 text-xs text-gray-900 font-mono break-all">
+        <p class="mt-1 text-xs text-neutral-900 font-mono break-all">
           {employee.post_guid}
         </p>
       </div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Icon from '$lib/components/Icons/Icon.svelte';
+  import { Search, Building2, Briefcase, Users } from '@lucide/svelte';
   import {
     mockPositions,
     mockDepartments,
@@ -56,18 +56,16 @@
     class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
   >
     <div>
-      <h1 class="text-2xl font-bold text-gray-900">Должности</h1>
-      <p class="mt-1 text-sm text-gray-500">
+      <h1 class="text-2xl font-bold text-neutral-900">Должности</h1>
+      <p class="mt-1 text-sm text-neutral-500">
         Справочник должностей по подразделениям
       </p>
     </div>
 
     <div class="flex items-center space-x-4 text-sm">
-      <div class="bg-primary-50 px-3 py-2 rounded-lg">
-        <span class="text-primary-600 font-medium">Всего должностей:</span>
-        <span class="text-primary-900 font-bold ml-1"
-          >{mockPositions.length}</span
-        >
+      <div class="bg-info-50 px-3 py-2 rounded-lg">
+        <span class="text-info-600 font-medium">Всего должностей:</span>
+        <span class="text-info-900 font-bold ml-1">{mockPositions.length}</span>
       </div>
       <div class="bg-success-50 px-3 py-2 rounded-lg">
         <span class="text-success-600 font-medium">Подразделений:</span>
@@ -83,9 +81,8 @@
     <div class="flex flex-col lg:flex-row lg:items-center gap-4">
       <div class="flex-1">
         <div class="relative">
-          <Icon
-            name="search"
-            class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4"
+          <Search
+            class="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 h-4 w-4"
           />
           <input
             type="text"
@@ -111,8 +108,8 @@
 
   <!-- Результаты поиска -->
   {#if filteredPositions.length > 0}
-    <div class="bg-gray-50 px-4 py-3 rounded-lg">
-      <div class="text-sm text-gray-600">
+    <div class="bg-neutral-100 px-4 py-3 rounded-lg">
+      <div class="text-sm text-neutral-600">
         Найдено: <span class="font-semibold"
           >{filteredPositions.length} должностей</span
         >
@@ -128,54 +125,52 @@
     {#each Array.from(positionsByDepartment().entries()) as [departmentGuid, positions]}
       <div class="card">
         <!-- Заголовок подразделения -->
-        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+        <div class="px-6 py-4 border-b border-neutral-200 bg-neutral-100">
           <div class="flex items-center justify-between">
             <div class="flex items-center space-x-3">
-              <Icon name="building2" class="h-5 w-5 text-gray-400" />
-              <h3 class="text-lg font-medium text-gray-900">
+              <Building2 class="h-5 w-5 text-neutral-400" />
+              <h3 class="text-lg font-medium text-neutral-900">
                 {getDepartmentName(departmentGuid)}
               </h3>
             </div>
-            <span class="text-sm text-gray-500">
+            <span class="text-sm text-neutral-500">
               {positions.length} должностей
             </span>
           </div>
         </div>
 
         <!-- Список должностей -->
-        <div class="divide-y divide-gray-200">
+        <div class="divide-y divide-neutral-200">
           {#each positions as position}
-            <div class="px-6 py-4 hover:bg-gray-50">
+            <div class="px-6 py-4 hover:bg-neutral-100">
               <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
                   <div class="flex-shrink-0">
                     <div
-                      class="h-10 w-10 rounded-lg bg-primary-100 flex items-center justify-center"
+                      class="h-10 w-10 rounded-lg bg-info-100 flex items-center justify-center"
                     >
-                      <Icon name="briefcase" class="h-5 w-5 text-primary-600" />
+                      <Briefcase class="h-5 w-5 text-info-600" />
                     </div>
                   </div>
                   <div class="flex-1 min-w-0">
-                    <h4 class="text-sm font-medium text-gray-900">
+                    <h4 class="text-sm font-medium text-neutral-900">
                       {position.position_name}
                     </h4>
-                    <p class="text-sm text-gray-500">
+                    <p class="text-sm text-neutral-500">
                       ID: {position.position_guid}
                     </p>
                   </div>
                 </div>
 
                 <div class="flex items-center space-x-4 text-sm">
-                  <div class="flex items-center text-gray-500">
-                    <Icon name="users" class="h-4 w-4 mr-1" />
+                  <div class="flex items-center text-neutral-500">
+                    <Users class="h-4 w-4 mr-1" />
                     <span
                       >{getEmployeeCountForPosition(position.position_guid)} сотр.</span
                     >
                   </div>
 
-                  <button
-                    class="text-primary-600 hover:text-primary-900 font-medium"
-                  >
+                  <button class="text-info-600 hover:text-info-900 font-medium">
                     Просмотр
                   </button>
                 </div>
@@ -189,11 +184,11 @@
 
   {#if filteredPositions.length === 0}
     <div class="text-center py-12">
-      <div class="text-gray-400 text-lg mb-2">💼</div>
-      <h3 class="text-lg font-medium text-gray-900 mb-1">
+      <div class="text-neutral-400 text-lg mb-2">💼</div>
+      <h3 class="text-lg font-medium text-neutral-900 mb-1">
         Должности не найдены
       </h3>
-      <p class="text-gray-500">
+      <p class="text-neutral-500">
         {#if searchTerm || selectedDepartment}
           Попробуйте изменить фильтры поиска
         {:else}

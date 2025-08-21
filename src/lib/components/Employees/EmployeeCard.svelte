@@ -1,5 +1,4 @@
 <script lang="ts">
-  import IconRow from './IconRow.svelte';
   import {
     Award,
     Coins,
@@ -8,6 +7,10 @@
     Calendar,
     Mail,
   } from '@lucide/svelte';
+
+  import { formatDate, getInitials } from '$lib/utils';
+
+  import IconRow from '$lib/components/UI/IconRow.svelte';
 
   import type { EmployeeWithDetails } from '$lib/types';
 
@@ -18,43 +21,27 @@
 
   let { employee, onDetailClick }: Props = $props();
 
-  function formatDate(dateStr) {
-    if (!dateStr) return '';
-    try {
-      const [day, month, year] = dateStr.split('.');
-      return `${day}.${month}.${year}`;
-    } catch {
-      return dateStr;
-    }
-  }
-
   function getStatusBadge(employee) {
     return employee.datedismis ? 'Уволен' : 'Активен';
-  }
-
-  function getInitials(fullName) {
-    return fullName
-      .split(' ')
-      .map((name) => name[0])
-      .join('')
-      .substring(0, 2);
   }
 </script>
 
 <div
-  class="rounded-lg p-4 hover:shadow-md transition-shadow bg-white border-gray-200"
+  class="rounded-lg p-4 border border-neutral-200 hover:shadow-md transition-shadow bg-primary-50"
 >
   <!-- Верхняя строка с аватаром и кнопками -->
   <div class="flex items-start mb-1 gap-2">
     <div
-      class="h-10 w-10 mb-5 flex items-center justify-center rounded-full bg-blue-100"
+      class="h-10 w-10 mb-5 flex items-center justify-center rounded-full bg-info-100"
     >
-      <span class="title-sm font-medium title-blue-700">
+      <span class="title-sm font-medium text-info-700">
         {getInitials(employee.employee)}
       </span>
     </div>
     <div class="flex-1 max-w-40">
-      <h3 class="title-sm font-medium title-gray-900 line-clamp-3 break-words">
+      <h3
+        class="title-sm font-medium text-neutral-900 line-clamp-3 break-words"
+      >
         {employee.employee}
       </h3>
     </div>
@@ -63,16 +50,16 @@
       <div class="flex flex-col md:flex-row items-end md:items-center gap-2">
         <span
           class="inline-flex items-center px-2 py-1 rounded-full font-medium whitespace-nowrap text-xs {employee.datedismis
-            ? 'bg-red-100 text-red-700'
-            : 'bg-green-100 text-green-700'}"
+            ? 'bg-danger-100 text-danger-700'
+            : 'bg-success-100 text-success-700'}"
         >
           {getStatusBadge(employee)}
         </span>
         <button
           onclick={() => onDetailClick(employee)}
-          class="inline-flex items-center px-2 py-1 border-2 border-green-100 font-normal rounded whitespace-nowrap text-green-700 text-xs"
+          class="inline-flex items-center px-2 py-1 border-2 border-success-100 font-normal rounded whitespace-nowrap text-success-700 text-xs"
         >
-          <Award size={14} color={'#15803d'} />
+          <Award size={14} color={'#14814A'} />
           Начислить
         </button>
       </div>
@@ -81,14 +68,14 @@
 
   <!-- ID под блоком с аватаром и именем -->
   <div class="mb-3">
-    <p class="title-xs title-gray-500">ID: {employee.ident}</p>
+    <p class="title-xs text-neutral-500">ID: {employee.ident}</p>
   </div>
 
   <!-- Баланс -->
   <IconRow
     icon={Coins}
     title="Баланс: {employee.balance} АК"
-    backgroundColor={'bg-gray-100'}
+    backgroundColor={'bg-neutral-100'}
   />
 
   <!-- Подразделение -->
@@ -105,17 +92,17 @@
       title="Принят: {formatDate(employee.dateemploy)}"
     />
     <div class="mb-3">
-      <div class="title-xs title-gray-500">
+      <div class="title-xs text-neutral-500">
         Пол: {employee.sex}
       </div>
     </div>
   </div>
 
   <!-- Кнопки действий -->
-  <div class="flex justify-end items-center pt-3 border-t border-gray-100">
+  <div class="flex justify-end items-center pt-3 border-t border-neutral-100">
     <button
       onclick={() => onDetailClick(employee)}
-      class="title-blue-600 hover:title-blue-800 title-xs"
+      class="text-info-600 hover:text-info-800 text-xs"
     >
       Подробнее
     </button>

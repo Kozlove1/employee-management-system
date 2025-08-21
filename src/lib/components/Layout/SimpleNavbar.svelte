@@ -15,12 +15,12 @@
   }
 </script>
 
-<nav class="bg-white shadow-sm border-b border-gray-200">
+<nav class="bg-primary-50 shadow-sm border-b border-neutral-200">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between h-16">
       <div class="flex items-center">
         <button
-          class="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 lg:hidden"
+          class="p-2 rounded-md text-neutral-400 hover:text-neutral-500 hover:bg-neutral-100 focus:outline-none focus:ring-2 focus:ring-info-500 lg:hidden"
           onclick={() => (appState.sidebarOpen = !appState.sidebarOpen)}
         >
           ☰
@@ -33,8 +33,8 @@
           <button
             class="px-3 py-2 rounded-md text-sm font-medium transition-colors {appState.currentView ===
             item.id
-              ? 'bg-primary-100 text-primary-700'
-              : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'}"
+              ? 'bg-info-100 text-info-700 border-b-2 border-info-500'
+              : 'text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100'}"
             onclick={() => setView(item.id)}
           >
             <span class="mr-2">{item.emoji}</span>
@@ -53,8 +53,8 @@
           <button
             class="block w-full text-left px-3 py-2 text-base font-medium transition-colors {appState.currentView ===
             item.id
-              ? 'bg-primary-100 text-primary-700 border-l-4 border-primary-500'
-              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'}"
+              ? 'bg-info-100 text-info-700 border-l-4 border-info-500'
+              : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50'}"
             onclick={() => setView(item.id)}
           >
             <span class="mr-3">{item.emoji}</span>

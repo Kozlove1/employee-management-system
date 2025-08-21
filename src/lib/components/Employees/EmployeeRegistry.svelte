@@ -19,18 +19,20 @@
   });
 </script>
 
-<div class="min-h-screen bg-gray-50">
+<div class="min-h-screen bg-neutral-50">
   <div class="container mx-auto px-4 py-8">
     <!-- Заголовок -->
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900">Реестр сотрудников</h1>
-      <p class="mt-2 text-sm text-gray-600">
+      <h1 class="text-3xl font-bold text-neutral-900">Реестр сотрудников</h1>
+      <p class="mt-2 text-sm text-neutral-600">
         Управление сотрудниками и их балансами АммоКоинов
       </p>
     </div>
 
     <!-- Панель поиска и фильтров -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+    <div
+      class="bg-primary-50 rounded-lg shadow-sm border border-neutral-200 p-6 mb-6"
+    >
       <div class="flex flex-col lg:flex-row gap-4 items-center">
         <!-- Поиск -->
         <div class="relative flex-1">
@@ -45,7 +47,7 @@
             bind:value={employeeStore.searchTerm}
             oninput={(e) =>
               employeeStore.setSearchTerm((e.target as HTMLInputElement).value)}
-            class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            class="block w-full pl-10 pr-3 py-2 border border-neutral-300 rounded-md leading-5 bg-primary-50 placeholder-neutral-500 focus:outline-none focus:placeholder-neutral-400 focus:ring-1 focus:ring-info-500 focus:border-info-500 sm:text-sm"
           />
         </div>
 
@@ -57,7 +59,7 @@
               employeeStore.setDepartmentFilter(
                 (e.target as HTMLSelectElement).value
               )}
-            class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            class="block w-full px-3 py-2 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-info-500 focus:border-info-500 sm:text-sm bg-primary-50"
           >
             <option value="">Все подразделения</option>
             {#each mockDepartments as dept}
@@ -76,9 +78,9 @@
               employeeStore.setActiveOnlyFilter(
                 (e.target as HTMLInputElement).checked
               )}
-            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            class="h-4 w-4 text-info-500 focus:ring-info-500 border-neutral-300 rounded"
           />
-          <label for="active-only" class="ml-2 block text-sm text-gray-900">
+          <label for="active-only" class="ml-2 block text-sm text-neutral-900">
             Только активные
           </label>
         </div>
@@ -87,7 +89,7 @@
         <button
           onclick={() => employeeStore.refreshData()}
           disabled={employeeStore.isLoading}
-          class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary-50 bg-info-500 hover:bg-info-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-info-500 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <RefreshCcw
             class="w-4 h-4 mr-2 {employeeStore.isLoading ? 'animate-spin' : ''}"
@@ -98,7 +100,7 @@
 
       <!-- Пагинация и статистика -->
       <div class="mt-4 flex flex-col sm:flex-row justify-between items-center">
-        <div class="text-sm text-gray-500 mb-2 sm:mb-0">
+        <div class="text-sm text-neutral-500 mb-2 sm:mb-0">
           Показано {employeeStore.paginatedEmployees().length} из {employeeStore.filteredEmployees()
             .length} сотрудников
         </div>
@@ -109,12 +111,12 @@
             <button
               onclick={() => employeeStore.prevPage()}
               disabled={employeeStore.currentPage === 1}
-              class="p-2 rounded-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="p-2 rounded-md border border-neutral-300 bg-primary-50 text-neutral-500 hover:bg-neutral-100 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ChevronLeft class="w-4 h-4" />
             </button>
 
-            <span class="text-sm text-gray-700">
+            <span class="text-sm text-neutral-700">
               {employeeStore.currentPage} / {employeeStore.totalPages()}
             </span>
 
@@ -122,7 +124,7 @@
               onclick={() => employeeStore.nextPage()}
               disabled={employeeStore.currentPage ===
                 employeeStore.totalPages()}
-              class="p-2 rounded-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="p-2 rounded-md border border-neutral-300 bg-primary-50 text-neutral-500 hover:bg-neutral-100 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ChevronRight class="w-4 h-4" />
             </button>
@@ -139,37 +141,37 @@
         <!-- Скелетон загрузки -->
         {#each Array(12) as _, i}
           <div
-            class="bg-white rounded-lg border border-gray-200 p-4 animate-pulse"
+            class="bg-primary-50 rounded-lg border border-neutral-200 p-4 animate-pulse"
           >
             <div class="flex items-start space-x-4">
-              <div class="h-10 w-10 bg-gray-300 rounded-full"></div>
+              <div class="h-10 w-10 bg-neutral-300 rounded-full"></div>
               <div class="flex-1 space-y-2">
-                <div class="h-4 bg-gray-300 rounded w-3/4"></div>
-                <div class="h-3 bg-gray-300 rounded w-1/2"></div>
+                <div class="h-4 bg-neutral-300 rounded w-3/4"></div>
+                <div class="h-3 bg-neutral-300 rounded w-1/2"></div>
               </div>
             </div>
             <div class="mt-4 space-y-2">
-              <div class="h-3 bg-gray-300 rounded"></div>
-              <div class="h-3 bg-gray-300 rounded w-5/6"></div>
+              <div class="h-3 bg-neutral-300 rounded"></div>
+              <div class="h-3 bg-neutral-300 rounded w-5/6"></div>
             </div>
           </div>
         {/each}
       {:else if employeeStore.paginatedEmployees().length === 0}
         <!-- Пустое состояние -->
         <div class="col-span-full text-center py-12">
-          <div class="mx-auto h-24 w-24 text-gray-400">
+          <div class="mx-auto h-24 w-24 text-neutral-400">
             <Search class="h-full w-full" />
           </div>
-          <h3 class="mt-4 text-lg font-medium text-gray-900">
+          <h3 class="mt-4 text-lg font-medium text-neutral-900">
             Сотрудники не найдены
           </h3>
-          <p class="mt-2 text-sm text-gray-500">
+          <p class="mt-2 text-sm text-neutral-500">
             Попробуйте изменить критерии поиска или фильтры
           </p>
           <div class="mt-4">
             <button
               onclick={() => employeeStore.clearFilters()}
-              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-blue-600 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-info-600 bg-info-100 hover:bg-info-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-info-500"
             >
               Сбросить фильтры
             </button>
@@ -206,7 +208,7 @@
     <button
       type="button"
       onclick={() => employeeStore.closeModal()}
-      class="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+      class="inline-flex justify-center rounded-md border border-neutral-300 shadow-sm px-4 py-2 bg-primary-50 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
     >
       Закрыть
     </button>
