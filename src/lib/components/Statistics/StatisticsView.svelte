@@ -1,5 +1,12 @@
 <script lang="ts">
-  import Icon from '$lib/components/Icons/Icon.svelte';
+  import {
+    Users,
+    Building2,
+    Coins,
+    TrendingUp,
+    Award,
+    BarChart3,
+  } from '@lucide/svelte';
   import {
     getTopEmployeesByBalance,
     mockEmployees,
@@ -71,8 +78,8 @@
 <div class="space-y-6">
   <!-- Заголовок -->
   <div>
-    <h1 class="text-2xl font-bold text-gray-900">Статистика</h1>
-    <p class="mt-1 text-sm text-gray-500">
+    <h1 class="text-2xl font-bold text-neutral-900">Статистика</h1>
+    <p class="mt-1 text-sm text-neutral-500">
       Аналитика по начислениям и балансам АммоКоинов
     </p>
   </div>
