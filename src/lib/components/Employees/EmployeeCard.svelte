@@ -1,13 +1,4 @@
 <script lang="ts">
-  import {
-    Award,
-    Coins,
-    Building2,
-    Briefcase,
-    Calendar,
-    Mail,
-  } from '@lucide/svelte';
-
   import { formatDate, getInitials } from '$lib/utils';
 
   import IconRow from '$lib/components/UI/IconRow.svelte';
@@ -46,7 +37,7 @@
       </h3>
     </div>
     <div class="flex-shrink-0 ml-auto">
-      <!-- Статус и кнопка начислить -->
+      <!-- Status and award button -->
       <div class="flex flex-col md:flex-row items-end md:items-center gap-2">
         <span
           class="inline-flex items-center px-2 py-1 rounded-full font-medium whitespace-nowrap text-xs {employee.datedismis
@@ -57,54 +48,47 @@
         </span>
         <button
           onclick={() => onDetailClick(employee)}
-          class="inline-flex items-center px-2 py-1 border-2 border-success-100 font-normal rounded whitespace-nowrap text-success-700 text-xs"
+          class="inline-flex items-center px-1 my-0 border-2 border-success-100 font-normal rounded-lg whitespace-nowrap text-success-700"
         >
-          <Award size={14} color={'#14814A'} />
-          Начислить
+          <IconRow
+            icon="award"
+            iconSize="m"
+            title="Начислить"
+            titleColor="text-success-700"
+            titleSize="s"
+            gapSize="s"
+          />
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ID под блоком с аватаром и именем -->
+  <!-- ID -->
   <div class="mb-3">
     <p class="title-xs text-neutral-500">ID: {employee.ident}</p>
   </div>
 
-  <!-- Баланс -->
+  <!-- Balance -->
   <IconRow
-    icon={Coins}
+    icon="coins"
     title="Баланс: {employee.balance} АК"
+    titleColor="text-neutral-900"
     backgroundColor={'bg-neutral-100'}
   />
 
-  <!-- Подразделение -->
-  <IconRow icon={Building2} title={employee.department_name} />
+  <!-- Department -->
+  <IconRow icon="building2" title={employee.department_name} />
 
-  <!-- Должность и другие детали -->
+  <!-- Position and other details -->
   <div class="mb-3">
-    <IconRow icon={Briefcase} title={employee.position_name} />
+    <IconRow icon="briefcase" title={employee.position_name} />
     {#if employee.email}
-      <IconRow icon={Mail} title={employee.email} />
+      <IconRow icon="mail" title={employee.email} />
     {/if}
     <IconRow
-      icon={Calendar}
+      icon="calendar"
       title="Принят: {formatDate(employee.dateemploy)}"
     />
-    <div class="mb-3">
-      <div class="title-xs text-neutral-500">
-        Пол: {employee.sex}
-      </div>
-    </div>
-  </div>
-
-  <!-- Кнопки действий -->
-  <div class="flex justify-end items-center pt-3 border-t border-neutral-100">
-    <button
-      onclick={() => onDetailClick(employee)}
-      class="text-info-600 hover:text-info-800 text-xs"
-    >
-      Подробнее
-    </button>
+    <IconRow icon="venusAndMars" title="Пол: {employee.sex}" />
   </div>
 </div>
