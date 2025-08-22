@@ -1,14 +1,21 @@
 <script>
   import '../app.css';
-  import { appState } from '$lib/stores/appStore.svelte';
   import SimpleNavbar from '$lib/components/Layout/SimpleNavbar.svelte';
+
+  let currentScreen = $state('accruals');
+
+  const isAccrualsScreen = $derived(currentScreen === 'accruals');
+  const isEmployeesScreen = $derived(currentScreen === 'employees');
+  const isDepartmentsScreen = $derived(currentScreen === 'departments');
+  const isPositionsScreen = $derived(currentScreen === 'positions');
+  const isStatisticsScreen = $derived(currentScreen === 'statistics');
 </script>
 
 <div class="min-h-screen bg-neutral-50">
-  <SimpleNavbar />
+  <SimpleNavbar bind:currentScreen />
 
   <main class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-    {#if appState.currentView === 'accruals'}
+    {#if isAccrualsScreen}
       <div class="text-center py-12">
         <h2 class="text-3xl font-bold text-neutral-900 mb-4">
           🏆 Начисления АммоКоинов
@@ -30,9 +37,9 @@
           </ul>
         </div>
       </div>
-    {:else if appState.currentView === 'employees'}
+    {:else if isEmployeesScreen}
       <!-- Импортируем компонент реестра сотрудников -->
-      {#await import('$lib/components/Employees/EmployeeRegistry.svelte')}
+      {#await import('$lib/screens/Employees/EmployeeRegistry.svelte')}
         <div class="flex justify-center items-center py-12">
           <div class="text-center">
             <div
@@ -53,7 +60,7 @@
           </div>
         </div>
       {/await}
-    {:else if appState.currentView === 'departments'}
+    {:else if isDepartmentsScreen}
       <div class="text-center py-12">
         <h2 class="text-3xl font-bold text-neutral-900 mb-4">
           🏢 Подразделения
@@ -73,7 +80,7 @@
           </ul>
         </div>
       </div>
-    {:else if appState.currentView === 'positions'}
+    {:else if isPositionsScreen}
       <div class="text-center py-12">
         <h2 class="text-3xl font-bold text-neutral-900 mb-4">💼 Должности</h2>
         <p class="text-neutral-600 mb-8">
@@ -93,7 +100,7 @@
           </ul>
         </div>
       </div>
-    {:else if appState.currentView === 'statistics'}
+    {:else if isStatisticsScreen}
       <div class="text-center py-12">
         <h2 class="text-3xl font-bold text-neutral-900 mb-4">📊 Статистика</h2>
         <p class="text-neutral-600 mb-8">

@@ -77,7 +77,7 @@
   />
 
   <!-- Department -->
-  <IconRow icon="building2" title={employee.department_name} />
+  <IconRow icon="building" title={employee.department_name} />
 
   <!-- Position and other details -->
   <div class="mb-3">

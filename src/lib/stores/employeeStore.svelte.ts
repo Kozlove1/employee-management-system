@@ -1,5 +1,5 @@
-import { apiEmployeesData } from '$lib/components/Employees/employeesMockData';
 import { mockDepartments } from '$lib/data/mockData';
+import { apiEmployeesData } from '$lib/screens/Employees/employeesMockData';
 import type { EmployeeWithDetails } from '$lib/types';
 
 class EmployeeStore {
