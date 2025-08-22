@@ -10,9 +10,25 @@
     VenusAndMars,
   } from '@lucide/svelte';
 
-  import type { IconRowProps } from './IconRow.types';
+  export type IconName =
+    | 'award'
+    | 'coins'
+    | 'building2'
+    | 'briefcase'
+    | 'calendar'
+    | 'mail'
+    | 'user'
+    | 'venusAndMars';
 
-  type Props = IconRowProps;
+  type Props = {
+    backgroundColor?: string;
+    gapSize?: 's' | 'm' | 'l';
+    title?: string;
+    titleColor?: string;
+    titleSize?: 's' | 'm' | 'l';
+    icon: IconName;
+    iconSize?: 's' | 'm' | 'l';
+  };
 
   let {
     backgroundColor = 'bg-primary-50',
