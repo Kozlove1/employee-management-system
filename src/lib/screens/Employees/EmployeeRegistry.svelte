@@ -2,14 +2,10 @@
   import EmployeeCard from './EmployeeCard.svelte';
   import Modal from '$lib/components/UI/Modal.svelte';
   import UserDetails from '../../components/UserDetails.svelte';
+  import Pagination from '$lib/components/UI/Pagination.svelte';
   import { employeeStore } from '$lib/screens/Employees/store/employeeStore.svelte';
   import { mockDepartments } from '$lib/data/mockData';
-  import {
-    ChevronLeft,
-    ChevronRight,
-    RefreshCcw,
-    Search,
-  } from '@lucide/svelte';
+  import { RefreshCcw, Search } from '@lucide/svelte';
   import { getAppContainerStyle } from '$lib/utils';
 
   $effect(() => {
@@ -114,29 +110,12 @@
       </div>
 
       <!-- Pagination -->
-      {#if employeeStore.totalPages() > 1}
-        <div class="flex items-center space-x-2">
-          <button
-            onclick={() => employeeStore.prevPage()}
-            disabled={employeeStore.currentPage === 1}
-            class="btn p-2 border border-neutral-300 bg-primary-50 text-neutral-500 hover:bg-neutral-100 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <ChevronLeft class="w-4 h-4" />
-          </button>
-
-          <span class="text-sm text-neutral-700">
-            {employeeStore.currentPage} / {employeeStore.totalPages()}
-          </span>
-
-          <button
-            onclick={() => employeeStore.nextPage()}
-            disabled={employeeStore.currentPage === employeeStore.totalPages()}
-            class="btn p-2 border border-neutral-300 bg-primary-50 text-neutral-500 hover:bg-neutral-100 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <ChevronRight class="w-4 h-4" />
-          </button>
-        </div>
-      {/if}
+      <Pagination
+        currentPage={employeeStore.currentPage}
+        totalPages={employeeStore.totalPages()}
+        onPrevPage={() => employeeStore.prevPage()}
+        onNextPage={() => employeeStore.nextPage()}
+      />
     </div>
   </div>
 
@@ -193,6 +172,16 @@
         />
       {/each}
     {/if}
+  </div>
+
+  <!-- Pagination at the bottom -->
+  <div class="mt-8">
+    <Pagination
+      currentPage={employeeStore.currentPage}
+      totalPages={employeeStore.totalPages()}
+      onPrevPage={() => employeeStore.prevPage()}
+      onNextPage={() => employeeStore.nextPage()}
+    />
   </div>
 </div>
 
