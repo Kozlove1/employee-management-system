@@ -6,6 +6,7 @@
     mockEmployees,
     getDepartmentName,
   } from '$lib/data/mockData';
+
   import type { Position } from '$lib/types';
 
   let searchTerm = $state('');
@@ -170,7 +171,9 @@
                     >
                   </div>
 
-                  <button class="text-info-600 hover:text-info-900 font-medium">
+                  <button
+                    class="btn text-info-600 hover:text-info-900 font-medium"
+                  >
                     Просмотр
                   </button>
                 </div>

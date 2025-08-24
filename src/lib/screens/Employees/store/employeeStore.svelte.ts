@@ -3,28 +3,28 @@ import { apiEmployeesData } from '$lib/screens/Employees/employeesMockData';
 import type { EmployeeWithDetails } from '$lib/types';
 
 class EmployeeStore {
-  // Основные данные
+  // Main data
   apiEmployees = $state<EmployeeWithDetails[]>([]);
   isLoading = $state(false);
 
-  // Фильтры и поиск
+  // Filters and search
   searchTerm = $state('');
   selectedDepartment = $state('');
   activeOnly = $state(false);
 
-  // Пагинация
+  // Pagination
   currentPage = $state(1);
-  itemsPerPage = $state(12);
+  itemsPerPage = $state(50);
 
-  // Модальное окно
+  // Modal window
   showDetailModal = $state(false);
   selectedEmployee = $state<EmployeeWithDetails | null>(null);
 
-  // Вычисляемые значения
+  // Computed values
   filteredEmployees = $derived(() => {
     let filtered = this.apiEmployees;
 
-    // Поиск по имени
+    // Search by name
     if (this.searchTerm) {
       const searchLower = this.searchTerm.toLowerCase();
       filtered = filtered.filter(emp => 
@@ -33,16 +33,16 @@ class EmployeeStore {
       );
     }
 
-    // Фильтр по подразделению
+    // Filter by department
     if (this.selectedDepartment) {
       filtered = filtered.filter(emp => 
         emp.department_guid === this.selectedDepartment
       );
     }
 
-    // Фильтр только активные
+    // Filter only active
     if (this.activeOnly) {
-      filtered = filtered.filter(emp => !emp.datedismis);
+      filtered = filtered.filter(employee => !employee.datedismis);
     }
 
     return filtered;
@@ -58,13 +58,13 @@ class EmployeeStore {
     return this.filteredEmployees().slice(startIndex, endIndex);
   });
 
-  // Методы для работы с данными
+  // Methods for working with data
   async fetchEmployees() {
     if (this.isLoading) return;
     
     this.isLoading = true;
     try {
-      // Имитация API запроса
+      // Mock API request
       await new Promise((resolve) => setTimeout(resolve, 500));
       
       const enrichedData = apiEmployeesData.map((employee) => {
@@ -90,7 +90,7 @@ class EmployeeStore {
     }
   }
 
-  // Методы для управления модальным окном
+  // Methods for managing the modal window
   openEmployeeDetail(employee: EmployeeWithDetails) {
     this.selectedEmployee = employee;
     this.showDetailModal = true;
@@ -101,7 +101,7 @@ class EmployeeStore {
     this.selectedEmployee = null;
   }
 
-  // Методы для пагинации
+  // Methods for pagination
   nextPage() {
     if (this.currentPage < this.totalPages()) {
       this.currentPage++;
@@ -120,20 +120,20 @@ class EmployeeStore {
     }
   }
 
-  // Методы для фильтров
+  // Methods for filters
   setSearchTerm(term: string) {
     this.searchTerm = term;
-    this.currentPage = 1; // Сброс на первую страницу при поиске
+    this.currentPage = 1;
   }
 
   setDepartmentFilter(departmentGuid: string) {
     this.selectedDepartment = departmentGuid;
-    this.currentPage = 1; // Сброс на первую страницу при фильтрации
+    this.currentPage = 1;
   }
 
   setActiveOnlyFilter(activeOnly: boolean) {
     this.activeOnly = activeOnly;
-    this.currentPage = 1; // Сброс на первую страницу при фильтрации
+    this.currentPage = 1;
   }
 
   clearFilters() {
@@ -143,7 +143,7 @@ class EmployeeStore {
     this.currentPage = 1;
   }
 
-  // Вспомогательные методы
+  // Helper methods
   refreshData() {
     this.fetchEmployees();
   }
@@ -152,21 +152,10 @@ class EmployeeStore {
     return Math.floor(Math.random() * 50000) + 1000;
   }
 
-  // Форматирование данных
-  formatDate(dateStr: string) {
-    if (!dateStr) return '';
-    try {
-      const [day, month, year] = dateStr.split('.');
-      return `${day}.${month}.${year}`;
-    } catch {
-      return dateStr;
-    }
-  }
-
   getStatusBadge(employee: EmployeeWithDetails) {
     return employee.datedismis ? 'Уволен' : 'Активен';
   }
 }
 
-// Экспортируем единственный экземпляр store
+
 export const employeeStore = new EmployeeStore();

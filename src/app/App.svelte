@@ -1,6 +1,9 @@
 <script>
   import '../app.css';
   import SimpleNavbar from '$lib/components/Layout/SimpleNavbar.svelte';
+  import { getAppContainerStyle, CONTAINER_SM, CONTAINER_MD } from '$lib/utils';
+  import LoadingSpinner from '$lib/components/UI/LoadingSpinner.svelte';
+  import ErrorMessage from '$lib/components/UI/ErrorMessage.svelte';
 
   let currentScreen = $state('accruals');
 
@@ -14,7 +17,7 @@
 <div class="min-h-screen bg-neutral-50">
   <SimpleNavbar bind:currentScreen />
 
-  <main class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+  <main class={getAppContainerStyle('py-6')}>
     {#if isAccrualsScreen}
       <div class="text-center py-12">
         <h2 class="text-3xl font-bold text-neutral-900 mb-4">
@@ -24,7 +27,7 @@
           Система управления бонусными начислениями сотрудникам
         </p>
         <div
-          class="bg-primary-50 p-8 rounded-lg shadow-sm max-w-2xl mx-auto border border-neutral-200"
+          class="bg-primary-50 p-8 rounded-lg shadow-sm {CONTAINER_SM} border border-neutral-200"
         >
           <h3 class="text-xl font-semibold mb-4 text-neutral-900">
             Основные функции:
@@ -38,27 +41,13 @@
         </div>
       </div>
     {:else if isEmployeesScreen}
-      <!-- Импортируем компонент реестра сотрудников -->
       {#await import('$lib/screens/Employees/EmployeeRegistry.svelte')}
-        <div class="flex justify-center items-center py-12">
-          <div class="text-center">
-            <div
-              class="animate-spin rounded-full h-8 w-8 border-b-2 border-info-500 mx-auto mb-2"
-            ></div>
-            <p class="text-neutral-600">Загрузка...</p>
-          </div>
-        </div>
+        <LoadingSpinner />
       {:then module}
         {@const EmployeeRegistry = module.default}
         <EmployeeRegistry />
       {:catch error}
-        <div class="text-center py-12">
-          <div
-            class="bg-danger-50 border border-danger-200 rounded-lg p-4 max-w-md mx-auto"
-          >
-            <p class="text-danger-800">Ошибка загрузки: {error.message}</p>
-          </div>
-        </div>
+        <ErrorMessage message={error.message} />
       {/await}
     {:else if isDepartmentsScreen}
       <div class="text-center py-12">
@@ -67,7 +56,7 @@
         </h2>
         <p class="text-neutral-600 mb-8">Организационная структура компании</p>
         <div
-          class="bg-primary-50 p-8 rounded-lg shadow-sm max-w-2xl mx-auto border border-neutral-200"
+          class="bg-primary-50 p-8 rounded-lg shadow-sm {CONTAINER_SM} border border-neutral-200"
         >
           <h3 class="text-xl font-semibold mb-4 text-neutral-900">
             Возможности:
@@ -87,7 +76,7 @@
           Справочник должностей по подразделениям
         </p>
         <div
-          class="bg-primary-50 p-8 rounded-lg shadow-sm max-w-2xl mx-auto border border-neutral-200"
+          class="bg-primary-50 p-8 rounded-lg shadow-sm {CONTAINER_SM} border border-neutral-200"
         >
           <h3 class="text-xl font-semibold mb-4 text-neutral-900">
             Особенности:
@@ -137,7 +126,7 @@
 
         <!-- Топ сотрудников -->
         <div
-          class="bg-primary-50 p-8 rounded-lg shadow-sm max-w-4xl mx-auto border border-neutral-200"
+          class="bg-primary-50 p-8 rounded-lg shadow-sm {CONTAINER_MD} border border-neutral-200"
         >
           <h3 class="text-xl font-semibold mb-6 text-neutral-900">
             🏆 Топ-10 сотрудников по балансу АммоКоинов

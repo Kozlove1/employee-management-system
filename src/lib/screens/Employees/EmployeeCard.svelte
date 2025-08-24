@@ -23,7 +23,7 @@
   <!-- Верхняя строка с аватаром и кнопками -->
   <div class="flex items-start mb-1 gap-2">
     <div
-      class="h-10 w-10 mb-5 flex items-center justify-center rounded-full bg-info-100"
+      class="h-10 w-10 mb-5 px-3 flex items-center justify-center rounded-full bg-info-100"
     >
       <span class="title-sm font-medium text-info-700">
         {getInitials(employee.employee)}
@@ -48,7 +48,7 @@
         </span>
         <button
           onclick={() => onDetailClick(employee)}
-          class="inline-flex items-center px-1 my-0 border-2 border-success-100 font-normal rounded-lg whitespace-nowrap text-success-700"
+          class="btn inline-flex items-center px-1 my-0 border-2 border-success-100 font-normal rounded-lg whitespace-nowrap text-success-700"
         >
           <IconRow
             icon="award"
@@ -89,6 +89,6 @@
       icon="calendar"
       title="Принят: {formatDate(employee.dateemploy)}"
     />
-    <IconRow icon="venusAndMars" title="Пол: {employee.sex}" />
+    <IconRow icon="venus-and-mars" title="Пол: {employee.sex}" />
   </div>
 </div>

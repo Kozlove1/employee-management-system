@@ -21,7 +21,7 @@
     | 'calendar'
     | 'mail'
     | 'user'
-    | 'venusAndMars'
+    | 'venus-and-mars'
     | 'menu';
 
   type Props = {
@@ -55,7 +55,7 @@
     calendar: Calendar,
     mail: Mail,
     user: User,
-    venusAndMars: VenusAndMars,
+    'venus-and-mars': VenusAndMars,
     menu: Menu,
   };
 

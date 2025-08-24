@@ -1,5 +1,6 @@
 <script lang="ts">
   import IconRow, { type IconName } from '$lib/components/UI/IconRow.svelte';
+  import { getAppContainerStyle } from '$lib/utils';
 
   type MenuItem = {
     id: string;
@@ -13,8 +14,7 @@
   const menuItems = [
     { id: 'accruals', label: 'Начисления', icon: 'award' },
     { id: 'employees', label: 'Сотрудники', icon: 'user' },
-    { id: 'departments', label: 'Подразделения', icon: 'building' },
-    { id: 'positions', label: 'Должности', icon: 'briefcase' },
+    { id: 'positions', label: 'Типы начислений', icon: 'briefcase' },
     { id: 'statistics', label: 'Статистика', icon: 'chart' },
   ] as MenuItem[];
 
@@ -25,13 +25,14 @@
 </script>
 
 <nav class="bg-primary-50 shadow-sm border-b border-neutral-200">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class={getAppContainerStyle()}>
     <div class="flex h-16">
       <!-- Mobile menu button -->
       <div class="flex items-center lg:hidden">
         <button
           onclick={() => (sidebarOpen = !sidebarOpen)}
           aria-label="Toggle mobile menu"
+          class="btn"
         >
           <IconRow icon="menu" iconSize="l" titleColor="text-neutral-500" />
         </button>
@@ -41,7 +42,7 @@
       <div class="hidden lg:flex lg:flex-1 lg:justify-between lg:items-center">
         {#each menuItems as item}
           <button
-            class="px-2 py-1 rounded-lg text-sm font-medium {currentScreen ===
+            class="btn px-2 py-1 rounded-lg text-sm font-medium {currentScreen ===
             item.id
               ? 'bg-white text-info-700 border-2 border-info-200 shadow-sm'
               : 'text-neutral-600 border-2 border-transparent hover:border-neutral-200 hover:bg-white hover:text-neutral-800 hover:shadow-sm'}"
@@ -68,7 +69,7 @@
       <div class="pt-2 pb-3 space-y-2 px-2">
         {#each menuItems as item}
           <button
-            class="block w-full text-left px-2 py-1 font-medium rounded-lg {currentScreen ===
+            class="btn block w-full text-left px-2 py-1 font-medium rounded-lg {currentScreen ===
             item.id
               ? 'bg-white text-info-700 border-2 border-info-200 shadow-sm'
               : 'text-neutral-600 border-2 border-transparent hover:border-neutral-200 hover:bg-white hover:text-neutral-800 hover:shadow-sm'}"
