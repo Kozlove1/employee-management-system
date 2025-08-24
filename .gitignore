@@ -18,6 +18,9 @@ node_modules/
 *.swo
 *~
 
+# Cursor IDE files
+svelte_cursor_rules
+
 # OS generated files
 .DS_Store
 .DS_Store?

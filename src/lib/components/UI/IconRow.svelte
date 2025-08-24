@@ -2,23 +2,27 @@
   import {
     Award,
     Coins,
+    ChartNoAxesCombined,
     Building2,
     Briefcase,
     Calendar,
     Mail,
     User,
     VenusAndMars,
+    Menu,
   } from '@lucide/svelte';
 
   export type IconName =
     | 'award'
     | 'coins'
-    | 'building2'
+    | 'chart'
+    | 'building'
     | 'briefcase'
     | 'calendar'
     | 'mail'
     | 'user'
-    | 'venusAndMars';
+    | 'venusAndMars'
+    | 'menu';
 
   type Props = {
     backgroundColor?: string;
@@ -28,6 +32,7 @@
     titleSize?: 's' | 'm' | 'l';
     icon: IconName;
     iconSize?: 's' | 'm' | 'l';
+    hoverColor?: string;
   };
 
   let {
@@ -38,17 +43,20 @@
     titleSize = 'm',
     icon,
     iconSize = 'm',
+    hoverColor = 'text-neutral-700',
   }: Props = $props();
 
   const icons = {
     award: Award,
     coins: Coins,
-    building2: Building2,
+    chart: ChartNoAxesCombined,
+    building: Building2,
     briefcase: Briefcase,
     calendar: Calendar,
     mail: Mail,
     user: User,
     venusAndMars: VenusAndMars,
+    menu: Menu,
   };
 
   const iconSizes = {
@@ -78,9 +86,14 @@
 
 <div>
   <div class="flex items-center {gapSizes[gapSize]} {backgroundStyles}">
-    <IconComponent size={iconSizes[iconSize]} />
+    <IconComponent
+      size={iconSizes[iconSize]}
+      class="{titleColor} group-hover:{hoverColor}"
+    />
     {#if title}
-      <p class="{titleSizes[titleSize]} {titleColor}">{title}</p>
+      <p class="{titleSizes[titleSize]} {titleColor} group-hover:{hoverColor}">
+        {title}
+      </p>
     {/if}
   </div>
 </div>
