@@ -75,7 +75,7 @@
 
           <button
             onclick={onClose}
-            class="rounded-md text-neutral-400 hover:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-info-500"
+            class="btn rounded-md text-neutral-400 hover:text-neutral-600"
           >
             <X size={24} />
           </button>

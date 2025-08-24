@@ -1,6 +1,7 @@
 <script lang="ts">
   import Icon from '$lib/components/Icons/Icon.svelte';
   import AccrualForm from './AccrualForm.svelte';
+
   import {
     mockEmployees,
     mockAccrualTypes,

@@ -1,6 +1,7 @@
 <script lang="ts">
-  import Icon from '$lib/components/Icons/Icon.svelte';
+  import IconRow from '$lib/components/UI/IconRow.svelte';
   import { mockEmployees, mockAccrualTypes } from '$lib/data/mockData';
+
   import type { AccrualFormData } from '$lib/types';
 
   let {

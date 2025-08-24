@@ -1,5 +1,85 @@
 import type { Employee } from '$lib/types';
 
+function generateAdditionalEmployees(count: number): Employee[] {
+  const firstNames = [
+    'Александр', 'Алексей', 'Андрей', 'Артем', 'Владимир', 'Дмитрий', 'Евгений', 'Игорь', 'Максим', 'Михаил',
+    'Николай', 'Павел', 'Роман', 'Сергей', 'Станислав', 'Юрий', 'Анна', 'Елена', 'Ирина', 'Мария',
+    'Наталья', 'Ольга', 'Светлана', 'Татьяна', 'Юлия', 'Виктория', 'Дарья', 'Екатерина', 'Кристина', 'Людмила'
+  ];
+  
+  const lastNames = [
+    'Иванов', 'Петров', 'Сидоров', 'Смирнов', 'Кузнецов', 'Попов', 'Васильев', 'Соколов', 'Михайлов', 'Новиков',
+    'Федоров', 'Морозов', 'Волков', 'Алексеев', 'Лебедев', 'Семенов', 'Егоров', 'Павлов', 'Козлов', 'Степанов',
+    'Николаев', 'Орлов', 'Андреев', 'Макаров', 'Никитин', 'Захаров', 'Зайцев', 'Соловьев', 'Борисов', 'Яковлев'
+  ];
+  
+  const middleNames = [
+    'Александрович', 'Алексеевич', 'Андреевич', 'Артемович', 'Владимирович', 'Дмитриевич', 'Евгеньевич', 'Игоревич',
+    'Максимович', 'Михайлович', 'Николаевич', 'Павлович', 'Романович', 'Сергеевич', 'Станиславович', 'Юрьевич',
+    'Александровна', 'Алексеевна', 'Андреевна', 'Артемовна', 'Владимировна', 'Дмитриевна', 'Евгеньевна', 'Игоревна',
+    'Максимовна', 'Михайловна', 'Николаевна', 'Павловна', 'Романовна', 'Сергеевна', 'Станиславовна', 'Юрьевна'
+  ];
+
+  const departments = [
+    '86253b53-4e33-11ee-9d85-00155de8647c', // Подразделение 1
+    '86253e12-4e33-11ee-9d85-00155de8647c', // Подразделение 2
+    '86253c25-4e33-11ee-9d85-00155de8647c'  // Подразделение 3
+  ];
+
+  const positions = [
+    'add09c40-a0c4-11ef-9dad-00155de8647c', // Должность 1
+    '11dbba8e-a0c4-11ef-9dad-00155de8647c', // Должность 2
+    '22dbba8e-a0c4-11ef-9dad-00155de8647c', // Должность 3
+    '33dbba8e-a0c4-11ef-9dad-00155de8647c', // Должность 4
+    '44dbba8e-a0c4-11ef-9dad-00155de8647c'  // Должность 5
+  ];
+
+  const additionalEmployees: Employee[] = [];
+
+  for (let i = 0; i < count; i++) {
+    const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+    const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+    const middleName = middleNames[Math.floor(Math.random() * middleNames.length)];
+    const fullName = `${lastName} ${firstName} ${middleName}`;
+    
+    const isMale = Math.random() > 0.5;
+    const sex = isMale ? 'Мужской' : 'Женский';
+    
+    const year = 2010 + Math.floor(Math.random() * 15);
+    const month = String(1 + Math.floor(Math.random() * 12)).padStart(2, '0');
+    const day = String(1 + Math.floor(Math.random() * 28)).padStart(2, '0');
+    const dateemploy = `${day}.${month}.${year}`;
+    
+    // 10% сотрудников уволены
+    const isDismissed = Math.random() < 0.1;
+    const datedismis = isDismissed ? '15.06.2024' : '';
+    
+    const ident = `0000-${String(700 + i).padStart(5, '0')}`;
+    const employeeGuid = `emp${String(i + 100).padStart(3, '0')}-a041-11ef-9dad-00155de8647c`;
+    const personGuid = `per${String(i + 100).padStart(3, '0')}-a025-11ef-9dad-00155de8647c`;
+    const postGuid = positions[Math.floor(Math.random() * positions.length)];
+    const departmentGuid = departments[Math.floor(Math.random() * departments.length)];
+    
+    const email = Math.random() > 0.2 ? `${lastName.toLowerCase()}.${firstName.charAt(0).toLowerCase()}@ammoni.ru` : '';
+
+    additionalEmployees.push({
+      org_guid: '8753101a-4fb8-11ed-9d6f-00155dd75c64',
+      post_guid: postGuid,
+      ident: ident,
+      employee: fullName,
+      employee_guid: employeeGuid,
+      dateemploy: dateemploy,
+      datedismis: datedismis,
+      email: email,
+      sex: sex,
+      person_guid: personGuid,
+      department_guid: departmentGuid,
+    });
+  }
+
+  return additionalEmployees;
+}
+
 // Mock данные сотрудников на основе реального JSON API
 export const apiEmployeesData: Employee[] = [
   {
@@ -237,4 +317,5 @@ export const apiEmployeesData: Employee[] = [
     person_guid: 'a1546027-a025-11ef-9dad-00155de8647c',
     department_guid: '86253c25-4e33-11ee-9d85-00155de8647c',
   },
+  ...generateAdditionalEmployees(82)
 ];
