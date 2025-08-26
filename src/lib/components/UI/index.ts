@@ -4,3 +4,4 @@ export { default as LoadingSpinner } from './LoadingSpinner.svelte';
 export { default as Modal } from './Modal.svelte';
 export { default as PaginationButton } from './PaginationButton.svelte';
 export { default as RefreshButton } from './RefreshButton.svelte';
+export { default as StatCard } from './StatCard.svelte';

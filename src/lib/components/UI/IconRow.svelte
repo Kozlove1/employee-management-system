@@ -11,6 +11,7 @@
     VenusAndMars,
     Menu,
     Crown,
+    Tags,
   } from '@lucide/svelte';
 
   export type IconName =
@@ -24,7 +25,8 @@
     | 'user'
     | 'venus-and-mars'
     | 'menu'
-    | 'crown';
+    | 'crown'
+    | 'tags';
 
   export type IconColor = 'yellow' | 'black' | 'blue';
 
@@ -64,6 +66,7 @@
     'venus-and-mars': VenusAndMars,
     menu: Menu,
     crown: Crown,
+    tags: Tags,
   };
 
   const iconSizes = {
