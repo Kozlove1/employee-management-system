@@ -3,7 +3,7 @@
   type TopOffset = '25vh' | '50vh' | '75vh';
 
   let {
-    text = 'Загрузка...',
+    title = 'Загрузка...',
     size = 'lg' as SpinnerSize,
     topOffset = '0vh' as TopOffset,
   } = $props();
@@ -25,6 +25,6 @@
         size
       ]} border-info-500 mb-2 mx-auto"
     ></div>
-    <p class="text-neutral-600">{text}</p>
+    <p class="text-neutral-600">{title}</p>
   </div>
 </div>

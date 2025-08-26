@@ -90,93 +90,14 @@
         </div>
       </div>
     {:else if isStatisticsScreen}
-      <div class="text-center py-12">
-        <h2 class="text-3xl font-bold text-neutral-900 mb-4">📊 Статистика</h2>
-        <p class="text-neutral-600 mb-8">
-          Аналитика по начислениям и балансам АммоКоинов
-        </p>
-
-        <!-- Общие метрики -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div
-            class="bg-primary-50 p-6 rounded-lg shadow-sm border border-neutral-200"
-          >
-            <div class="text-3xl font-bold text-info-500">1,601</div>
-            <div class="text-sm text-neutral-600">Всего сотрудников</div>
-          </div>
-          <div
-            class="bg-primary-50 p-6 rounded-lg shadow-sm border border-neutral-200"
-          >
-            <div class="text-3xl font-bold text-info-500">3</div>
-            <div class="text-sm text-neutral-600">Подразделений</div>
-          </div>
-          <div
-            class="bg-primary-50 p-6 rounded-lg shadow-sm border border-neutral-200"
-          >
-            <div class="text-3xl font-bold text-warning-500">156,750</div>
-            <div class="text-sm text-neutral-600">Общий баланс АК</div>
-          </div>
-          <div
-            class="bg-primary-50 p-6 rounded-lg shadow-sm border border-neutral-200"
-          >
-            <div class="text-3xl font-bold text-success-500">4,250</div>
-            <div class="text-sm text-neutral-600">Средний баланс АК</div>
-          </div>
-        </div>
-
-        <!-- Топ сотрудников -->
-        <div
-          class="bg-primary-50 p-8 rounded-lg shadow-sm {CONTAINER_MD} border border-neutral-200"
-        >
-          <h3 class="text-xl font-semibold mb-6 text-neutral-900">
-            🏆 Топ-10 сотрудников по балансу АммоКоинов
-          </h3>
-          <div class="space-y-4">
-            <div
-              class="flex justify-between items-center p-4 bg-warning-50 rounded-lg border border-warning-200"
-            >
-              <div class="flex items-center">
-                <span class="text-2xl mr-3">🥇</span>
-                <div>
-                  <div class="font-medium text-neutral-900">
-                    Колногорова Олеся Александровна
-                  </div>
-                  <div class="text-sm text-neutral-500">0000-00283</div>
-                </div>
-              </div>
-              <div class="text-xl font-bold text-warning-500">7,000 АК</div>
-            </div>
-            <div
-              class="flex justify-between items-center p-4 bg-neutral-100 rounded-lg border border-neutral-200"
-            >
-              <div class="flex items-center">
-                <span class="text-2xl mr-3">🥈</span>
-                <div>
-                  <div class="font-medium text-neutral-900">
-                    Макаров Дмитрий Юрьевич
-                  </div>
-                  <div class="text-sm text-neutral-500">0000-00158</div>
-                </div>
-              </div>
-              <div class="text-xl font-bold text-neutral-600">5,000 АК</div>
-            </div>
-            <div
-              class="flex justify-between items-center p-4 bg-success-50 rounded-lg border border-success-200"
-            >
-              <div class="flex items-center">
-                <span class="text-2xl mr-3">🥉</span>
-                <div>
-                  <div class="font-medium text-neutral-900">
-                    Разбойкин Юрий Павлович
-                  </div>
-                  <div class="text-sm text-neutral-500">0000-00140</div>
-                </div>
-              </div>
-              <div class="text-xl font-bold text-success-500">4,000 АК</div>
-            </div>
-          </div>
-        </div>
-      </div>
+      {#await import('$lib/screens/Statistics')}
+        <LoadingSpinner />
+      {:then module}
+        {@const StatisticsView = module.StatisticsView}
+        <StatisticsView />
+      {:catch error}
+        <ErrorMessage message={error.message} />
+      {/await}
     {/if}
   </main>
 </div>

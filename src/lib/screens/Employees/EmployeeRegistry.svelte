@@ -1,12 +1,13 @@
 <script lang="ts">
-  import EmployeeCard from './EmployeeCard.svelte';
-  import Modal from '$lib/components/UI/Modal.svelte';
-  import UserDetails from '../../components/UserDetails.svelte';
-  import Pagination from '$lib/components/UI/Pagination.svelte';
-  import { employeeStore } from '$lib/screens/Employees/store/employeeStore.svelte';
-  import { mockDepartments } from '$lib/data/mockData';
-  import { RefreshCcw, Search } from '@lucide/svelte';
+  import { Search } from '@lucide/svelte';
   import { getAppContainerStyle } from '$lib/utils';
+
+  import { mockDepartments } from '$lib/data/mockData';
+
+  import UserDetails from '$lib/components/UserDetails.svelte';
+  import { Modal, PaginationButton, RefreshButton } from '$lib/components/UI';
+  import { employeeStore } from '$lib/screens/Employees/store/employeeStore.svelte';
+  import EmployeeCard from './EmployeeCard.svelte';
 
   $effect(() => {
     if (employeeStore.apiEmployees.length === 0) {
@@ -84,16 +85,11 @@
       </div>
 
       <!-- Update button -->
-      <button
-        onclick={() => employeeStore.refreshData()}
-        disabled={employeeStore.isLoading}
-        class="btn text-primary-50 bg-info-500 hover:bg-info-600 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
-      >
-        <RefreshCcw
-          class="w-4 h-4 mr-2 {employeeStore.isLoading ? 'animate-spin' : ''}"
-        />
-        Обновить
-      </button>
+      <RefreshButton
+        onClick={() => employeeStore.refreshData()}
+        isLoading={employeeStore.isLoading}
+        variant="info"
+      />
     </div>
 
     <!-- Pagination and statistics -->
@@ -109,8 +105,7 @@
         </div>
       </div>
 
-      <!-- Pagination -->
-      <Pagination
+      <PaginationButton
         currentPage={employeeStore.currentPage}
         totalPages={employeeStore.totalPages()}
         onPrevPage={() => employeeStore.prevPage()}
@@ -176,7 +171,7 @@
 
   <!-- Pagination at the bottom -->
   <div class="mt-8">
-    <Pagination
+    <PaginationButton
       currentPage={employeeStore.currentPage}
       totalPages={employeeStore.totalPages()}
       onPrevPage={() => employeeStore.prevPage()}

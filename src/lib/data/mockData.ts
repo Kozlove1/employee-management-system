@@ -130,6 +130,71 @@ export const mockEmployees: Employee[] = [
     sex: "М", 
     person_guid: "3876902a-a025-11ef-9dad-00155de8647c",
     department_guid: "86253e12-4e33-11ee-9d85-00155de8647c"
+  },
+  {
+    org_guid: "8753101a-4fb8-11ed-9d6f-00155dd75c64",
+    post_guid: "55ffdee1-a0c4-11ef-9dad-00155de8647c",
+    ident: "0000-03125",
+    employee: "Макаров Дмитрий Юрьевич",
+    employee_guid: "0a08b119-a041-11ef-9dad-00155de8647c",
+    dateemploy: "15.08.2017",
+    datedismis: "",
+    email: "makarov.d@ammoni.ru",
+    sex: "М",
+    person_guid: "4987a02b-a025-11ef-9dad-00155de8647c",
+    department_guid: "86253ef6-4e33-11ee-9d85-00155de8647c"
+  },
+  {
+    org_guid: "8753101a-4fb8-11ed-9d6f-00155dd75c64",
+    post_guid: "66ggff2-a0c4-11ef-9dad-00155de8647c",
+    ident: "0000-04189",
+    employee: "Разбойкин Юрий Павлович",
+    employee_guid: "1b19c21a-a041-11ef-9dad-00155de8647c",
+    dateemploy: "03.11.2019",
+    datedismis: "",
+    email: "razboykin.y@ammoni.ru",
+    sex: "М",
+    person_guid: "5a98b12c-a025-11ef-9dad-00155de8647c",
+    department_guid: "86253b1a-4e33-11ee-9d85-00155de8647c"
+  },
+  {
+    org_guid: "8753101a-4fb8-11ed-9d6f-00155dd75c64",
+    post_guid: "77hhgg3-a0c4-11ef-9dad-00155de8647c",
+    ident: "0000-05234",
+    employee: "Смирнова Анна Владимировна",
+    employee_guid: "2c2ad31b-a041-11ef-9dad-00155de8647c",
+    dateemploy: "22.05.2020",
+    datedismis: "",
+    email: "smirnova.a@ammoni.ru",
+    sex: "Ж",
+    person_guid: "6ba9c23d-a025-11ef-9dad-00155de8647c",
+    department_guid: "86253e12-4e33-11ee-9d85-00155de8647c"
+  },
+  {
+    org_guid: "8753101a-4fb8-11ed-9d6f-00155dd75c64",
+    post_guid: "88iihh4-a0c4-11ef-9dad-00155de8647c",
+    ident: "0000-06178",
+    employee: "Петров Игорь Сергеевич",
+    employee_guid: "3d3be41c-a041-11ef-9dad-00155de8647c",
+    dateemploy: "10.09.2021",
+    datedismis: "",
+    email: "petrov.i@ammoni.ru",
+    sex: "М",
+    person_guid: "7cbad34e-a025-11ef-9dad-00155de8647c",
+    department_guid: "86253ef6-4e33-11ee-9d85-00155de8647c"
+  },
+  {
+    org_guid: "8753101a-4fb8-11ed-9d6f-00155dd75c64",
+    post_guid: "99jjii5-a0c4-11ef-9dad-00155de8647c",
+    ident: "0000-07192",
+    employee: "Козлова Елена Михайловна",
+    employee_guid: "4e4cf51d-a041-11ef-9dad-00155de8647c",
+    dateemploy: "14.12.2022",
+    datedismis: "",
+    email: "kozlova.e@ammoni.ru",
+    sex: "Ж",
+    person_guid: "8dcbe45f-a025-11ef-9dad-00155de8647c",
+    department_guid: "86253b1a-4e33-11ee-9d85-00155de8647c"
   }
 ];
 
@@ -203,17 +268,5 @@ export function getAccrualTypeName(typeGuid: string): string {
 // Генерация случайных балансов для демонстрации
 export function generateRandomBalance(): number {
   return Math.floor(Math.random() * 10000);
-}
-
-// Функция для получения топ сотрудников по балансу
-export function getTopEmployeesByBalance(limit: number = 10) {
-  return mockEmployees
-    .map(emp => ({
-      ...emp,
-      balance: generateRandomBalance(),
-      department_name: getDepartmentName(emp.department_guid)
-    }))
-    .sort((a, b) => b.balance - a.balance)
-    .slice(0, limit);
 }
 
