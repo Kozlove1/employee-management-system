@@ -10,6 +10,7 @@
     User,
     VenusAndMars,
     Menu,
+    Crown,
   } from '@lucide/svelte';
 
   export type IconName =
@@ -22,16 +23,20 @@
     | 'mail'
     | 'user'
     | 'venus-and-mars'
-    | 'menu';
+    | 'menu'
+    | 'crown';
+
+  export type IconColor = 'yellow' | 'black' | 'blue';
 
   type Props = {
     backgroundColor?: string;
     gapSize?: 's' | 'm' | 'l';
     title?: string;
     titleColor?: string;
-    titleSize?: 's' | 'm' | 'l';
+    titleSize?: 's' | 'm' | 'l' | 'xl' | '3xl';
     icon: IconName;
-    iconSize?: 's' | 'm' | 'l';
+    iconSize?: 's' | 'm' | 'l' | 'xl' | '2xl';
+    iconColor?: IconColor;
     hoverColor?: string;
   };
 
@@ -43,6 +48,7 @@
     titleSize = 'm',
     icon,
     iconSize = 'm',
+    iconColor = 'black',
     hoverColor = 'text-neutral-700',
   }: Props = $props();
 
@@ -57,18 +63,29 @@
     user: User,
     'venus-and-mars': VenusAndMars,
     menu: Menu,
+    crown: Crown,
   };
 
   const iconSizes = {
     s: 10,
     m: 12,
     l: 16,
+    xl: 22,
+    '2xl': 28,
+  };
+
+  const iconColors = {
+    yellow: '#f5e804',
+    black: '#002335',
+    blue: '#005691',
   };
 
   const titleSizes = {
     s: 'text-xs',
     m: 'text-sm',
     l: 'text-base',
+    xl: 'text-lg',
+    '3xl': 'text-3xl',
   };
 
   const gapSizes = {
@@ -88,7 +105,8 @@
   <div class="flex items-center {gapSizes[gapSize]} {backgroundStyles}">
     <IconComponent
       size={iconSizes[iconSize]}
-      class="{titleColor} group-hover:{hoverColor}"
+      class="group-hover:{hoverColor}"
+      color={iconColors[iconColor]}
     />
     {#if title}
       <p class="{titleSizes[titleSize]} {titleColor} group-hover:{hoverColor}">
