@@ -49,7 +49,6 @@
       {:catch error}
         <ErrorMessage message={error.message} />
       {/await}
-    {:else if isDepartmentsScreen}
       <div class="text-center py-12">
         <h2 class="text-3xl font-bold text-neutral-900 mb-4">
           🏢 Подразделения
@@ -69,7 +68,6 @@
           </ul>
         </div>
       </div>
-    {:else if isPositionsScreen}
       <div class="text-center py-12">
         <h2 class="text-3xl font-bold text-neutral-900 mb-4">💼 Должности</h2>
         <p class="text-neutral-600 mb-8">
