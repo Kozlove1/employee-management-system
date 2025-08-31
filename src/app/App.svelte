@@ -1,9 +1,9 @@
 <script>
-  import '../app.css';
   import SimpleNavbar from '$lib/components/Layout/SimpleNavbar.svelte';
-  import { getAppContainerStyle, CONTAINER_SM, CONTAINER_MD } from '$lib/utils';
-  import LoadingSpinner from '$lib/components/UI/LoadingSpinner.svelte';
   import ErrorMessage from '$lib/components/UI/ErrorMessage.svelte';
+  import LoadingSpinner from '$lib/components/UI/LoadingSpinner.svelte';
+  import { CONTAINER_SM, getAppContainerStyle } from '$lib/utils';
+  import '../app.css';
 
   let currentScreen = $state('accruals');
 
@@ -49,44 +49,6 @@
       {:catch error}
         <ErrorMessage message={error.message} />
       {/await}
-      <div class="text-center py-12">
-        <h2 class="text-3xl font-bold text-neutral-900 mb-4">
-          🏢 Подразделения
-        </h2>
-        <p class="text-neutral-600 mb-8">Организационная структура компании</p>
-        <div
-          class="bg-primary-50 p-8 rounded-lg shadow-sm {CONTAINER_SM} border border-neutral-200"
-        >
-          <h3 class="text-xl font-semibold mb-4 text-neutral-900">
-            Возможности:
-          </h3>
-          <ul class="text-left space-y-2 text-neutral-700">
-            <li>✅ Просмотр всех подразделений</li>
-            <li>✅ Информация о руководителях</li>
-            <li>✅ Количество сотрудников в каждом подразделении</li>
-            <li>✅ Статус активности подразделений</li>
-          </ul>
-        </div>
-      </div>
-      <div class="text-center py-12">
-        <h2 class="text-3xl font-bold text-neutral-900 mb-4">💼 Должности</h2>
-        <p class="text-neutral-600 mb-8">
-          Справочник должностей по подразделениям
-        </p>
-        <div
-          class="bg-primary-50 p-8 rounded-lg shadow-sm {CONTAINER_SM} border border-neutral-200"
-        >
-          <h3 class="text-xl font-semibold mb-4 text-neutral-900">
-            Особенности:
-          </h3>
-          <ul class="text-left space-y-2 text-neutral-700">
-            <li>✅ Справочник должностей по подразделениям</li>
-            <li>✅ Связи между должностями и подразделениями</li>
-            <li>✅ Количество сотрудников на каждой должности</li>
-            <li>✅ Удобная группировка по отделам</li>
-          </ul>
-        </div>
-      </div>
     {:else if isStatisticsScreen}
       {#await import('$lib/screens/Statistics')}
         <LoadingSpinner />
