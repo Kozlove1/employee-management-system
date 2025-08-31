@@ -1,6 +1,6 @@
 <script lang="ts">
   import IconRow from '$lib/components/UI/IconRow.svelte';
-  import { mockEmployees, mockAccrualTypes } from '$lib/data/mockData';
+  import { mockAccrualTypes, mockEmployees } from '$lib/data/mockData';
 
   import type { AccrualFormData } from '$lib/types';
 
@@ -71,7 +71,7 @@
           class="text-gray-400 hover:text-gray-500"
           onclick={handleCancel}
         >
-          <Icon name="x" class="h-6 w-6" />
+          <IconRow icon="x" iconSize="l" />
         </button>
       </div>
 
@@ -155,7 +155,7 @@
             <div
               class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none"
             >
-              <Icon name="calendar" class="h-5 w-5 text-gray-400" />
+              <IconRow icon="calendar" iconSize="m" />
             </div>
           </div>
         </div>

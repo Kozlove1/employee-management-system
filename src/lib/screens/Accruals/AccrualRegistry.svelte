@@ -1,11 +1,11 @@
 <script lang="ts">
-  import Icon from '$lib/components/Icons/Icon.svelte';
+  import IconRow from '$lib/components/UI/IconRow.svelte';
   import AccrualForm from './AccrualForm.svelte';
 
   import {
-    mockEmployees,
-    mockAccrualTypes,
     getDepartmentName,
+    mockAccrualTypes,
+    mockEmployees,
   } from '$lib/data/mockData';
   import type { AccrualFormData, AccrualWithDetails } from '$lib/types';
 
@@ -163,10 +163,11 @@
     <div class="flex flex-col lg:flex-row lg:items-center gap-4">
       <div class="flex-1">
         <div class="relative">
-          <Icon
-            name="search"
-            class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4"
-          />
+          <div
+            class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+          >
+            <IconRow icon="search" iconSize="s" />
+          </div>
           <input
             type="text"
             placeholder="Поиск по сотруднику, типу, комментарию..."
@@ -192,12 +193,12 @@
         </select>
 
         <button class="btn-secondary" onclick={resetFilters}>
-          <Icon name="filter" class="h-4 w-4 mr-2" />
+          <IconRow icon="filter" iconSize="s" />
           Сбросить
         </button>
 
         <button class="btn-success" onclick={() => (showForm = true)}>
-          <Icon name="plus" class="h-4 w-4 mr-2" />
+          <IconRow icon="plus" iconSize="s" />
           Добавить начисление
         </button>
       </div>
@@ -289,7 +290,7 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 <div class="flex items-center">
-                  <Icon name="calendar" class="h-4 w-4 mr-1" />
+                  <IconRow icon="calendar" iconSize="s" />
                   {accrual.datecreate}
                 </div>
               </td>
