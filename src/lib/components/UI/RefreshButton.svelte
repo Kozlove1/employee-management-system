@@ -15,7 +15,7 @@
     isLoading = false,
     disabled = false,
     text = 'Обновить',
-    loadingText = 'Обновление...',
+    loadingText = 'Загрузка...',
     variant = 'primary',
   }: Props = $props();
 
@@ -28,11 +28,10 @@
 <button
   onclick={onClick}
   disabled={disabled || isLoading}
-  class="btn flex items-center gap-2 px-4 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors {buttonClasses[
+  class="btn flex items-center gap-2 px-3 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors {buttonClasses[
     variant
   ]}"
 >
   <RefreshCw class="h-4 w-4 {isLoading ? 'animate-spin' : ''}" />
   <span>{isLoading ? loadingText : text}</span>
 </button>
-

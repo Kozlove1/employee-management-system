@@ -1,16 +1,20 @@
-<script lang="ts">
+<script module lang="ts">
   import {
     Award,
-    Coins,
-    ChartNoAxesCombined,
-    Building2,
     Briefcase,
+    Building2,
     Calendar,
+    ChartNoAxesCombined,
+    Coins,
+    Crown,
+    Funnel,
     Mail,
+    Menu,
+    Plus,
+    Search,
     User,
     VenusAndMars,
-    Menu,
-    Crown,
+    X,
   } from '@lucide/svelte';
 
   export type IconName =
@@ -24,33 +28,13 @@
     | 'user'
     | 'venus-and-mars'
     | 'menu'
-    | 'crown';
+    | 'crown'
+    | 'x'
+    | 'filter'
+    | 'plus'
+    | 'search';
 
   export type IconColor = 'yellow' | 'black' | 'blue';
-
-  type Props = {
-    backgroundColor?: string;
-    gapSize?: 's' | 'm' | 'l';
-    title?: string;
-    titleColor?: string;
-    titleSize?: 's' | 'm' | 'l' | 'xl' | '3xl';
-    icon: IconName;
-    iconSize?: 's' | 'm' | 'l' | 'xl' | '2xl';
-    iconColor?: IconColor;
-    hoverColor?: string;
-  };
-
-  let {
-    backgroundColor = 'bg-primary-50',
-    gapSize = 'm',
-    title,
-    titleColor = 'text-neutral-500',
-    titleSize = 'm',
-    icon,
-    iconSize = 'm',
-    iconColor = 'black',
-    hoverColor = 'text-neutral-700',
-  }: Props = $props();
 
   const icons = {
     award: Award,
@@ -64,6 +48,10 @@
     'venus-and-mars': VenusAndMars,
     menu: Menu,
     crown: Crown,
+    x: X,
+    filter: Funnel,
+    plus: Plus,
+    search: Search,
   };
 
   const iconSizes = {
@@ -93,6 +81,32 @@
     m: 'gap-2',
     l: 'gap-3',
   };
+</script>
+
+<script lang="ts">
+  interface Props {
+    backgroundColor?: string;
+    gapSize?: 's' | 'm' | 'l';
+    title?: string;
+    titleColor?: string;
+    titleSize?: 's' | 'm' | 'l' | 'xl' | '3xl';
+    icon: IconName;
+    iconSize?: 's' | 'm' | 'l' | 'xl' | '2xl';
+    iconColor?: IconColor;
+    hoverColor?: string;
+  }
+
+  let {
+    backgroundColor = 'bg-primary-50',
+    gapSize = 'm',
+    title,
+    titleColor = 'text-neutral-500',
+    titleSize = 'm',
+    icon,
+    iconSize = 'm',
+    iconColor = 'black',
+    hoverColor = 'text-neutral-700',
+  }: Props = $props();
 
   const backgroundStyles = backgroundColor
     ? `${backgroundColor} rounded-md p-1`
