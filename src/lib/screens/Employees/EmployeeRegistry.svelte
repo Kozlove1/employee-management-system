@@ -1,16 +1,34 @@
 <script lang="ts">
-  import { Search } from '@lucide/svelte';
   import { getAppContainerStyle } from '$lib/utils';
+  import { Search } from '@lucide/svelte';
 
   import { mockDepartments } from '$lib/data/mockData';
 
+  import {
+    ErrorMessage,
+    Modal,
+    PaginationButton,
+    RefreshButton,
+  } from '$lib/components/UI';
   import UserDetails from '$lib/components/UserDetails.svelte';
-  import { Modal, PaginationButton, RefreshButton } from '$lib/components/UI';
   import { employeeStore } from '$lib/screens/Employees/store/employeeStore.svelte';
   import EmployeeCard from './EmployeeCard.svelte';
 
+  let isLoading = $derived(employeeStore.getIsLoading());
+  let error = $derived(employeeStore.getError());
+  let apiEmployees = $derived(employeeStore.getApiEmployees());
+  let filteredEmployees = $derived(employeeStore.filteredEmployees);
+  let paginatedEmployees = $derived(employeeStore.paginatedEmployees);
+  let currentPage = $derived(employeeStore.getCurrentPage());
+  let totalPages = $derived(employeeStore.totalPages);
+  let searchTerm = $derived(employeeStore.getSearchTerm());
+  let selectedDepartment = $derived(employeeStore.getSelectedDepartment());
+  let activeOnly = $derived(employeeStore.getActiveOnly());
+  let showDetailModal = $derived(employeeStore.getShowDetailModal());
+  let selectedEmployee = $derived(employeeStore.getSelectedEmployee());
+
   $effect(() => {
-    if (employeeStore.apiEmployees.length === 0) {
+    if (apiEmployees.length === 0 && !isLoading && !error) {
       employeeStore.fetchEmployees();
     }
   });
@@ -23,6 +41,16 @@
       Управление сотрудниками и их балансами АммоКоинов
     </p>
   </div>
+
+  {#if error}
+    <div class="mb-6">
+      <ErrorMessage
+        message={error}
+        onRetry={() => employeeStore.retry()}
+        onDismiss={() => employeeStore.clearError()}
+      />
+    </div>
+  {/if}
 
   <!-- Panel search and filters -->
   <div
@@ -38,7 +66,7 @@
         <input
           type="text"
           placeholder="Поиск по имени или ID..."
-          bind:value={employeeStore.searchTerm}
+          value={searchTerm}
           oninput={(e) =>
             employeeStore.setSearchTerm((e.target as HTMLInputElement).value)}
           class="input block w-full pl-10 pr-3 py-2 border border-neutral-300 rounded-md leading-5 bg-primary-50 placeholder-neutral-500 sm:text-sm"
@@ -48,7 +76,7 @@
       <!-- Filter by departments -->
       <div class="w-48 flex-shrink-0">
         <select
-          bind:value={employeeStore.selectedDepartment}
+          value={selectedDepartment}
           onchange={(e) =>
             employeeStore.setDepartmentFilter(
               (e.target as HTMLSelectElement).value
@@ -69,7 +97,7 @@
         <input
           id="active-only"
           type="checkbox"
-          bind:checked={employeeStore.activeOnly}
+          checked={activeOnly}
           onchange={(e) =>
             employeeStore.setActiveOnlyFilter(
               (e.target as HTMLInputElement).checked
@@ -87,7 +115,7 @@
       <!-- Update button -->
       <RefreshButton
         onClick={() => employeeStore.refreshData()}
-        isLoading={employeeStore.isLoading}
+        {isLoading}
         variant="info"
       />
     </div>
@@ -96,18 +124,17 @@
     <div class="mt-4 flex flex-col sm:flex-row justify-between items-center">
       <div class="text-sm text-neutral-500 mb-2 sm:mb-0 flex flex-row gap-2">
         <div>
-          Найдено {employeeStore.filteredEmployees().length} из {employeeStore
-            .apiEmployees.length} сотрудников
+          Найдено {filteredEmployees.length} из {apiEmployees.length} сотрудников
         </div>
         <div class="text-neutral-500">•</div>
         <div>
-          Показано {employeeStore.paginatedEmployees().length}
+          Показано {paginatedEmployees.length}
         </div>
       </div>
 
       <PaginationButton
-        currentPage={employeeStore.currentPage}
-        totalPages={employeeStore.totalPages()}
+        {currentPage}
+        {totalPages}
         onPrevPage={() => employeeStore.prevPage()}
         onNextPage={() => employeeStore.nextPage()}
       />
@@ -118,7 +145,7 @@
   <div
     class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6"
   >
-    {#if employeeStore.isLoading}
+    {#if isLoading}
       <!-- Loading skeleton -->
       {#each Array(12) as _}
         <div
@@ -137,7 +164,7 @@
           </div>
         </div>
       {/each}
-    {:else if employeeStore.paginatedEmployees().length === 0}
+    {:else if paginatedEmployees.length === 0}
       <!-- Empty state -->
       <div class="col-span-full text-center pt-24">
         <div class="mx-auto h-12 w-24 text-neutral-400">
@@ -160,7 +187,7 @@
       </div>
     {:else}
       <!-- Employee cards -->
-      {#each employeeStore.paginatedEmployees() as employee (employee.employee_guid)}
+      {#each paginatedEmployees as employee (employee.employee_guid)}
         <EmployeeCard
           {employee}
           onDetailClick={(emp) => employeeStore.openEmployeeDetail(emp)}
@@ -172,8 +199,8 @@
   <!-- Pagination at the bottom -->
   <div class="mt-8">
     <PaginationButton
-      currentPage={employeeStore.currentPage}
-      totalPages={employeeStore.totalPages()}
+      {currentPage}
+      {totalPages}
       onPrevPage={() => employeeStore.prevPage()}
       onNextPage={() => employeeStore.nextPage()}
     />
@@ -182,15 +209,14 @@
 
 <!-- Modal with employee details -->
 <Modal
-  isOpen={employeeStore.showDetailModal &&
-    employeeStore.selectedEmployee !== null}
+  isOpen={showDetailModal && selectedEmployee !== null}
   onClose={() => employeeStore.closeModal()}
   title="Детали сотрудника"
   size="xl"
 >
   {#snippet children()}
-    {#if employeeStore.selectedEmployee}
-      <UserDetails employee={employeeStore.selectedEmployee} />
+    {#if selectedEmployee}
+      <UserDetails employee={selectedEmployee} />
     {/if}
   {/snippet}
 

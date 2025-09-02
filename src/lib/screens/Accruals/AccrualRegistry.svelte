@@ -3,9 +3,9 @@
   import StatCard from '$lib/components/UI/StatCard.svelte';
   import { statisticsCards, formatStatValue } from '$lib/data/statisticsData';
   import {
-    mockEmployees,
-    mockAccrualTypes,
     getDepartmentName,
+    mockAccrualTypes,
+    mockEmployees,
   } from '$lib/data/mockData';
 
   // Состояние компонента
