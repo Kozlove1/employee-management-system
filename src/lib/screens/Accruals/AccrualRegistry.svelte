@@ -1,7 +1,7 @@
 <script lang="ts">
   import StatCard from '$lib/components/UI/StatCard.svelte';
   import { mockAccrualTypes, mockEmployees } from '$lib/data/mockData';
-  import { formatStatValue, statisticsCards } from '$lib/data/statisticsData';
+  import { statisticsCards } from '$lib/data/statisticsData';
   import AccrualForm from './Form/AccrualForm.svelte';
   import { accrualFormStore } from './Form/store/accrualFormStore.svelte';
   import {
@@ -16,15 +16,18 @@
   let selectedType = $state('');
   let sortOrder = $state('newest');
 
-  // Используем новую систему данных с реактивностью
   let dataVersion = $state(0); // Триггер для обновления
-  let accruals = $derived(() => {
-    dataVersion; // Зависимость для принудительного обновления
-    const result = AccrualsDataManager.getAll();
-    return result;
+
+  // Отслеживаем изменения dataVersion
+  $effect(() => {
+    console.log('dataVersion changed to:', dataVersion);
   });
 
-  // Фильтрация данных с использованием новой системы
+  let accruals = $derived(() => {
+    dataVersion; // Зависимость для принудительного обновления
+    return AccrualsDataManager.getAll();
+  });
+
   let filteredAccruals = $derived(() => {
     // Принудительно зависим от accruals() чтобы получать обновления
     const allAccruals = accruals();
@@ -68,38 +71,44 @@
     return Array.from(types);
   });
 
-  // Статистика с использованием новой системы
-  let totalEmployees = $derived(mockEmployees.length);
-  let totalAccrualTypes = $derived(mockAccrualTypes.length);
+  let totalEmployees = $derived(() => {
+    dataVersion; // Зависимость для принудительного обновления
+    return mockEmployees.length;
+  });
 
-  let stats = $derived(() => AccrualsDataManager.getStats());
+  let totalAccrualTypes = $derived(() => {
+    dataVersion; // Зависимость для принудительного обновления
+    return mockAccrualTypes.length;
+  });
 
-  // Объект со всеми значениями статистики
-  let statisticsValues = $derived({
-    totalEmployees,
-    monthlyAccruals: stats().monthlyCount,
-    totalAccrualTypes,
-    totalAmount: stats().monthlyAmount,
+  let stats = $derived(() => {
+    dataVersion; // Зависимость для принудительного обновления
+    return AccrualsDataManager.getStats();
+  });
+
+  let statisticsValues = $derived(() => {
+    dataVersion; // Зависимость для принудительного обновления
+    const values = {
+      totalEmployees: totalEmployees(),
+      monthlyAccruals: stats().monthlyCount,
+      totalAccrualTypes: totalAccrualTypes(),
+      totalAmount: stats().monthlyAmount, // Сумма начислений за текущий месяц
+    };
+    return values;
   });
 
   function handleAddAccrual(data) {
-    try {
-      const createData: CreateAccrualData = {
-        employee_guid: data.employee_guid,
-        type_guid: data.type_guid,
-        amount: data.amount,
-        comment: data.comment || '',
-        date: data.date,
-      };
+    const createData: CreateAccrualData = {
+      employee_guid: data.employee_guid,
+      type_guid: data.type_guid,
+      amount: data.amount,
+      comment: data.comment || '',
+      date: data.date,
+    };
 
-      AccrualsDataManager.create(createData, mockEmployees, mockAccrualTypes);
+    AccrualsDataManager.create(createData, mockEmployees, mockAccrualTypes);
 
-      // Триггерим обновление
-      dataVersion++;
-    } catch (error) {
-      console.error('Error creating accrual:', error);
-      // Здесь можно добавить уведомление об ошибке
-    }
+    dataVersion++;
   }
 
   function handleEditAccrual(accrualToEdit) {
@@ -109,43 +118,31 @@
   function handleUpdateAccrual(data) {
     const currentAccrual = accrualFormStore.getCurrentAccrual();
 
-    try {
-      const updateData: UpdateAccrualData = {
-        post_guid: currentAccrual.post_guid,
-        employee_guid: data.employee_guid,
-        type_guid: data.type_guid,
-        amount: data.amount,
-        comment: data.comment || '',
-        date: data.date,
-      };
+    const updateData: UpdateAccrualData = {
+      post_guid: currentAccrual.post_guid,
+      employee_guid: data.employee_guid,
+      type_guid: data.type_guid,
+      amount: data.amount,
+      comment: data.comment || '',
+      date: data.date,
+    };
 
-      const result = AccrualsDataManager.update(
-        updateData,
-        mockEmployees,
-        mockAccrualTypes
-      );
+    const result = AccrualsDataManager.update(
+      updateData,
+      mockEmployees,
+      mockAccrualTypes
+    );
 
-      // Триггерим обновление
-      dataVersion++;
-    } catch (error) {
-      console.error('Error updating accrual:', error);
-      // Здесь можно добавить уведомление об ошибке
-    }
+    dataVersion++;
   }
 
   function handleDeleteAccrual(accrualGuid) {
-    try {
-      const success = AccrualsDataManager.delete(accrualGuid);
+    const success = AccrualsDataManager.delete(accrualGuid);
 
-      if (success) {
-        // Триггерим обновление
-        dataVersion++;
-      } else {
-        console.error('Failed to delete accrual: not found');
-      }
-    } catch (error) {
-      console.error('Error deleting accrual:', error);
-      // Здесь можно добавить уведомление об ошибке
+    if (success) {
+      dataVersion++;
+    } else {
+      console.error('Failed to delete accrual: not found');
     }
   }
 
@@ -155,7 +152,6 @@
     selectedType = '';
   }
 
-  // Обертка для правильного определения операции
   function handleFormSubmit(data) {
     const currentAccrual = accrualFormStore.getCurrentAccrual();
 
@@ -181,6 +177,13 @@
       })
     );
   }
+
+  function formatStatValue(value, format, currency) {
+    if (format === 'currency' && currency) {
+      return `${value || 0} ${currency}`;
+    }
+    return String(value || '0');
+  }
 </script>
 
 <div class="space-y-6">
@@ -190,7 +193,7 @@
       <StatCard
         title={card.title}
         value={formatStatValue(
-          statisticsValues[card.valueKey],
+          statisticsValues()[card.valueKey],
           card.format,
           card.currency
         )}

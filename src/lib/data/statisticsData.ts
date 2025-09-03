@@ -48,14 +48,3 @@ export const statisticsCards: StatCardData[] = [
     currency: 'AK'
   }
 ];
-
-// Функция для форматирования значений
-export function formatStatValue(value: any, format?: string, currency?: string): string {
-  if (format === 'currency' && currency) {
-    return `${value} ${currency}`;
-  }
-  if (format === 'number' && typeof value === 'number') {
-    return value.toLocaleString();
-  }
-  return String(value);
-}

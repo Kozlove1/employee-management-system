@@ -223,22 +223,16 @@ export class AccrualsDataManager {
 
   // Обновить начисление
   static update(data: UpdateAccrualData, mockEmployees: any[], mockAccrualTypes: any[]): AccrualWithDetails | null {
-    console.log('AccrualsDataManager.update called with:', data);
     const index = this.data.findIndex(accrual => accrual.post_guid === data.post_guid);
-    console.log('Found index:', index);
     
     if (index === -1) {
-      console.log('Accrual not found with post_guid:', data.post_guid);
       return null;
     }
 
     const employee = mockEmployees.find(e => e.employee_guid === data.employee_guid);
     const type = mockAccrualTypes.find(t => t.type_guid === data.type_guid);
-    console.log('Found employee:', employee);
-    console.log('Found type:', type);
 
     if (!employee || !type) {
-      console.log('Employee or type not found');
       throw new Error('Employee or Accrual Type not found');
     }
 
@@ -258,9 +252,6 @@ export class AccrualsDataManager {
       comment: data.comment,
     };
 
-    console.log('Updating accrual from:', this.data[index]);
-    console.log('Updating accrual to:', updatedAccrual);
-    
     this.data[index] = updatedAccrual;
     return updatedAccrual;
   }
@@ -274,6 +265,7 @@ export class AccrualsDataManager {
     }
 
     this.data.splice(index, 1);
+    
     return true;
   }
 
@@ -290,11 +282,16 @@ export class AccrualsDataManager {
       );
     });
 
-    return {
+    // Подсчитываем сумму начислений за текущий месяц
+    const monthlyAmount = monthlyAccruals.reduce((sum, accrual) => sum + (accrual.amount || 0), 0);
+
+    const stats = {
       total: this.data.length,
       monthlyCount: monthlyAccruals.length,
-      monthlyAmount: monthlyAccruals.reduce((sum, accrual) => sum + (accrual.amount || 0), 0),
+      monthlyAmount: monthlyAmount, // Сумма начислений за текущий месяц
     };
+    
+    return stats;
   }
 
   // Поиск и фильтрация

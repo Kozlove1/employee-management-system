@@ -18,7 +18,6 @@
 
   let { onSubmit, onCancel }: Props = $props();
 
-  // Reactive variables using $derived with store getters
   let isOpen = $derived(accrualFormStore.getIsOpen());
   let formData = $derived(accrualFormStore.getFormData());
   let isFormValid = $derived(accrualFormStore.isFormValid);
@@ -28,7 +27,6 @@
   let modalSubtitle = $derived(accrualFormStore.getModalSubtitle());
   let errors = $derived(accrualFormStore.getErrors());
 
-  // Auto-update amount when type changes
   $effect(() => {
     if (selectedType) {
       accrualFormStore.updateAmountFromType();
@@ -67,7 +65,6 @@
     accrualFormStore.updateField('comment', value);
   }
 
-  // Expose store methods to parent component
   export function openForCreate() {
     accrualFormStore.openForCreate();
   }
