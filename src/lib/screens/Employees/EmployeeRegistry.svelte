@@ -212,7 +212,6 @@
   isOpen={showDetailModal && selectedEmployee !== null}
   onClose={() => employeeStore.closeModal()}
   title="Детали сотрудника"
-  size="xl"
 >
   {#snippet children()}
     {#if selectedEmployee}
