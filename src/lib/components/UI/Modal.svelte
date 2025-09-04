@@ -49,7 +49,16 @@
   }
 
   function handleBackdropKeydown(event: KeyboardEvent) {
-    if (event.key === 'Enter' || event.key === ' ') {
+    // Проверяем, что фокус не находится в интерактивном элементе
+    const activeElement = document.activeElement;
+    const isInInput =
+      activeElement &&
+      (activeElement.tagName === 'INPUT' ||
+        activeElement.tagName === 'TEXTAREA' ||
+        activeElement.tagName === 'SELECT' ||
+        (activeElement as HTMLElement).contentEditable === 'true');
+
+    if (!isInInput && (event.key === 'Enter' || event.key === ' ')) {
       event.preventDefault();
       handleClose();
     }

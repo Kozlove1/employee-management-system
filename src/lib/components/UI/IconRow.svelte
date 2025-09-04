@@ -12,10 +12,10 @@
     Menu,
     Plus,
     Search,
+    Tags,
     User,
     VenusAndMars,
     X,
-    Tags,
   } from '@lucide/svelte';
 
   export type IconName =
@@ -62,7 +62,8 @@
     m: 12,
     l: 16,
     xl: 22,
-    '2xl': 28,
+    '2xl': 24,
+    '3xl': 28,
   };
 
   const iconColors = {
@@ -76,6 +77,7 @@
     m: 'text-sm',
     l: 'text-base',
     xl: 'text-lg',
+    '2xl': 'text-2xl',
     '3xl': 'text-3xl',
   };
 
@@ -92,9 +94,9 @@
     gapSize?: 's' | 'm' | 'l';
     title?: string;
     titleColor?: string;
-    titleSize?: 's' | 'm' | 'l' | 'xl' | '3xl';
+    titleSize?: 's' | 'm' | 'l' | 'xl' | '2xl' | '3xl';
     icon: IconName;
-    iconSize?: 's' | 'm' | 'l' | 'xl' | '2xl';
+    iconSize?: 's' | 'm' | 'l' | 'xl' | '2xl' | '3xl';
     iconColor?: IconColor;
     hoverColor?: string;
   }
