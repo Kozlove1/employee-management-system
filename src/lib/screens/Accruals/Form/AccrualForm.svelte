@@ -1,6 +1,6 @@
 <script lang="ts">
   import Modal from '$lib/components/UI/Modal.svelte';
-  import { mockAccrualTypes, mockEmployees } from '$lib/data/mockData';
+  import { mockEmployees } from '$lib/data/mockData';
   import {
     AccrualTypeSelect,
     AmountInput,
@@ -8,6 +8,7 @@
     DateTimeInput,
     EmployeeSelect,
   } from '$lib/screens/Accruals/Form/components';
+  import { accrualTypesStore } from '$lib/stores/accrualTypesStore.svelte';
   import type { AccrualFormData, AccrualWithDetails } from '$lib/types';
   import { accrualFormStore } from './store/accrualFormStore.svelte';
 
@@ -98,7 +99,7 @@
       <AccrualTypeSelect
         value={formData.type_guid}
         onValueChange={updateType}
-        accrualTypes={mockAccrualTypes}
+        accrualTypes={accrualTypesStore.types}
         required={true}
         error={errors.type_guid}
       />

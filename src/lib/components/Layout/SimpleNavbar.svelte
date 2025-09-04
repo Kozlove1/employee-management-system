@@ -7,7 +7,7 @@
   enum MenuItemEnum {
     ACCRUALS = '/accruals',
     EMPLOYEES = '/employees',
-    POSITIONS = '/positions',
+    TYPES_OF_ACCRUALS = '/typesOfAccruals',
     STATISTICS = '/statistics',
   }
 
@@ -24,10 +24,10 @@
     { id: 'accruals', label: 'Начисления', icon: 'award', href: '/accruals' },
     { id: 'employees', label: 'Сотрудники', icon: 'user', href: '/employees' },
     {
-      id: 'positions',
+      id: 'typesOfAccruals',
       label: 'Типы начислений',
       icon: 'briefcase',
-      href: '/positions',
+      href: '/typesOfAccruals',
     },
     {
       id: 'statistics',

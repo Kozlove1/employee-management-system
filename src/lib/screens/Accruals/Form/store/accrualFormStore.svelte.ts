@@ -1,4 +1,4 @@
-import { mockAccrualTypes } from '$lib/data/mockData';
+import { accrualTypesStore } from '$lib/stores/accrualTypesStore.svelte';
 import type { AccrualFormData, AccrualType, AccrualWithDetails } from '$lib/types';
 import { getLocalDateTime } from '$lib/utils/dateUtils';
 
@@ -45,18 +45,23 @@ class AccrualFormStore {
     return this.errors;
   }
 
-  // Computed values
   selectedType = $derived.by((): AccrualType | null => {
-    return mockAccrualTypes.find(type => type.type_guid === this.formData.type_guid) || null;
+    return accrualTypesStore.getTypeById(this.formData.type_guid);
   });
 
   isFormValid = $derived.by((): boolean => {
-    return (
+    const selectedType = this.selectedType;
+    const hasValidAmount = selectedType?.ammo_coins_amount !== undefined 
+      ? true
+      : this.formData.amount > 0;
+    
+    const isValid = (
       this.formData.employee_guid !== '' &&
       this.formData.type_guid !== '' &&
-      this.formData.amount > 0 &&
+      hasValidAmount &&
       this.formData.date !== ''
     );
+    return isValid;
   });
 
   getModalTitle(): string {
@@ -67,28 +72,16 @@ class AccrualFormStore {
     return 'Заполните форму для начисления АммоКоинов сотруднику';
   }
 
-  // Auto-update amount when type changes (called from component)
   updateAmountFromType(): void {
-    console.log('updateAmountFromType called, selectedType:', this.selectedType);
-    console.log('currentAccrual exists:', !!this.currentAccrual);
-    
     if (this.selectedType) {
       if (this.selectedType.ammo_coins_amount !== undefined) {
-        // Всегда обновляем сумму если у типа есть фиксированное количество АК
-        console.log('Updating amount to:', this.selectedType.ammo_coins_amount);
         this.formData.amount = this.selectedType.ammo_coins_amount;
       } else if (!this.currentAccrual) {
-        // Сбрасываем сумму в 0 только при создании нового начисления
-        console.log('Resetting amount to 0 for new accrual');
         this.formData.amount = 0;
-      } else {
-        console.log('Keeping current amount for editing:', this.formData.amount);
       }
-      // При редактировании, если у типа нет фиксированной суммы, оставляем текущую сумму
     }
   }
 
-  // Public methods
   openForCreate(): void {
     this.currentAccrual = null;
     this.resetForm();
@@ -118,7 +111,6 @@ class AccrualFormStore {
 
   updateField<K extends keyof AccrualFormData>(field: K, value: AccrualFormData[K]): void {
     this.formData[field] = value;
-    // Clear error for this field when user starts typing
     if (this.errors[field]) {
       delete this.errors[field];
     }
@@ -138,7 +130,6 @@ class AccrualFormStore {
       this.close();
     } catch (error) {
       console.error('Form submission error:', error);
-      // Handle submission errors if needed
       this.errors = { 
         ...this.errors, 
         general: error instanceof Error ? error.message : 'Произошла ошибка при сохранении' 

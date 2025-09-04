@@ -1,9 +1,9 @@
 import type {
-    Accrual,
-    AccrualType,
-    Department,
-    Employee,
-    Position
+  Accrual,
+  AccrualType,
+  Department,
+  Employee,
+  Position
 } from '$lib/types';
 
 export const mockOrganization = {
@@ -200,33 +200,28 @@ export const mockEmployees: Employee[] = [
 
 export const mockAccrualTypes: AccrualType[] = [
   {
-    type_guid: "type1",
+    type_guid: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
     type_name: "Тестовая награда 2",
-    amount: 300,
     ammo_coins_amount: 300 // Фиксированное количество АК
   },
   {
-    type_guid: "type2", 
+    type_guid: "b2c3d4e5-f6g7-8901-bcde-f23456789012", 
     type_name: "Тестовая награда 3",
-    amount: 60,
     ammo_coins_amount: 60 // Фиксированное количество АК
   },
   {
-    type_guid: "type3",
+    type_guid: "c3d4e5f6-g7h8-9012-cdef-345678901234",
     type_name: "Тестовая награда",
-    amount: 100,
     ammo_coins_amount: 100 // Фиксированное количество АК
   },
   {
-    type_guid: "type4",
-    type_name: "Премия за выслугу лет",
-    amount: 500
+    type_guid: "d4e5f6g7-h8i9-0123-def0-456789012345",
+    type_name: "Премия за выслугу лет"
     // Нет ammo_coins_amount - означает, что сумма вводится вручную
   },
   {
-    type_guid: "type5",
-    type_name: "Бонус за качественную работу",
-    amount: 200
+    type_guid: "e5f6g7h8-i9j0-1234-ef01-567890123456",
+    type_name: "Бонус за качественную работу"
     // Нет ammo_coins_amount - означает, что сумма вводится вручную
   }
 ];
