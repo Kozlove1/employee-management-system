@@ -14,7 +14,11 @@
     Skeleton,
   } from '$lib/components/UI';
   import UserDetails from '$lib/components/UserDetails.svelte';
+  import { mockEmployees } from '$lib/data/mockData';
+  import AccrualForm from '$lib/screens/Accruals/Form/AccrualForm.svelte';
+  import { AccrualsDataManager } from '$lib/screens/Accruals/accrualsData';
   import { employeeStore } from '$lib/screens/Employees/store/employeeStore.svelte';
+  import { accrualTypesStore } from '$lib/stores/accrualTypesStore.svelte';
   import EmployeeCard from './EmployeeCard.svelte';
 
   let isLoading = $derived(employeeStore.getIsLoading());
@@ -36,6 +40,32 @@
       employeeStore.fetchEmployees();
     }
   });
+
+  function handleAccrualAdded() {
+    // Обновляем данные сотрудников после начисления
+    employeeStore.refreshData();
+  }
+
+  async function handleAccrualSubmit(data) {
+    try {
+      AccrualsDataManager.create(
+        {
+          employee_guid: data.employee_guid,
+          type_guid: data.type_guid,
+          amount: data.amount,
+          comment: data.comment || '',
+          date: data.date,
+        },
+        mockEmployees,
+        accrualTypesStore.types
+      );
+
+      handleAccrualAdded();
+    } catch (error) {
+      console.error('Ошибка при создании начисления:', error);
+      throw error;
+    }
+  }
 </script>
 
 <div class={getAppContainerStyle('min-h-screen bg-neutral-50')}>
@@ -189,6 +219,7 @@
         <EmployeeCard
           {employee}
           onDetailClick={(emp) => employeeStore.openEmployeeDetail(emp)}
+          onAccrualAdded={handleAccrualAdded}
         />
       {/each}
     </div>
@@ -227,3 +258,6 @@
     </button>
   {/snippet}
 </Modal>
+
+<!-- Глобальная форма начисления -->
+<AccrualForm onSubmit={handleAccrualSubmit} />

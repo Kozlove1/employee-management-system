@@ -2,18 +2,24 @@
   import { formatDate, getInitials } from '$lib/utils';
 
   import IconRow from '$lib/components/UI/IconRow.svelte';
+  import { accrualFormStore } from '$lib/screens/Accruals/Form/store/accrualFormStore.svelte';
 
   import type { EmployeeWithDetails } from '$lib/types';
 
   type Props = {
     employee: EmployeeWithDetails;
-    onDetailClick: (employee: EmployeeWithDetails) => void;
+    onAccrualAdded?: () => void;
   };
 
-  let { employee, onDetailClick }: Props = $props();
+  let { employee, onAccrualAdded }: Props = $props();
 
   function getStatusBadge(employee) {
     return employee.datedismis ? 'Уволен' : 'Активен';
+  }
+
+  function handleAccrualClick() {
+    accrualFormStore.openForCreate();
+    accrualFormStore.updateField('employee_guid', employee.employee_guid);
   }
 </script>
 
@@ -46,19 +52,21 @@
         >
           {getStatusBadge(employee)}
         </span>
-        <button
-          onclick={() => onDetailClick(employee)}
-          class="btn inline-flex items-center px-1 my-0 border-2 border-success-100 font-normal rounded-lg whitespace-nowrap text-success-700"
-        >
-          <IconRow
-            icon="award"
-            iconSize="m"
-            title="Начислить"
-            titleColor="text-success-700"
-            titleSize="s"
-            gapSize="s"
-          />
-        </button>
+        {#if !employee.datedismis}
+          <button
+            onclick={handleAccrualClick}
+            class="btn inline-flex items-center px-1 my-0 border-2 border-success-100 font-normal rounded-lg whitespace-nowrap text-success-700 hover:bg-success-50 transition-colors"
+          >
+            <IconRow
+              icon="award"
+              iconSize="m"
+              title="Начислить"
+              titleColor="text-success-700"
+              titleSize="s"
+              gapSize="s"
+            />
+          </button>
+        {/if}
       </div>
     </div>
   </div>
