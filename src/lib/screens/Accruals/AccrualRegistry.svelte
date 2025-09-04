@@ -1,331 +1,356 @@
 <script lang="ts">
-  import IconRow from '$lib/components/UI/IconRow.svelte';
-  import AccrualForm from './AccrualForm.svelte';
-
   import {
-    getDepartmentName,
-    mockAccrualTypes,
-    mockEmployees,
-  } from '$lib/data/mockData';
-  import type { AccrualFormData, AccrualWithDetails } from '$lib/types';
+    AccrualListItem,
+    ActionButton,
+    EmptyState,
+    FilterSelect,
+    IconRow,
+    SearchInput,
+    Skeleton,
+    StatCard,
+  } from '$lib/components/UI';
+  import { mockAccrualTypes, mockEmployees } from '$lib/data/mockData';
+  import { statisticsCards } from '$lib/data/statisticsData';
+  import AccrualForm from './Form/AccrualForm.svelte';
+  import { accrualFormStore } from './Form/store/accrualFormStore.svelte';
+  import {
+    AccrualsDataManager,
+    type CreateAccrualData,
+    type UpdateAccrualData,
+  } from './accrualsData';
 
   // Состояние компонента
-  let showForm = $state(false);
   let searchTerm = $state('');
   let selectedEmployee = $state('');
   let selectedType = $state('');
-  let dateFrom = $state('');
-  let dateTo = $state('');
+  let sortOrder = $state('newest');
 
-  // Генерируем тестовые начисления
-  let accruals = $state<AccrualWithDetails[]>([
-    {
-      org_guid: '8753101a-4fb8-11ed-9d6f-00155dd75c64',
-      post_guid: 'accrual1',
-      post: 'Тестовая награда 2',
-      department_guid: '86253ef6-4e33-11ee-9d85-00155de8647c',
-      datecreate: '27.07.2025',
-      datedisband: '',
-      employee_name: 'Абдуллина Надежа Маскутовна',
-      type_name: 'Тестовая награда 2 (300 АК)',
-      amount: 300,
-      comment: '',
-    },
-    {
-      org_guid: '8753101a-4fb8-11ed-9d6f-00155dd75c64',
-      post_guid: 'accrual2',
-      post: 'Тестовая награда 3',
-      department_guid: '86253b1a-4e33-11ee-9d85-00155de8647c',
-      datecreate: '20.03.2018',
-      datedisband: '',
-      employee_name: 'Абдулганеев Ильназар Альфредович',
-      type_name: 'Тестовая награда 3 (60 АК)',
-      amount: 60,
-      comment: 'За качественную работу',
-    },
-    {
-      org_guid: '8753101a-4fb8-11ed-9d6f-00155dd75c64',
-      post_guid: 'accrual3',
-      post: 'Тестовая награда',
-      department_guid: '86253ef6-4e33-11ee-9d85-00155de8647c',
-      datecreate: '12.12.2016',
-      datedisband: '',
-      employee_name: 'Абрахманов Ильшат Ришатович',
-      type_name: 'Тестовая награда (100 АК)',
-      amount: 100,
-      comment: 'Специальная награда',
-    },
-  ]);
+  let dataVersion = $state(0); // Триггер для обновления
+  let isLoading = $state(true); // Состояние загрузки
 
-  // Фильтрация данных
+  // Отслеживаем изменения dataVersion
+  $effect(() => {
+    console.log('dataVersion changed to:', dataVersion);
+  });
+
+  // Имитация загрузки данных при первом рендере
+  $effect(() => {
+    if (isLoading) {
+      // Имитируем задержку загрузки
+      const timer = setTimeout(() => {
+        isLoading = false;
+      }, 1500);
+
+      return () => clearTimeout(timer);
+    }
+  });
+
+  // Сброс состояния загрузки при обновлении данных
+  $effect(() => {
+    if (dataVersion > 0 && !isLoading) {
+      // Показываем краткую загрузку при обновлении данных
+      isLoading = true;
+      const timer = setTimeout(() => {
+        isLoading = false;
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  });
+
+  let accruals = $derived(() => {
+    dataVersion; // Зависимость для принудительного обновления
+    return AccrualsDataManager.getAll();
+  });
+
   let filteredAccruals = $derived(() => {
-    return accruals.filter((accrual) => {
-      const matchesSearch =
-        !searchTerm ||
-        accrual.employee_name
-          ?.toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
-        accrual.type_name?.toLowerCase().includes(searchTerm.toLowerCase());
+    // Принудительно зависим от accruals() чтобы получать обновления
+    const allAccruals = accruals();
 
-      const matchesEmployee =
-        !selectedEmployee || accrual.employee_name === selectedEmployee;
-      const matchesType = !selectedType || accrual.type_name === selectedType;
+    // Находим GUID'ы для фильтрации
+    const employeeGuid = selectedEmployee
+      ? mockEmployees.find((e) => e.employee === selectedEmployee)
+          ?.employee_guid
+      : undefined;
 
-      return matchesSearch && matchesEmployee && matchesType;
+    const typeGuid = selectedType
+      ? mockAccrualTypes.find((t) => t.type_name === selectedType)?.type_guid
+      : undefined;
+
+    const result = AccrualsDataManager.search({
+      searchTerm: searchTerm || undefined,
+      employeeGuid,
+      typeGuid,
+      sortOrder: sortOrder as 'newest' | 'oldest',
     });
+
+    return result;
   });
 
   // Уникальные сотрудники и типы для фильтров
   let uniqueEmployees = $derived(() => {
     const employees = new Set(
-      accruals.map((a) => a.employee_name).filter(Boolean)
+      accruals()
+        .map((a) => a.employee_name)
+        .filter(Boolean)
     );
     return Array.from(employees);
   });
 
   let uniqueTypes = $derived(() => {
-    const types = new Set(accruals.map((a) => a.type_name).filter(Boolean));
+    const types = new Set(
+      accruals()
+        .map((a) => a.type_name)
+        .filter(Boolean)
+    );
     return Array.from(types);
   });
 
-  // Статистика
-  let totalAccruals = $derived(filteredAccruals.length);
-  let totalAmount = $derived(() => {
-    const filtered = filteredAccruals();
-    return filtered.reduce((sum, accrual) => sum + (accrual.amount || 0), 0);
+  let totalEmployees = $derived(() => {
+    dataVersion; // Зависимость для принудительного обновления
+    return mockEmployees.length;
   });
 
-  function handleAddAccrual(data: AccrualFormData) {
-    const employee = mockEmployees.find(
-      (e) => e.employee_guid === data.employee_guid
-    );
-    const type = mockAccrualTypes.find((t) => t.type_guid === data.type_guid);
+  let totalAccrualTypes = $derived(() => {
+    dataVersion; // Зависимость для принудительного обновления
+    return mockAccrualTypes.length;
+  });
 
-    const newAccrual: AccrualWithDetails = {
-      org_guid: '8753101a-4fb8-11ed-9d6f-00155dd75c64',
-      post_guid: `accrual_${Date.now()}`,
-      post: type?.type_name || '',
-      department_guid: employee?.department_guid || '',
-      datecreate: data.date || new Date().toLocaleDateString('ru-RU'),
-      datedisband: '',
-      employee_name: employee?.employee || '',
-      type_name: type?.type_name || '',
+  let stats = $derived(() => {
+    dataVersion; // Зависимость для принудительного обновления
+    return AccrualsDataManager.getStats();
+  });
+
+  let statisticsValues = $derived(() => {
+    dataVersion; // Зависимость для принудительного обновления
+    const values = {
+      totalEmployees: totalEmployees(),
+      monthlyAccruals: stats().monthlyCount,
+      totalAccrualTypes: totalAccrualTypes(),
+      totalAmount: stats().monthlyAmount, // Сумма начислений за текущий месяц
+    };
+    return values;
+  });
+
+  function handleAddAccrual(data) {
+    const createData: CreateAccrualData = {
+      employee_guid: data.employee_guid,
+      type_guid: data.type_guid,
       amount: data.amount,
       comment: data.comment || '',
+      date: data.date,
     };
 
-    accruals = [newAccrual, ...accruals];
+    AccrualsDataManager.create(createData, mockEmployees, mockAccrualTypes);
+
+    dataVersion++;
+  }
+
+  function handleEditAccrual(accrualToEdit) {
+    accrualFormStore.openForEdit(accrualToEdit);
+  }
+
+  function handleUpdateAccrual(data) {
+    const currentAccrual = accrualFormStore.getCurrentAccrual();
+
+    const updateData: UpdateAccrualData = {
+      post_guid: currentAccrual.post_guid,
+      employee_guid: data.employee_guid,
+      type_guid: data.type_guid,
+      amount: data.amount,
+      comment: data.comment || '',
+      date: data.date,
+    };
+
+    const result = AccrualsDataManager.update(
+      updateData,
+      mockEmployees,
+      mockAccrualTypes
+    );
+
+    dataVersion++;
+  }
+
+  function handleDeleteAccrual(accrualGuid) {
+    const success = AccrualsDataManager.delete(accrualGuid);
+
+    if (success) {
+      dataVersion++;
+    } else {
+      console.error('Failed to delete accrual: not found');
+    }
   }
 
   function resetFilters() {
     searchTerm = '';
     selectedEmployee = '';
     selectedType = '';
-    dateFrom = '';
-    dateTo = '';
+  }
+
+  function handleEmployeeChange(value: string) {
+    selectedEmployee = value;
+  }
+
+  function handleTypeChange(value: string) {
+    selectedType = value;
+  }
+
+  function handleSortOrderChange(value: string) {
+    sortOrder = value;
+  }
+
+  function handleFormSubmit(data) {
+    const currentAccrual = accrualFormStore.getCurrentAccrual();
+
+    if (currentAccrual) {
+      handleUpdateAccrual(data);
+    } else {
+      handleAddAccrual(data);
+    }
+  }
+
+  function formatStatValue(value, format, currency) {
+    if (format === 'currency' && currency) {
+      return `${value || 0} ${currency}`;
+    }
+    return String(value || '0');
   }
 </script>
 
 <div class="space-y-6">
-  <!-- Заголовок и статистика -->
-  <div
-    class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
-  >
-    <div>
-      <h1 class="text-2xl font-bold text-gray-900">Начисления АммоКоинов</h1>
-      <p class="mt-1 text-sm text-gray-500">
-        Заполните форму для начисления АммоКоинов сотруднику
-      </p>
-    </div>
-
-    <div class="flex items-center space-x-4 text-sm">
-      <div class="bg-primary-50 px-3 py-2 rounded-lg">
-        <span class="text-primary-600 font-medium">Всего сотрудников:</span>
-        <span class="text-primary-900 font-bold ml-1">1 601</span>
-      </div>
-      <div class="bg-warning-50 px-3 py-2 rounded-lg">
-        <span class="text-warning-600 font-medium">Начислений за месяц:</span>
-        <span class="text-warning-900 font-bold ml-1">0</span>
-      </div>
-      <div class="bg-success-50 px-3 py-2 rounded-lg">
-        <span class="text-success-600 font-medium">Типы начислений:</span>
-        <span class="text-success-900 font-bold ml-1">6</span>
-      </div>
-      <div class="bg-gray-50 px-3 py-2 rounded-lg">
-        <span class="text-gray-600 font-medium">Общая сумма:</span>
-        <span class="text-gray-900 font-bold ml-1">0 АК</span>
-      </div>
-    </div>
+  <!-- Карточки статистики -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    {#if isLoading}
+      <Skeleton type="stat-card" count={4} />
+    {:else}
+      {#each statisticsCards as card}
+        <StatCard
+          title={card.title}
+          value={formatStatValue(
+            statisticsValues()[card.valueKey],
+            card.format,
+            card.currency
+          )}
+          subtitle={card.subtitle}
+          icon={card.icon}
+          color={card.color}
+        />
+      {/each}
+    {/if}
   </div>
 
-  <!-- Фильтры и поиск -->
-  <div class="card p-4">
-    <div class="flex flex-col lg:flex-row lg:items-center gap-4">
-      <div class="flex-1">
-        <div class="relative">
-          <div
-            class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-          >
-            <IconRow icon="search" iconSize="s" />
+  <!-- Заголовок и поиск -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+    <div
+      class="px-6 py-4 border-b border-gray-200 flex justify-between items-center"
+    >
+      <IconRow
+        title="Начисления АммоКоинов"
+        icon={'coins'}
+        titleSize="2xl"
+        titleColor="text-neutral-900"
+        iconSize="xl"
+        iconColor="blue"
+      />
+      <ActionButton
+        onClick={() => {
+          accrualFormStore.openForCreate();
+        }}
+        disabled={isLoading}
+        text="Добавить начисление"
+      />
+    </div>
+
+    <div class="p-6">
+      {#if isLoading}
+        <Skeleton type="search-filters" />
+      {:else}
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
+          <!-- Поисковая строка -->
+          <div class="lg:col-span-2">
+            <SearchInput
+              value={searchTerm}
+              placeholder="Поиск по сотруднику, типу, комментарию"
+              bgColor="bg-white"
+              borderColor="border-gray-300"
+              rounded="rounded-lg"
+              onChange={(value) => (searchTerm = value)}
+            />
           </div>
-          <input
-            type="text"
-            placeholder="Поиск по сотруднику, типу, комментарию..."
-            bind:value={searchTerm}
-            class="input pl-10"
+
+          <!-- Селектор сотрудников -->
+          <FilterSelect
+            value={selectedEmployee}
+            options={[
+              {
+                value: '',
+                label: `Все сотрудники (${uniqueEmployees().length})`,
+              },
+              ...uniqueEmployees().map((employee) => ({
+                value: employee,
+                label: employee,
+              })),
+            ]}
+            onChange={handleEmployeeChange}
+          />
+
+          <!-- Селектор типов -->
+          <FilterSelect
+            value={selectedType}
+            options={[
+              { value: '', label: `Все типы (${uniqueTypes().length})` },
+              ...uniqueTypes().map((type) => ({ value: type, label: type })),
+            ]}
+            onChange={handleTypeChange}
+          />
+
+          <!-- Селектор сортировки -->
+          <FilterSelect
+            value={sortOrder}
+            options={[
+              { value: 'newest', label: 'От новых к старым' },
+              { value: 'oldest', label: 'От старым к новым' },
+            ]}
+            onChange={handleSortOrderChange}
           />
         </div>
-      </div>
 
-      <div class="flex flex-wrap gap-3">
-        <select bind:value={selectedEmployee} class="select min-w-[200px]">
-          <option value="">Все сотрудники ({mockEmployees.length})</option>
-          {#each uniqueEmployees() as employee}
-            <option value={employee}>{employee}</option>
-          {/each}
-        </select>
-
-        <select bind:value={selectedType} class="select min-w-[200px]">
-          <option value="">Все типы ({mockAccrualTypes.length})</option>
-          {#each uniqueTypes() as type}
-            <option value={type}>{type}</option>
-          {/each}
-        </select>
-
-        <button class="btn-secondary" onclick={resetFilters}>
-          <IconRow icon="filter" iconSize="s" />
-          Сбросить
-        </button>
-
-        <button class="btn-success" onclick={() => (showForm = true)}>
-          <IconRow icon="plus" iconSize="s" />
-          Добавить начисление
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Статистика по фильтрам -->
-  {#if filteredAccruals.length > 0}
-    <div class="bg-gray-50 px-4 py-3 rounded-lg">
-      <div class="text-sm text-gray-600">
-        Всего: <span class="font-semibold">{totalAccruals} начислений</span> на
-        сумму
-        <span class="font-semibold">{totalAmount} АК</span>
-        {#if totalAccruals !== accruals.length}
-          (отфильтровано из {accruals.length})
-        {/if}
-      </div>
-    </div>
-  {/if}
-
-  <!-- Таблица начислений -->
-  <div class="card overflow-hidden">
-    <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-          <tr>
-            <th
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Сотрудник
-            </th>
-            <th
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Тип начисления
-            </th>
-            <th
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Сумма
-            </th>
-            <th
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Дата
-            </th>
-            <th
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Комментарий
-            </th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          {#each filteredAccruals() as accrual}
-            <tr class="hover:bg-gray-50">
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center">
-                  <div class="flex-shrink-0 h-8 w-8">
-                    <div
-                      class="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center"
-                    >
-                      <span class="text-sm font-medium text-primary-600">
-                        {accrual.employee_name?.charAt(0) || '?'}
-                      </span>
-                    </div>
-                  </div>
-                  <div class="ml-4">
-                    <div class="text-sm font-medium text-gray-900">
-                      {accrual.employee_name}
-                    </div>
-                    <div class="text-sm text-gray-500">
-                      {getDepartmentName(accrual.department_guid)}
-                    </div>
-                  </div>
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span
-                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800"
-                >
-                  {accrual.type_name}
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900">
-                  {accrual.amount} АК
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                <div class="flex items-center">
-                  <IconRow icon="calendar" iconSize="s" />
-                  {accrual.datecreate}
-                </div>
-              </td>
-              <td class="px-6 py-4">
-                <div class="text-sm text-gray-500 max-w-xs truncate">
-                  {accrual.comment || '—'}
-                </div>
-              </td>
-            </tr>
-          {/each}
-        </tbody>
-      </table>
-
-      {#if filteredAccruals.length === 0}
-        <div class="text-center py-12">
-          <div class="text-gray-400 text-lg mb-2">📝</div>
-          <h3 class="text-lg font-medium text-gray-900 mb-1">
-            Начисления не найдены
-          </h3>
-          <p class="text-gray-500">
-            {#if searchTerm || selectedEmployee || selectedType}
-              Попробуйте изменить фильтры поиска
-            {:else}
-              Начните с добавления первого начисления
-            {/if}
-          </p>
+        <!-- Статистика по фильтрам -->
+        <div class="mt-4 text-sm text-gray-600">
+          Всего: <span class="font-semibold"
+            >{filteredAccruals().length} начислений</span
+          >
         </div>
       {/if}
     </div>
   </div>
+
+  <!-- Список начислений -->
+  <div class="space-y-3">
+    {#if isLoading}
+      <Skeleton type="list-item" count={5} />
+    {:else}
+      {#each filteredAccruals() as accrual}
+        <AccrualListItem
+          {accrual}
+          onEdit={handleEditAccrual}
+          onDelete={handleDeleteAccrual}
+        />
+      {/each}
+
+      {#if filteredAccruals().length === 0}
+        <EmptyState
+          showButton={true}
+          buttonText="Добавить начисление"
+          buttonAction={() => accrualFormStore.openForCreate()}
+          title="Нет начислений"
+          description="Начните с добавления первого начисления"
+          disabled={isLoading}
+        />
+      {/if}
+    {/if}
+  </div>
 </div>
 
 <!-- Модальная форма -->
-<AccrualForm
-  bind:isOpen={showForm}
-  onSubmit={handleAddAccrual}
-  onCancel={() => (showForm = false)}
-/>
+<AccrualForm onSubmit={handleFormSubmit} />
