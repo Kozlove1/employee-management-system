@@ -45,7 +45,6 @@ export interface Accrual {
 export interface AccrualType {
   type_guid: string;
   type_name: string;
-  amount: number;
   ammo_coins_amount?: number;
 }
 

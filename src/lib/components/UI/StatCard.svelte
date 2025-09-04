@@ -23,6 +23,9 @@
     calendar: 'calendar',
     tags: 'tags',
     wallet: 'coins',
+    award: 'award',
+    chart: 'chart',
+    coins: 'coins',
   };
 </script>
 

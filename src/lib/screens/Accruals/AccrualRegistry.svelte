@@ -9,8 +9,9 @@
     Skeleton,
     StatCard,
   } from '$lib/components/UI';
-  import { mockAccrualTypes, mockEmployees } from '$lib/data/mockData';
+  import { mockEmployees } from '$lib/data/mockData';
   import { statisticsCards } from '$lib/data/statisticsData';
+  import { accrualTypesStore } from '$lib/stores/accrualTypesStore.svelte';
   import AccrualForm from './Form/AccrualForm.svelte';
   import { accrualFormStore } from './Form/store/accrualFormStore.svelte';
   import {
@@ -26,12 +27,7 @@
   let sortOrder = $state('newest');
 
   let dataVersion = $state(0); // Триггер для обновления
-  let isLoading = $state(true); // Состояние загрузки
-
-  // Отслеживаем изменения dataVersion
-  $effect(() => {
-    console.log('dataVersion changed to:', dataVersion);
-  });
+  let isLoading = $state(true);
 
   // Имитация загрузки данных при первом рендере
   $effect(() => {
@@ -40,19 +36,6 @@
       const timer = setTimeout(() => {
         isLoading = false;
       }, 1500);
-
-      return () => clearTimeout(timer);
-    }
-  });
-
-  // Сброс состояния загрузки при обновлении данных
-  $effect(() => {
-    if (dataVersion > 0 && !isLoading) {
-      // Показываем краткую загрузку при обновлении данных
-      isLoading = true;
-      const timer = setTimeout(() => {
-        isLoading = false;
-      }, 500);
 
       return () => clearTimeout(timer);
     }
@@ -74,7 +57,8 @@
       : undefined;
 
     const typeGuid = selectedType
-      ? mockAccrualTypes.find((t) => t.type_name === selectedType)?.type_guid
+      ? accrualTypesStore.types.find((t) => t.type_name === selectedType)
+          ?.type_guid
       : undefined;
 
     const result = AccrualsDataManager.search({
@@ -113,7 +97,7 @@
 
   let totalAccrualTypes = $derived(() => {
     dataVersion; // Зависимость для принудительного обновления
-    return mockAccrualTypes.length;
+    return accrualTypesStore.types.length;
   });
 
   let stats = $derived(() => {
@@ -127,12 +111,12 @@
       totalEmployees: totalEmployees(),
       monthlyAccruals: stats().monthlyCount,
       totalAccrualTypes: totalAccrualTypes(),
-      totalAmount: stats().monthlyAmount, // Сумма начислений за текущий месяц
+      totalAmount: stats().monthlyAmount,
     };
     return values;
   });
 
-  function handleAddAccrual(data) {
+  async function handleAddAccrual(data) {
     const createData: CreateAccrualData = {
       employee_guid: data.employee_guid,
       type_guid: data.type_guid,
@@ -141,7 +125,11 @@
       date: data.date,
     };
 
-    AccrualsDataManager.create(createData, mockEmployees, mockAccrualTypes);
+    AccrualsDataManager.create(
+      createData,
+      mockEmployees,
+      accrualTypesStore.types
+    );
 
     dataVersion++;
   }
@@ -150,7 +138,7 @@
     accrualFormStore.openForEdit(accrualToEdit);
   }
 
-  function handleUpdateAccrual(data) {
+  async function handleUpdateAccrual(data) {
     const currentAccrual = accrualFormStore.getCurrentAccrual();
 
     const updateData: UpdateAccrualData = {
@@ -165,7 +153,7 @@
     const result = AccrualsDataManager.update(
       updateData,
       mockEmployees,
-      mockAccrualTypes
+      accrualTypesStore.types
     );
 
     dataVersion++;
