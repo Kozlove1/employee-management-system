@@ -1,9 +1,10 @@
-import type { 
-  Employee, 
-  Department, 
-  Accrual, 
-  AccrualType, 
-  Position 
+import { apiEmployeesData } from '$lib/screens/Employees/employeesMockData';
+import type {
+  Accrual,
+  AccrualType,
+  Department,
+  Employee,
+  Position
 } from '$lib/types';
 
 export const mockOrganization = {
@@ -65,99 +66,34 @@ export const mockPositions: Position[] = [
   }
 ];
 
-export const mockEmployees: Employee[] = [
-  {
-    org_guid: "8753101a-4fb8-11ed-9d6f-00155dd75c64",
-    post_guid: "add09c40-a0c4-11ef-9dad-00155de8647c",
-    ident: "0000-00283",
-    employee: "Колногорова Олеся Александровна",
-    employee_guid: "6b68a3b2-a041-11ef-9dad-00155de8647c",
-    dateemploy: "27.01.2014",
-    datedismis: "",
-    email: "kolnogorova.o@ammoni.ru",
-    sex: "Ж",
-    person_guid: "c9bc282f-a02c-11ef-9dad-00155de8647c",
-    department_guid: "86253b53-4e33-11ee-9d85-00155de8647c"
-  },
-  {
-    org_guid: "8753101a-4fb8-11ed-9d6f-00155dd75c64",
-    post_guid: "11dbba8e-a0c4-11ef-9dad-00155de8647c",
-    ident: "0000-00468",
-    employee: "Абрахманов Ильшат Ришатович",
-    employee_guid: "c604d015-a041-11ef-9dad-00155de8647c",
-    dateemploy: "16.02.2015",
-    datedismis: "",
-    email: "",
-    sex: "М",
-    person_guid: "05546027-a025-11ef-9dad-00155de8647c",
-    department_guid: "86253ef6-4e33-11ee-9d85-00155de8647c"
-  },
-  {
-    org_guid: "8753101a-4fb8-11ed-9d6f-00155dd75c64",
-    post_guid: "22ccab9e-a0c4-11ef-9dad-00155de8647c",
-    ident: "0000-01860",
-    employee: "Абдулганеев Ильназар Альфредович",
-    employee_guid: "d705e016-a041-11ef-9dad-00155de8647c",
-    dateemploy: "20.03.2018",
-    datedismis: "",
-    email: "",
-    sex: "М",
-    person_guid: "16547028-a025-11ef-9dad-00155de8647c",
-    department_guid: "86253b1a-4e33-11ee-9d85-00155de8647c"
-  },
-  {
-    org_guid: "8753101a-4fb8-11ed-9d6f-00155dd75c64", 
-    post_guid: "33ddbc8f-a0c4-11ef-9dad-00155de8647c",
-    ident: "0000-01656",
-    employee: "Абдуллина Надежа Маскутовна",
-    employee_guid: "e806f017-a041-11ef-9dad-00155de8647c",
-    dateemploy: "12.12.2016",
-    datedismis: "",
-    email: "abdullina.n@ammoni.ru",
-    sex: "Ж",
-    person_guid: "27658029-a025-11ef-9dad-00155de8647c",
-    department_guid: "86253ef6-4e33-11ee-9d85-00155de8647c"
-  },
-  {
-    org_guid: "8753101a-4fb8-11ed-9d6f-00155dd75c64",
-    post_guid: "44eecda0-a0c4-11ef-9dad-00155de8647c",
-    ident: "0000-02347",
-    employee: "Абдуллин Алмаз Ришатович",
-    employee_guid: "f907a018-a041-11ef-9dad-00155de8647c",
-    dateemploy: "21.06.2025",
-    datedismis: "",
-    email: "",
-    sex: "М", 
-    person_guid: "3876902a-a025-11ef-9dad-00155de8647c",
-    department_guid: "86253e12-4e33-11ee-9d85-00155de8647c"
-  }
-];
+// Экспортируем синхронизированные данные сотрудников
+export const mockEmployees: Employee[] = apiEmployeesData;
 
 export const mockAccrualTypes: AccrualType[] = [
   {
-    type_guid: "type1",
-    type_name: "Тестовая награда 2 (300 АК)",
-    amount: 300
+    type_guid: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    type_name: "Тестовая награда 2",
+    ammo_coins_amount: 300 // Фиксированное количество АК
   },
   {
-    type_guid: "type2", 
-    type_name: "Тестовая награда 3 (60 АК)",
-    amount: 60
+    type_guid: "b2c3d4e5-f6g7-8901-bcde-f23456789012", 
+    type_name: "Тестовая награда 3",
+    ammo_coins_amount: 60 // Фиксированное количество АК
   },
   {
-    type_guid: "type3",
-    type_name: "Тестовая награда (100 АК)",
-    amount: 100
+    type_guid: "c3d4e5f6-g7h8-9012-cdef-345678901234",
+    type_name: "Тестовая награда",
+    ammo_coins_amount: 100 // Фиксированное количество АК
   },
   {
-    type_guid: "type4",
-    type_name: "Премия за выслугу лет",
-    amount: 500
+    type_guid: "d4e5f6g7-h8i9-0123-def0-456789012345",
+    type_name: "Премия за выслугу лет"
+    // Нет ammo_coins_amount - означает, что сумма вводится вручную
   },
   {
-    type_guid: "type5",
-    type_name: "Бонус за качественную работу",
-    amount: 200
+    type_guid: "e5f6g7h8-i9j0-1234-ef01-567890123456",
+    type_name: "Бонус за качественную работу"
+    // Нет ammo_coins_amount - означает, что сумма вводится вручную
   }
 ];
 
@@ -203,17 +139,5 @@ export function getAccrualTypeName(typeGuid: string): string {
 // Генерация случайных балансов для демонстрации
 export function generateRandomBalance(): number {
   return Math.floor(Math.random() * 10000);
-}
-
-// Функция для получения топ сотрудников по балансу
-export function getTopEmployeesByBalance(limit: number = 10) {
-  return mockEmployees
-    .map(emp => ({
-      ...emp,
-      balance: generateRandomBalance(),
-      department_name: getDepartmentName(emp.department_guid)
-    }))
-    .sort((a, b) => b.balance - a.balance)
-    .slice(0, limit);
 }
 

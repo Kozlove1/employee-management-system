@@ -45,7 +45,7 @@ export interface Accrual {
 export interface AccrualType {
   type_guid: string;
   type_name: string;
-  amount: number;
+  ammo_coins_amount?: number;
 }
 
 // UI типы для отображения
@@ -60,6 +60,8 @@ export interface AccrualWithDetails extends Accrual {
   type_name?: string;
   amount?: number;
   comment?: string;
+  employee_guid?: string;
+  type_guid?: string;
 }
 
 export interface DepartmentWithDetails extends Department {
@@ -72,7 +74,7 @@ export interface AccrualFormData {
   employee_guid: string;
   type_guid: string;
   amount: number;
-  date?: string;
+  date: string;
   comment?: string;
 }
 
