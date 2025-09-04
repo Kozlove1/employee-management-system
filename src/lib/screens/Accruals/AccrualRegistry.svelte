@@ -35,7 +35,7 @@
       // Имитируем задержку загрузки
       const timer = setTimeout(() => {
         isLoading = false;
-      }, 1500);
+      });
 
       return () => clearTimeout(timer);
     }
