@@ -1,1 +1,1 @@
-export { default as StatisticsView } from './StatisticsView.svelte';
+export { default as StatisticsView } from './StatisticsView.svelte'
