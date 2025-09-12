@@ -7,7 +7,7 @@
 		SearchInput,
 		StatCard
 	} from '$lib/components/UI'
-	import type { AccrualType } from '$lib/types'
+	import type { AccrualType, TypeOfAccrualFormData } from '$lib/types'
 	import TypeOfAccrualForm from './Form/TypeOfAccrualForm.svelte'
 	import { typeOfAccrualFormStore } from './Form/store/typeOfAccrualFormStore.svelte'
 	import TypeOfAccrualListItem from './TypeOfAccrualListItem.svelte'
@@ -51,7 +51,8 @@
 		return TypesOfAccrualsDataManager.getStats()
 	})
 
-	function handleAddType(data) {
+	function handleAddType(data: TypeOfAccrualFormData) {
+		console.log('handleAddType', data)
 		const createData: CreateTypeOfAccrualData = {
 			type_name: data.type_name,
 			ammo_coins_amount: data.ammo_coins_amount
@@ -65,7 +66,7 @@
 		typeOfAccrualFormStore.openForEdit(typeToEdit)
 	}
 
-	function handleUpdateType(data) {
+	function handleUpdateType(data: TypeOfAccrualFormData) {
 		const currentType = typeOfAccrualFormStore.getCurrentType()
 
 		if (!currentType) return
@@ -107,7 +108,7 @@
 		sortOrder = value
 	}
 
-	function handleFormSubmit(data) {
+	function handleFormSubmit(data: TypeOfAccrualFormData) {
 		const currentType = typeOfAccrualFormStore.getCurrentType()
 
 		if (currentType) {
@@ -172,7 +173,7 @@
 						bgColor="bg-white"
 						borderColor="border-gray-300"
 						rounded="rounded-lg"
-						onChange={(value) => (searchTerm = value)}
+						onChange={(value: string) => (searchTerm = value)}
 					/>
 				</div>
 

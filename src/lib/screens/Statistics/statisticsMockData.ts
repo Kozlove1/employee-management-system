@@ -1,4 +1,4 @@
-import type { EmployeeStats } from '$lib/types'
+import type { AccrualTypeStats, EmployeeStats } from '$lib/types'
 
 export const statisticsEmployees: EmployeeStats[] = [
 	{
@@ -81,6 +81,115 @@ export function getTopEmployeesByBalance(limit: number = 10): EmployeeStats[] {
 
 	return employeesWithRandomBalance
 		.sort((a, b) => b.total_balance - a.total_balance)
+		.slice(0, limit)
+}
+
+export const accrualTypesStatistics: AccrualTypeStats[] = [
+	{
+		type_guid: '1a2b3c4d-5e6f-7g8h-9i0j-k1l2m3n4o5p6',
+		type_name: 'Участие в гонке героев',
+		category: 'Спортивное',
+		total_count: 5,
+		unique_employees: 5,
+		total_amount: 8000,
+		average_amount: 1600,
+		has_fixed_amount: true
+	},
+	{
+		type_guid: '2b3c4d5e-6f7g-8h9i-0j1k-l2m3n4o5p6q7',
+		type_name: 'Тестовая награда 3',
+		category: 'Тестовая награда 3',
+		total_count: 3,
+		unique_employees: 3,
+		total_amount: 4120,
+		average_amount: 1373,
+		has_fixed_amount: false
+	},
+	{
+		type_guid: '3c4d5e6f-7g8h-9i0j-1k2l-m3n4o5p6q7r8',
+		type_name: 'Тестовая награда 2',
+		category: 'Тестовая награда 2',
+		total_count: 2,
+		unique_employees: 2,
+		total_amount: 600,
+		average_amount: 300,
+		has_fixed_amount: true
+	},
+	{
+		type_guid: '4d5e6f7g-8h9i-0j1k-2l3m-n4o5p6q7r8s9',
+		type_name: 'Тестовая награда',
+		category: 'тест',
+		total_count: 2,
+		unique_employees: 2,
+		total_amount: 130,
+		average_amount: 65,
+		has_fixed_amount: false
+	},
+	{
+		type_guid: '5e6f7g8h-9i0j-1k2l-3m4n-o5p6q7r8s9t0',
+		type_name: 'Прохождение испытательного срока',
+		category: 'Прохождение испытательного срока',
+		total_count: 2,
+		unique_employees: 2,
+		total_amount: 1000,
+		average_amount: 500,
+		has_fixed_amount: true
+	},
+	{
+		type_guid: '6f7g8h9i-0j1k-2l3m-4n5o-p6q7r8s9t0u1',
+		type_name: 'Предложение по рационализации',
+		category: 'Предложение по рационализации',
+		total_count: 2,
+		unique_employees: 2,
+		total_amount: 7800,
+		average_amount: 3900,
+		has_fixed_amount: false
+	},
+	{
+		type_guid: '7g8h9i0j-1k2l-3m4n-5o6p-q7r8s9t0u1v2',
+		type_name: 'Достижение KPI',
+		category: 'Производственное',
+		total_count: 8,
+		unique_employees: 6,
+		total_amount: 12000,
+		average_amount: 1500,
+		has_fixed_amount: false
+	},
+	{
+		type_guid: '8h9i0j1k-2l3m-4n5o-6p7q-r8s9t0u1v2w3',
+		type_name: 'Участие в корпоративе',
+		category: 'Корпоративное',
+		total_count: 15,
+		unique_employees: 12,
+		total_amount: 4500,
+		average_amount: 300,
+		has_fixed_amount: true
+	},
+	{
+		type_guid: '9i0j1k2l-3m4n-5o6p-7q8r-s9t0u1v2w3x4',
+		type_name: 'Обучение и развитие',
+		category: 'Развитие',
+		total_count: 4,
+		unique_employees: 4,
+		total_amount: 2000,
+		average_amount: 500,
+		has_fixed_amount: true
+	},
+	{
+		type_guid: '0j1k2l3m-4n5o-6p7q-8r9s-t0u1v2w3x4y5',
+		type_name: 'Инновационная идея',
+		category: 'Инновации',
+		total_count: 1,
+		unique_employees: 1,
+		total_amount: 5000,
+		average_amount: 5000,
+		has_fixed_amount: false
+	}
+]
+
+export function getTopAccrualTypesByCount(limit: number = 10): AccrualTypeStats[] {
+	return accrualTypesStatistics
+		.sort((a, b) => b.total_count - a.total_count)
 		.slice(0, limit)
 }
 
