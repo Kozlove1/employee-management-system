@@ -105,6 +105,17 @@ export interface DepartmentStats {
 	average_balance: number
 }
 
+export interface AccrualTypeStats {
+	type_guid: string
+	type_name: string
+	category: string
+	total_count: number
+	unique_employees: number
+	total_amount: number
+	average_amount: number
+	has_fixed_amount: boolean
+}
+
 // Утилитарные типы
 export type SortDirection = 'asc' | 'desc'
 export type ViewMode = 'employees' | 'accruals' | 'departments' | 'positions' | 'statistics'
@@ -115,4 +126,55 @@ export interface FilterOptions {
 	active_only?: boolean
 	date_from?: string
 	date_to?: string
+}
+
+// Типы для форм типов начислений
+export interface TypeOfAccrualFormData {
+	type_name: string
+	ammo_coins_amount?: number
+}
+
+// Типы для статистики
+export interface StatisticsSummary {
+	totalEmployees: number
+	totalBalance: number
+	averageBalance: number
+}
+
+// Типы для компонентов
+export interface ComponentProps {
+	[key: string]: any
+}
+
+// Типы для обработчиков событий
+export type EventHandler<T = any> = (event: T) => void
+export type FormSubmitHandler = (data: any) => void
+export type ClickHandler = () => void
+export type ChangeHandler<T = string> = (value: T) => void
+
+// Типы для состояний загрузки
+export interface LoadingState {
+	isLoading: boolean
+	error: string | null
+}
+
+// Типы для пагинации
+export interface PaginationState {
+	currentPage: number
+	itemsPerPage: number
+	totalItems: number
+	totalPages: number
+}
+
+// Типы для поиска и фильтрации
+export interface SearchParams {
+	searchTerm?: string
+	hasFixedAmount?: boolean
+	sortOrder?: 'newest' | 'oldest' | 'name_asc' | 'name_desc'
+}
+
+// Типы для модальных окон
+export interface ModalState {
+	isOpen: boolean
+	data?: any
 }
