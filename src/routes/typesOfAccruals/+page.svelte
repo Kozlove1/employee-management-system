@@ -1,5 +1,5 @@
 <script lang="ts">
-  import TypesOfAccruals from '$lib/screens/TypesOfAccruals/TypesOfAccruals.svelte';
+	import TypesOfAccruals from '$lib/screens/TypesOfAccruals/TypesOfAccruals.svelte'
 </script>
 
 <TypesOfAccruals />
