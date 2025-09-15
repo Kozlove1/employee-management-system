@@ -1,6 +1,7 @@
+import type { AccrualType } from '$lib/screens/TypesOfAccruals/types'
 import { accrualTypesStore } from '$lib/stores/accrualTypesStore.svelte'
-import type { AccrualFormData, AccrualType, AccrualWithDetails } from '$lib/types'
 import { getLocalDateTime } from '$lib/utils/dateUtils'
+import type { AccrualFormData, AccrualWithDetails } from '../../types'
 
 interface FormErrors {
 	employee_guid?: string

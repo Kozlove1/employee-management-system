@@ -7,10 +7,10 @@
 		SearchInput,
 		StatCard
 	} from '$lib/components/UI'
-	import type { AccrualType, TypeOfAccrualFormData } from '$lib/types'
 	import TypeOfAccrualForm from './Form/TypeOfAccrualForm.svelte'
 	import { typeOfAccrualFormStore } from './Form/store/typeOfAccrualFormStore.svelte'
 	import TypeOfAccrualListItem from './TypeOfAccrualListItem.svelte'
+	import type { AccrualType, TypeOfAccrualFormData } from './types'
 	import {
 		TypesOfAccrualsDataManager,
 		type CreateTypeOfAccrualData,

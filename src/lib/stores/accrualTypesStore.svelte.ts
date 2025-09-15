@@ -1,5 +1,5 @@
+import type { AccrualType } from '$lib/screens/TypesOfAccruals/types'
 import { TypesOfAccrualsDataManager } from '$lib/screens/TypesOfAccruals/typesOfAccrualsData'
-import type { AccrualType } from '$lib/types'
 
 class AccrualTypesStore {
 	private dataVersion = $state<number>(0)

@@ -1,6 +1,6 @@
 import { mockDepartments } from '$lib/data/mockData'
 import { apiEmployeesData } from '$lib/screens/Employees/employeesMockData'
-import type { EmployeeWithDetails } from '$lib/types'
+import type { EmployeeWithDetails } from '../types'
 
 //reference: https://medium.com/@chose/week-7-how-to-manage-shared-state-in-svelte-5-with-runes-77a4ad305b8a
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { EmployeeWithDetails } from '$lib/types'
+	import type { EmployeeWithDetails } from '$lib/screens/Employees/types'
 
 	type Props = {
 		employee: EmployeeWithDetails

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { IconRow } from '$lib/components/UI'
-	import type { AccrualTypeStats, EmployeeStats } from '$lib/types'
+	import type { EmployeeStats } from '$lib/screens/Employees/types'
+	import type { AccrualTypeStats } from './types'
 
 	interface Props {
 		data: EmployeeStats | AccrualTypeStats

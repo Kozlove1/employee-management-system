@@ -4,7 +4,7 @@
 	import IconRow from '$lib/components/UI/IconRow.svelte'
 	import { accrualFormStore } from '$lib/screens/Accruals/Form/store/accrualFormStore.svelte'
 
-	import type { EmployeeWithDetails } from '$lib/types'
+	import type { EmployeeWithDetails } from './types'
 
 	type Props = {
 		employee: EmployeeWithDetails

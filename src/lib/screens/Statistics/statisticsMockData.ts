@@ -1,4 +1,5 @@
-import type { AccrualTypeStats, EmployeeStats } from '$lib/types'
+import type { EmployeeStats } from '$lib/screens/Employees/types'
+import type { AccrualTypeStats } from './types'
 
 export const statisticsEmployees: EmployeeStats[] = [
 	{

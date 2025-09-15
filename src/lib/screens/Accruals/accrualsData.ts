@@ -1,4 +1,4 @@
-import type { AccrualWithDetails } from '$lib/types'
+import type { AccrualWithDetails } from './types'
 
 // Функция для генерации уникального GUID
 export function generateAccrualId(): string {

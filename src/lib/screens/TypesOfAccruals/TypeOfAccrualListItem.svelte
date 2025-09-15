@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { AccrualType } from '$lib/types'
 	import { SquarePen, Trash2 } from '@lucide/svelte'
+	import type { AccrualType } from './types'
 
 	interface Props {
 		typeOfAccrual: AccrualType

@@ -19,6 +19,7 @@
 		type CreateAccrualData,
 		type UpdateAccrualData
 	} from './accrualsData'
+	import type { AccrualFormData, AccrualWithDetails } from './types'
 
 	// Состояние компонента
 	let searchTerm = $state('')
@@ -114,7 +115,7 @@
 		return values
 	})
 
-	async function handleAddAccrual(data) {
+	async function handleAddAccrual(data: AccrualFormData) {
 		const createData: CreateAccrualData = {
 			employee_guid: data.employee_guid,
 			type_guid: data.type_guid,
@@ -128,12 +129,17 @@
 		dataVersion++
 	}
 
-	function handleEditAccrual(accrualToEdit) {
+	function handleEditAccrual(accrualToEdit: AccrualWithDetails) {
 		accrualFormStore.openForEdit(accrualToEdit)
 	}
 
-	async function handleUpdateAccrual(data) {
+	async function handleUpdateAccrual(data: AccrualFormData) {
 		const currentAccrual = accrualFormStore.getCurrentAccrual()
+
+		if (!currentAccrual) {
+			console.error('Failed to update accrual: not found')
+			return
+		}
 
 		const updateData: UpdateAccrualData = {
 			post_guid: currentAccrual.post_guid,
@@ -149,7 +155,7 @@
 		dataVersion++
 	}
 
-	function handleDeleteAccrual(accrualGuid) {
+	function handleDeleteAccrual(accrualGuid: string) {
 		const success = AccrualsDataManager.delete(accrualGuid)
 
 		if (success) {
@@ -187,7 +193,7 @@
 		}
 	}
 
-	function formatStatValue(value, format, currency) {
+	function formatStatValue(value: number, format: string, currency: string) {
 		if (format === 'currency' && currency) {
 			return `${value || 0} ${currency}`
 		}
@@ -204,7 +210,11 @@
 			{#each statisticsCards as card}
 				<StatCard
 					title={card.title}
-					value={formatStatValue(statisticsValues()[card.valueKey], card.format, card.currency)}
+					value={formatStatValue(
+						statisticsValues()[card.valueKey as keyof typeof statisticsValues],
+						card.format || '',
+						card.currency || ''
+					)}
 					subtitle={card.subtitle}
 					icon={card.icon}
 					color={card.color}
@@ -246,7 +256,7 @@
 							bgColor="bg-white"
 							borderColor="border-gray-300"
 							rounded="rounded-lg"
-							onChange={(value) => (searchTerm = value)}
+							onChange={(value: string) => (searchTerm = value)}
 						/>
 					</div>
 

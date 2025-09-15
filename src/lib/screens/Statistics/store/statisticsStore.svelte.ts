@@ -1,5 +1,6 @@
+import type { EmployeeStats } from '$lib/screens/Employees/types'
 import { getTopAccrualTypesByCount, getTopEmployeesByBalance } from '$lib/screens/Statistics/statisticsMockData'
-import type { AccrualTypeStats, EmployeeStats } from '$lib/types'
+import type { AccrualTypeStats } from '../types'
 
 class StatisticsStore {
 	private topEmployees = $state<EmployeeStats[]>([])

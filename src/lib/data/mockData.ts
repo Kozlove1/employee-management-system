@@ -1,5 +1,8 @@
+import type { Accrual } from '$lib/screens/Accruals/types'
 import { apiEmployeesData } from '$lib/screens/Employees/employeesMockData'
-import type { Accrual, AccrualType, Department, Employee, Position } from '$lib/types'
+import type { Employee } from '$lib/screens/Employees/types'
+import type { AccrualType } from '$lib/screens/TypesOfAccruals/types'
+import type { Department, Position } from './types'
 
 export const mockOrganization = {
 	org_guid: '8753101a-4fb8-11ed-9d6f-00155dd75c64'

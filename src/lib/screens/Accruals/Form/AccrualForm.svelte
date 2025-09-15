@@ -9,7 +9,7 @@
 		EmployeeSelect
 	} from '$lib/screens/Accruals/Form/components'
 	import { accrualTypesStore } from '$lib/stores/accrualTypesStore.svelte'
-	import type { AccrualFormData, AccrualWithDetails } from '$lib/types'
+	import type { AccrualFormData, AccrualWithDetails } from '../types'
 	import { accrualFormStore } from './store/accrualFormStore.svelte'
 
 	type Props = {
@@ -113,7 +113,7 @@
 				error={errors.date}
 			/>
 
-			<CommentTextarea value={formData.comment} onValueChange={updateComment} />
+			<CommentTextarea value={formData.comment || ''} onValueChange={updateComment} />
 		</form>
 	{/snippet}
 
