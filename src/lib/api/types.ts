@@ -1,4 +1,3 @@
-// Базовые типы для API
 export interface ApiResponse<T = any> {
 	data: T
 	message?: string
@@ -33,7 +32,6 @@ export interface RequestConfig {
 	headers?: Record<string, string>
 }
 
-// Типы для фильтрации
 export interface BaseFilterParams {
 	search?: string
 	date_from?: string
@@ -41,32 +39,15 @@ export interface BaseFilterParams {
 	active_only?: boolean
 }
 
-// Типы для состояний запросов
 export interface RequestState {
 	isLoading: boolean
 	error: string | null
 	lastUpdated?: Date
 }
 
-// Типы для авторизации
-export interface AuthUser {
-	id: string
-	email: string
-	name?: string
-	roles?: string[]
-}
-
-export interface AuthToken {
-	accessToken: string
-	refreshToken?: string
-	expiresAt?: Date
-}
-
-// Типы для конфигурации API
 export interface ApiConfig {
 	baseURL: string
 	timeout: number
 	retries: number
-	enableAuth: boolean
 	headers: Record<string, string>
 }

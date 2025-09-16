@@ -1,19 +1,17 @@
 // Главный экспорт API слоя
-export { authService, getAuthToken, getAuthenticatedUser } from './auth'
-export { ApiError, apiClient, getAxiosInstance, init, instanceOfAxiosError } from './client'
+export { apiClient, getAxiosInstance, init, instanceOfAxiosError } from './client'
 export { API_ENDPOINTS } from './endpoints'
 export { apiInstance, initializeApi } from './init'
 export type {
-    ApiConfig, ApiError as ApiErrorType,
-    ApiResponse, AuthToken, AuthUser, BaseFilterParams, ErrorHandler, PaginatedResponse,
+    ApiConfig, ApiError,
+    ApiResponse, BaseFilterParams, PaginatedResponse,
     PaginationParams,
     RequestConfig,
     RequestState
 } from './types'
 
-// Экспорт модульных API сервисов
-export * from '../screens/Accruals/api'
-export * from '../screens/Employees/api'
-export * from '../screens/Statistics/api'
-export * from '../screens/TypesOfAccruals/api'
+export { accrualsApi } from '../screens/Accruals/api'
+export { employeesApi } from '../screens/Employees/api'
+export { statisticsApi } from '../screens/Statistics/api'
+export { accrualTypesApi } from '../screens/TypesOfAccruals/api'
 

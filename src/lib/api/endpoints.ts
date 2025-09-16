@@ -1,6 +1,4 @@
-// Базовые эндпоинты API
 export const API_ENDPOINTS = {
-	// Сотрудники
 	EMPLOYEES: {
 		BASE: '/employees',
 		BY_ID: (id: string) => `/employees/${id}`,
@@ -8,7 +6,6 @@ export const API_ENDPOINTS = {
 		STATS: '/employees/stats',
 	},
 	
-	// Начисления
 	ACCRUALS: {
 		BASE: '/accruals',
 		BY_ID: (id: string) => `/accruals/${id}`,
@@ -16,14 +13,12 @@ export const API_ENDPOINTS = {
 		STATS: '/accruals/stats',
 	},
 	
-	// Типы начислений
 	ACCRUAL_TYPES: {
 		BASE: '/accrual-types',
 		BY_ID: (id: string) => `/accrual-types/${id}`,
 		STATS: '/accrual-types/stats',
 	},
 	
-	// Статистика
 	STATISTICS: {
 		BASE: '/statistics',
 		EMPLOYEES: '/statistics/employees',
@@ -31,14 +26,12 @@ export const API_ENDPOINTS = {
 		DEPARTMENTS: '/statistics/departments',
 	},
 	
-	// Подразделения
 	DEPARTMENTS: {
 		BASE: '/departments',
 		BY_ID: (id: string) => `/departments/${id}`,
 		EMPLOYEES: (id: string) => `/departments/${id}/employees`,
 	},
 	
-	// Должности
 	POSITIONS: {
 		BASE: '/positions',
 		BY_ID: (id: string) => `/positions/${id}`,

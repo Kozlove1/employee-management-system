@@ -1,13 +1,13 @@
 import { apiClient } from '$lib/api/client'
 import { API_ENDPOINTS } from '$lib/api/endpoints'
 import type {
-    CreateEmployeeData,
-    EmployeeApiResponse,
-    EmployeeSearchParams,
-    EmployeeStatsApiResponse,
-    EmployeesWithDetailsApiResponse,
-    EmployeeWithDetailsApiResponse,
-    UpdateEmployeeData
+	CreateEmployeeData,
+	EmployeeApiResponse,
+	EmployeeSearchParams,
+	EmployeeStatsApiResponse,
+	EmployeesWithDetailsApiResponse,
+	EmployeeWithDetailsApiResponse,
+	UpdateEmployeeData
 } from './types'
 
 class EmployeesApiService {
@@ -28,7 +28,6 @@ class EmployeesApiService {
 			: API_ENDPOINTS.EMPLOYEES.BASE
 
 		return apiClient.get<EmployeesWithDetailsApiResponse>(endpoint, {
-			enableAuth: true, // Включаем авторизацию для этого запроса
 			timeout: 15000,   // Увеличиваем таймаут для больших списков
 		})
 	}
