@@ -78,21 +78,29 @@ class AccrualStore {
 	})
 
 	uniqueEmployees = $derived.by(() => {
-		const employees = new Set(
-			this.accruals
-				.map((a) => a.employee_name)
-				.filter(Boolean)
-		)
-		return Array.from(employees)
+		const employeeMap = new Map()
+		this.accruals.forEach((accrual) => {
+			if (accrual.employee_guid && accrual.employee_name) {
+				employeeMap.set(accrual.employee_guid, {
+					employee_guid: accrual.employee_guid,
+					employee_name: accrual.employee_name
+				})
+			}
+		})
+		return Array.from(employeeMap.values())
 	})
 
 	uniqueTypes = $derived.by(() => {
-		const types = new Set(
-			this.accruals
-				.map((a) => a.type_name)
-				.filter(Boolean)
-		)
-		return Array.from(types)
+		const typeMap = new Map()
+		this.accruals.forEach((accrual) => {
+			if (accrual.type_guid && accrual.type_name) {
+				typeMap.set(accrual.type_guid, {
+					type_guid: accrual.type_guid,
+					type_name: accrual.type_name
+				})
+			}
+		})
+		return Array.from(typeMap.values())
 	})
 
 	stats = $derived.by(() => {

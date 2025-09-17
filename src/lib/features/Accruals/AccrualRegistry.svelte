@@ -160,8 +160,8 @@
 								label: `Все сотрудники (${uniqueEmployees.length})`
 							},
 							...uniqueEmployees.map((employee) => ({
-								value: employee,
-								label: employee
+								value: employee.employee_guid,
+								label: employee.employee_name
 							}))
 						]}
 						onChange={handleEmployeeChange}
@@ -172,7 +172,7 @@
 						value={selectedType}
 						options={[
 							{ value: '', label: `Все типы (${uniqueTypes.length})` },
-							...uniqueTypes.map((type) => ({ value: type, label: type }))
+							...uniqueTypes.map((type) => ({ value: type.type_guid, label: type.type_name }))
 						]}
 						onChange={handleTypeChange}
 					/>
