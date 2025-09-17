@@ -1,8 +1,7 @@
 import type { AxiosInstance, AxiosRequestConfig } from 'axios'
 import axios, { AxiosError } from 'axios'
-import type { ApiResponse, RequestConfig } from './types'
+import type { ApiResponse, ErrorHandler, RequestConfig } from './types'
 
-export type ErrorHandler = (error: unknown) => void
 
 const NETWORK_AWAIT_TIMEOUT = 5000
 

@@ -10,20 +10,13 @@ export interface ApiError {
 	details?: any
 }
 
+export type ErrorHandler = (error: unknown) => void
+
 export interface PaginationParams {
 	page?: number
 	limit?: number
 	sort?: string
 	order?: 'asc' | 'desc'
-}
-
-export interface PaginatedResponse<T> extends ApiResponse<T[]> {
-	pagination: {
-		page: number
-		limit: number
-		total: number
-		totalPages: number
-	}
 }
 
 export interface RequestConfig {
@@ -37,17 +30,4 @@ export interface BaseFilterParams {
 	date_from?: string
 	date_to?: string
 	active_only?: boolean
-}
-
-export interface RequestState {
-	isLoading: boolean
-	error: string | null
-	lastUpdated?: Date
-}
-
-export interface ApiConfig {
-	baseURL: string
-	timeout: number
-	retries: number
-	headers: Record<string, string>
 }

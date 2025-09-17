@@ -1,0 +1,302 @@
+import { mockEmployees } from '$lib/features/Employees/mocks/employeesMockData'
+import { accrualTypesStore } from '$lib/features/TypesOfAccruals/store/accrualTypesStore.svelte'
+import { generateAccrualId, mockAccrualsData } from '../mocks/mockAccrualsData'
+import type { AccrualFormData, AccrualWithDetails } from '../types'
+
+class AccrualStore {
+	// Private reactive state
+	private accruals = $state<AccrualWithDetails[]>([])
+	private isLoading = $state<boolean>(false)
+	private error = $state<string | null>(null)
+	private searchTerm = $state<string>('')
+	private selectedEmployee = $state<string>('')
+	private selectedType = $state<string>('')
+	private sortOrder = $state<'newest' | 'oldest'>('newest')
+
+	// Public getters
+	getAccruals(): AccrualWithDetails[] {
+		return this.accruals
+	}
+
+	getIsLoading(): boolean {
+		return this.isLoading
+	}
+
+	getError(): string | null {
+		return this.error
+	}
+
+	getSearchTerm(): string {
+		return this.searchTerm
+	}
+
+	getSelectedEmployee(): string {
+		return this.selectedEmployee
+	}
+
+	getSelectedType(): string {
+		return this.selectedType
+	}
+
+	getSortOrder(): 'newest' | 'oldest' {
+		return this.sortOrder
+	}
+
+	// Computed values with $derived
+	filteredAccruals = $derived.by(() => {
+		let filtered = [...this.accruals]
+
+		// Поиск по тексту
+		if (this.searchTerm) {
+			const searchLower = this.searchTerm.toLowerCase()
+			filtered = filtered.filter(
+				(accrual) =>
+					accrual.employee_name?.toLowerCase().includes(searchLower) ||
+					accrual.type_name?.toLowerCase().includes(searchLower) ||
+					accrual.comment?.toLowerCase().includes(searchLower)
+			)
+		}
+
+		// Фильтр по сотруднику
+		if (this.selectedEmployee) {
+			filtered = filtered.filter((accrual) => accrual.employee_guid === this.selectedEmployee)
+		}
+
+		// Фильтр по типу
+		if (this.selectedType) {
+			filtered = filtered.filter((accrual) => accrual.type_guid === this.selectedType)
+		}
+
+		// Сортировка
+		if (this.sortOrder === 'oldest') {
+			filtered.sort((a, b) => new Date(a.datecreate).getTime() - new Date(b.datecreate).getTime())
+		} else {
+			filtered.sort((a, b) => new Date(b.datecreate).getTime() - new Date(a.datecreate).getTime())
+		}
+
+		return filtered
+	})
+
+	uniqueEmployees = $derived.by(() => {
+		const employees = new Set(
+			this.accruals
+				.map((a) => a.employee_name)
+				.filter(Boolean)
+		)
+		return Array.from(employees)
+	})
+
+	uniqueTypes = $derived.by(() => {
+		const types = new Set(
+			this.accruals
+				.map((a) => a.type_name)
+				.filter(Boolean)
+		)
+		return Array.from(types)
+	})
+
+	stats = $derived.by(() => {
+		const currentMonth = new Date().getMonth()
+		const currentYear = new Date().getFullYear()
+
+		const monthlyAccruals = this.accruals.filter((accrual) => {
+			const accrualDate = new Date(accrual.datecreate)
+			return accrualDate.getMonth() === currentMonth && accrualDate.getFullYear() === currentYear
+		})
+
+		const monthlyAmount = monthlyAccruals.reduce((sum, accrual) => sum + (accrual.amount || 0), 0)
+
+		return {
+			total: this.accruals.length,
+			monthlyCount: monthlyAccruals.length,
+			monthlyAmount
+		}
+	})
+
+	// Public methods for state management
+	setLoading(loading: boolean): void {
+		this.isLoading = loading
+	}
+
+	setError(error: string | null): void {
+		this.error = error
+	}
+
+	clearError(): void {
+		this.error = null
+	}
+
+	setSearchTerm(term: string): void {
+		this.searchTerm = term
+	}
+
+	setSelectedEmployee(employeeGuid: string): void {
+		this.selectedEmployee = employeeGuid
+	}
+
+	setSelectedType(typeGuid: string): void {
+		this.selectedType = typeGuid
+	}
+
+	setSortOrder(order: 'newest' | 'oldest'): void {
+		this.sortOrder = order
+	}
+
+	resetFilters(): void {
+		this.searchTerm = ''
+		this.selectedEmployee = ''
+		this.selectedType = ''
+	}
+
+	// API methods
+	async fetchAccruals(): Promise<void> {
+		this.setLoading(true)
+		this.clearError()
+
+		try {
+			// Пока используем мок данные, позже можно переключить на API
+			await this.loadMockData()
+		} catch (err) {
+			this.setError(err instanceof Error ? err.message : 'Ошибка загрузки начислений')
+		} finally {
+			this.setLoading(false)
+		}
+	}
+
+	// Mock data methods (временные, пока API не готов)
+	private async loadMockData(): Promise<void> {
+		// Имитируем задержку API
+		await new Promise(resolve => setTimeout(resolve, 500))
+		this.accruals = [...mockAccrualsData]
+	}
+
+	async createAccrual(data: AccrualFormData): Promise<void> {
+		this.setLoading(true)
+		this.clearError()
+
+		try {
+			// Пока используем мок данные
+			await this.createMockAccrual(data)
+		} catch (err) {
+			this.setError(err instanceof Error ? err.message : 'Ошибка создания начисления')
+			throw err
+		} finally {
+			this.setLoading(false)
+		}
+	}
+
+	private async createMockAccrual(data: AccrualFormData): Promise<void> {
+		// Имитируем задержку API
+		await new Promise(resolve => setTimeout(resolve, 300))
+
+		const employee = mockEmployees.find((e) => e.employee_guid === data.employee_guid)
+		const type = accrualTypesStore.types.find((t) => t.type_guid === data.type_guid)
+
+		if (!employee || !type) {
+			throw new Error('Employee or Accrual Type not found')
+		}
+
+		const newAccrual: AccrualWithDetails = {
+			org_guid: '8753101a-4fb8-11ed-9d6f-00155dd75c64',
+			post_guid: generateAccrualId(),
+			post: `${type.type_name} - ${data.amount} ${type.ammo_coins_amount ? 'АК' : 'руб'}`,
+			department_guid: employee.department_guid,
+			datecreate: data.date,
+			datedisband: '',
+
+			employee_name: employee.employee,
+			employee_guid: data.employee_guid,
+			type_name: type.type_name,
+			type_guid: data.type_guid,
+			amount: data.amount,
+			comment: data.comment
+		}
+
+		// Добавляем в начало массива
+		this.accruals.unshift(newAccrual)
+	}
+
+	async updateAccrual(accrualGuid: string, data: AccrualFormData): Promise<void> {
+		this.setLoading(true)
+		this.clearError()
+
+		try {
+			// Пока используем мок данные
+			await this.updateMockAccrual(accrualGuid, data)
+		} catch (err) {
+			this.setError(err instanceof Error ? err.message : 'Ошибка обновления начисления')
+			throw err
+		} finally {
+			this.setLoading(false)
+		}
+	}
+
+	private async updateMockAccrual(accrualGuid: string, data: AccrualFormData): Promise<void> {
+		// Имитируем задержку API
+		await new Promise(resolve => setTimeout(resolve, 300))
+
+		const index = this.accruals.findIndex((accrual) => accrual.post_guid === accrualGuid)
+
+		if (index === -1) {
+			throw new Error('Accrual not found')
+		}
+
+		const employee = mockEmployees.find((e) => e.employee_guid === data.employee_guid)
+		const type = accrualTypesStore.types.find((t) => t.type_guid === data.type_guid)
+
+		if (!employee || !type) {
+			throw new Error('Employee or Accrual Type not found')
+		}
+
+		const updatedAccrual: AccrualWithDetails = {
+			...this.accruals[index],
+			post: `${type.type_name} - ${data.amount} ${type.ammo_coins_amount ? 'АК' : 'руб'}`,
+			department_guid: employee.department_guid,
+			datecreate: data.date,
+
+			employee_name: employee.employee,
+			employee_guid: data.employee_guid,
+			type_name: type.type_name,
+			type_guid: data.type_guid,
+			amount: data.amount,
+			comment: data.comment
+		}
+
+		this.accruals[index] = updatedAccrual
+	}
+
+	async deleteAccrual(accrualGuid: string): Promise<void> {
+		this.setLoading(true)
+		this.clearError()
+
+		try {
+			// Пока используем мок данные
+			await this.deleteMockAccrual(accrualGuid)
+		} catch (err) {
+			this.setError(err instanceof Error ? err.message : 'Ошибка удаления начисления')
+			throw err
+		} finally {
+			this.setLoading(false)
+		}
+	}
+
+	private async deleteMockAccrual(accrualGuid: string): Promise<void> {
+		// Имитируем задержку API
+		await new Promise(resolve => setTimeout(resolve, 300))
+
+		const index = this.accruals.findIndex((accrual) => accrual.post_guid === accrualGuid)
+
+		if (index === -1) {
+			throw new Error('Accrual not found')
+		}
+
+		this.accruals.splice(index, 1)
+	}
+
+	// Инициализация store
+	async initialize(): Promise<void> {
+		await this.fetchAccruals()
+	}
+}
+
+export const accrualStore = new AccrualStore()

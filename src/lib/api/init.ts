@@ -1,5 +1,6 @@
 import { getEnvConfig, logEnvInfo, validateEnvConfig } from '$lib/utils/envUtils'
-import { init, type ErrorHandler } from './client'
+import { init } from './client'
+import type { ErrorHandler } from './types'
 
 export function initializeApi() {
 
