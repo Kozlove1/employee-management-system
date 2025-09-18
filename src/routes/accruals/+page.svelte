@@ -1,5 +1,5 @@
 <script lang="ts">
-	import AccrualRegistry from '$lib/screens/Accruals/AccrualRegistry.svelte'
+	import AccrualRegistry from '$lib/features/Accruals/AccrualRegistry.svelte'
 </script>
 
 <svelte:head>

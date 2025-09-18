@@ -1,4 +1,3 @@
-export { default as AccrualListItem } from '../../screens/Accruals/AccrualListItem.svelte'
 export { default as ActionButton } from './ActionButton.svelte'
 export { default as EmptyState } from './EmptyState.svelte'
 export { default as ErrorMessage } from './ErrorMessage.svelte'

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import EmployeeRegistry from '$lib/screens/Employees/EmployeeRegistry.svelte'
+	import EmployeeRegistry from '$lib/features/Employees/EmployeeRegistry.svelte'
 </script>
 
 <svelte:head>

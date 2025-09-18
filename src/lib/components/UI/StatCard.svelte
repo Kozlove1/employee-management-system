@@ -1,5 +1,5 @@
 <script lang="ts">
-	import IconRow from './IconRow.svelte'
+	import IconRow, { type IconName } from './IconRow.svelte'
 
 	type Props = {
 		title: string
@@ -18,7 +18,7 @@
 		gray: 'bg-gray-100'
 	}
 
-	const iconMapping = {
+	const iconMapping: Record<string, IconName> = {
 		users: 'user',
 		calendar: 'calendar',
 		tags: 'tags',

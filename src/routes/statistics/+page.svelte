@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { StatisticsView } from '$lib/screens/Statistics'
+	import StatisticsView from '$lib/features/Statistics/StatisticsView.svelte'
 </script>
 
 <svelte:head>
