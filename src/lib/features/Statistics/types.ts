@@ -17,7 +17,6 @@ export interface DepartmentStats {
 	average_balance: number
 }
 
-// Типы для статистики
 export interface StatisticsSummary {
 	totalEmployees: number
 	totalBalance: number

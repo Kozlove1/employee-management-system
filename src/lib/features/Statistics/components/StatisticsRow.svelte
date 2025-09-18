@@ -24,7 +24,6 @@
 		}
 	})()
 
-	// Type guards
 	function isEmployee(data: EmployeeStats | AccrualTypeStats): data is EmployeeStats {
 		return type === 'employee'
 	}
@@ -33,12 +32,10 @@
 		return type === 'accrualType'
 	}
 
-	// Employee specific logic
 	const employee = isEmployee(data) ? data : null
 	const formattedBalance = employee ? employee.total_balance.toLocaleString() : ''
 	const employeeInfo = employee ? `${employee.ident} • ${employee.department_name}` : ''
 
-	// Accrual type specific logic
 	const accrualType = isAccrualType(data) ? data : null
 	const formattedTotalAmount = accrualType ? accrualType.total_amount.toLocaleString() : ''
 	const formattedAverageAmount = accrualType ? accrualType.average_amount.toLocaleString() : ''

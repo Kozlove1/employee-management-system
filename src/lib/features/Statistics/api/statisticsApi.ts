@@ -1,17 +1,17 @@
 import { apiClient } from '$lib/api/client'
 import { API_ENDPOINTS } from '$lib/api/endpoints'
+
 import type {
-    AccrualTypeStatsApiResponse,
-    CombinedStatisticsResponse,
-    DepartmentStatsApiResponse,
-    EmployeeStatsApiResponse,
-    StatisticsFilterParams,
-    StatisticsSummaryApiResponse,
+	AccrualTypeStatsApiResponse,
+	CombinedStatisticsResponse,
+	DepartmentStatsApiResponse,
+	EmployeeStatsApiResponse,
+	StatisticsFilterParams,
+	StatisticsSummaryApiResponse,
 } from './types'
 
 class StatisticsApiService {
-	// Получить общую статистику
-	async getSummary(params?: StatisticsFilterParams) {
+	public async getSummary(params?: StatisticsFilterParams) {
 		const searchParams = new URLSearchParams()
 		
 		if (params) {
@@ -29,8 +29,7 @@ class StatisticsApiService {
 		return apiClient.get<StatisticsSummaryApiResponse>(endpoint)
 	}
 
-	// Получить статистику по сотрудникам
-	async getEmployeeStats(params?: StatisticsFilterParams) {
+	public async getEmployeeStats(params?: StatisticsFilterParams) {
 		const searchParams = new URLSearchParams()
 		
 		if (params) {
@@ -48,8 +47,7 @@ class StatisticsApiService {
 		return apiClient.get<EmployeeStatsApiResponse>(endpoint)
 	}
 
-	// Получить статистику по начислениям
-	async getAccrualStats(params?: StatisticsFilterParams) {
+	public async getAccrualStats(params?: StatisticsFilterParams) {
 		const searchParams = new URLSearchParams()
 		
 		if (params) {
@@ -67,8 +65,7 @@ class StatisticsApiService {
 		return apiClient.get<AccrualTypeStatsApiResponse>(endpoint)
 	}
 
-	// Получить статистику по подразделениям
-	async getDepartmentStats(params?: StatisticsFilterParams) {
+	public async getDepartmentStats(params?: StatisticsFilterParams) {
 		const searchParams = new URLSearchParams()
 		
 		if (params) {
@@ -86,8 +83,7 @@ class StatisticsApiService {
 		return apiClient.get<DepartmentStatsApiResponse>(endpoint)
 	}
 
-	// Получить объединенную статистику
-	async getCombinedStats(params?: StatisticsFilterParams) {
+	public async getCombinedStats(params?: StatisticsFilterParams) {
 		const searchParams = new URLSearchParams()
 		
 		if (params) {
