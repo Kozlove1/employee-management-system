@@ -14,6 +14,7 @@
 		Search,
 		Tags,
 		User,
+		Users,
 		VenusAndMars,
 		X
 	} from '@lucide/svelte'
@@ -27,6 +28,7 @@
 		| 'calendar'
 		| 'mail'
 		| 'user'
+		| 'users'
 		| 'venus-and-mars'
 		| 'menu'
 		| 'crown'
@@ -47,6 +49,7 @@
 		calendar: Calendar,
 		mail: Mail,
 		user: User,
+		users: Users,
 		'venus-and-mars': VenusAndMars,
 		menu: Menu,
 		crown: Crown,

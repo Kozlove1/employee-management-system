@@ -1,10 +1,28 @@
-import type { BaseApiResponse, BaseApiError, BaseFilterOptions, PaginationOptions } from '$lib/types/shared'
+export interface ApiResponse<T = any> {
+	data: T
+	message?: string
+	status: 'success' | 'error'
+}
 
-// Реэкспорт общих API типов
-export type ApiResponse<T = any> = BaseApiResponse<T>
-export type ApiError = BaseApiError
-export type PaginationParams = PaginationOptions
-export type BaseFilterParams = BaseFilterOptions
+export interface ApiError {
+	message: string
+	code?: string | number
+	details?: any
+}
+
+export interface PaginationParams {
+	page?: number
+	limit?: number
+	sort?: string
+	order?: 'asc' | 'desc'
+}
+
+export interface BaseFilterParams {
+	search?: string
+	date_from?: string
+	date_to?: string
+	active_only?: boolean
+}
 
 export type ErrorHandler = (error: unknown) => void
 

@@ -104,21 +104,25 @@
 			</div>
 		{:else if isAccrualType(data)}
 			<!-- Accrual type statistics -->
-			<div class="flex items-center justify-end gap-3">
-				<!-- Count -->
-				<div class="text-center">
-					<div class="text-xs font-bold text-gray-900 sm:text-sm">
-						x {data.total_count}
-					</div>
-					<div class="text-xs text-gray-500">
-						{data.unique_employees} чел.
+			<div class="flex items-center justify-end gap-2">
+				<!-- Count block -->
+				<div class="flex w-16 flex-col items-center">
+					<div class="flex items-center gap-1">
+						<IconRow
+							icon="users"
+							iconSize="m"
+							iconColor="blue"
+							backgroundColor="bg-info-50"
+							title={data.unique_employees.toString()}
+							titleColor="text-primary-500"
+						/>
 					</div>
 				</div>
 
-				<!-- Amount -->
-				<div class="text-center">
-					<div class="flex items-center justify-end gap-1">
-						<IconRow icon="coins" iconSize="s" iconColor="yellow" backgroundColor="" />
+				<!-- Amount block -->
+				<div class="flex w-32 flex-col items-end gap-1">
+					<div class="flex items-center gap-1">
+						<IconRow icon="coins" iconSize="l" iconColor="yellow" backgroundColor="" />
 						<span class="whitespace-nowrap text-xs font-bold text-gray-900 sm:text-sm">
 							{formattedTotalAmount} АК
 						</span>
