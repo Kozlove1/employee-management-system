@@ -1,7 +1,6 @@
 import type { BaseFilterParams, PaginationParams } from '$lib/api/types'
 import type { Employee, EmployeeStats, EmployeeWithDetails } from '$lib/types/shared'
 
-// API типы для сотрудников
 export interface EmployeeApiResponse {
 	employee: Employee
 }
@@ -22,7 +21,6 @@ export interface EmployeeStatsApiResponse {
 	stats: EmployeeStats[]
 }
 
-// Параметры для запросов
 export interface EmployeeFilterParams extends BaseFilterParams {
 	department_guid?: string
 	position_guid?: string
@@ -31,7 +29,6 @@ export interface EmployeeFilterParams extends BaseFilterParams {
 
 export interface EmployeeSearchParams extends PaginationParams, EmployeeFilterParams {}
 
-// Типы для создания/обновления
 export interface CreateEmployeeData {
 	employee: string
 	ident: string

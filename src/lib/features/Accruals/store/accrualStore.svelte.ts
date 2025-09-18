@@ -153,13 +153,13 @@ class AccrualStore {
 		this.sortOrder = order
 	}
 
-	resetFilters(): void {
+	public resetFilters(): void {
 		this.searchTerm = ''
 		this.selectedEmployee = ''
 		this.selectedType = ''
 	}
 
-	async fetchAccruals(): Promise<void> {
+	private async fetchAccruals(): Promise<void> {
 		this.setLoading(true)
 		this.clearError()
 

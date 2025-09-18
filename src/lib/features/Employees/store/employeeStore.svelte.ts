@@ -15,7 +15,6 @@ class EmployeeStore {
 	private showDetailModal = $state<boolean>(false)
 	private selectedEmployee = $state<EmployeeWithDetails | null>(null)
 
-	// Public getters for accessing state
 	getApiEmployees() {
 		return this.apiEmployees
 	}
@@ -47,7 +46,6 @@ class EmployeeStore {
 		return this.selectedEmployee
 	}
 
-	// Computed values with $derived
 	filteredEmployees = $derived.by(() => {
 		let filtered = this.apiEmployees
 
@@ -79,14 +77,12 @@ class EmployeeStore {
 		return this.filteredEmployees.slice(startIndex, endIndex)
 	})
 
-	// Methods for working with data
 	async fetchEmployees() {
 		if (this.isLoading) return
 
 		this.setLoading(true)
 		this.clearError()
 		try {
-			// Mock API request
 			await new Promise((resolve) => setTimeout(resolve, 500))
 
 			const enrichedData = apiEmployeesData.map((employee) => {
@@ -116,7 +112,6 @@ class EmployeeStore {
 		}
 	}
 
-	// State management methods following the article pattern
 	setLoading(isLoading: boolean) {
 		this.isLoading = isLoading
 	}
@@ -129,7 +124,6 @@ class EmployeeStore {
 		this.error = null
 	}
 
-	// Methods for managing the modal window
 	openEmployeeDetail(employee: EmployeeWithDetails) {
 		this.selectedEmployee = employee
 		this.showDetailModal = true
@@ -140,7 +134,6 @@ class EmployeeStore {
 		this.selectedEmployee = null
 	}
 
-	// Methods for pagination
 	nextPage() {
 		if (this.currentPage < this.totalPages) {
 			this.currentPage++
@@ -159,7 +152,6 @@ class EmployeeStore {
 		}
 	}
 
-	// Methods for filters
 	setSearchTerm(term: string) {
 		this.searchTerm = term
 		this.currentPage = 1
@@ -182,7 +174,6 @@ class EmployeeStore {
 		this.currentPage = 1
 	}
 
-	// Helper methods
 	refreshData() {
 		this.fetchEmployees()
 	}
@@ -192,7 +183,6 @@ class EmployeeStore {
 		this.fetchEmployees()
 	}
 
-	// Demo method to simulate error (for testing)
 	simulateError() {
 		this.setError(
 			'Демонстрация ошибки: Не удалось подключиться к серверу. Проверьте интернет-соединение.'

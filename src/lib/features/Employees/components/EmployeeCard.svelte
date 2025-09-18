@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { formatDate, getInitials } from '$lib/utils'
 
-	import IconRow from '$lib/components/UI/IconRow.svelte'
+	import { accrualFormStore } from '../../Accruals/store/accrualFormStore.svelte'
 
 	import type { EmployeeWithDetails } from '$lib/types/shared'
-	import { accrualFormStore } from '../../Accruals/store/accrualFormStore.svelte'
+
+	import IconRow from '$lib/components/UI/IconRow.svelte'
 
 	type Props = {
 		employee: EmployeeWithDetails
@@ -26,7 +27,6 @@
 <div
 	class="rounded-lg border border-neutral-200 bg-primary-50 p-4 transition-shadow hover:shadow-md"
 >
-	<!-- Верхняя строка с аватаром и кнопками -->
 	<div class="mb-1 flex items-start gap-2">
 		<div class="mb-5 flex h-10 w-10 items-center justify-center rounded-full bg-info-100 px-3">
 			<span class="title-sm font-medium text-info-700">
@@ -38,8 +38,9 @@
 				{employee.employee}
 			</h3>
 		</div>
+
+		<!-- Status and award button -->
 		<div class="ml-auto flex-shrink-0">
-			<!-- Status and award button -->
 			<div class="flex flex-col items-end gap-2 md:flex-row md:items-center">
 				<span
 					class="inline-flex items-center whitespace-nowrap rounded-full px-2 py-1 text-xs font-medium {employee.datedismis

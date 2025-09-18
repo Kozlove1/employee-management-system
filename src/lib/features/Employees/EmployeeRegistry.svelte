@@ -2,23 +2,23 @@
 	import { getAppContainerStyle } from '$lib/utils'
 	import { mockDepartments } from './mocks/employeesMockData'
 
+	import { accrualStore } from '$lib/features/Accruals/store/accrualStore.svelte'
+	import { employeeStore } from './store/employeeStore.svelte'
+
+	import type { AccrualFormData } from '../Accruals/types'
+
 	import {
 		EmptyState,
 		ErrorMessage,
 		FilterSelect,
 		IconRow,
-		Modal,
 		PaginationButton,
 		RefreshButton,
 		SearchInput,
 		Skeleton
 	} from '$lib/components/UI'
 	import AccrualForm from '$lib/features/Accruals/Form/AccrualForm.svelte'
-	import { accrualStore } from '$lib/features/Accruals/store/accrualStore.svelte'
-	import type { AccrualFormData } from '../Accruals/types'
 	import { EmployeeCard } from './components'
-	import UserDetails from './components/UserDetails.svelte'
-	import { employeeStore } from './store/employeeStore.svelte'
 
 	let isLoading = $derived(employeeStore.getIsLoading())
 
@@ -31,8 +31,6 @@
 	let searchTerm = $derived(employeeStore.getSearchTerm())
 	let selectedDepartment = $derived(employeeStore.getSelectedDepartment())
 	let activeOnly = $derived(employeeStore.getActiveOnly())
-	let showDetailModal = $derived(employeeStore.getShowDetailModal())
-	let selectedEmployee = $derived(employeeStore.getSelectedEmployee())
 
 	$effect(() => {
 		if (apiEmployees.length === 0 && !isLoading && !error) {
@@ -41,7 +39,6 @@
 	})
 
 	function handleAccrualAdded() {
-		// Обновляем данные сотрудников после начисления
 		employeeStore.refreshData()
 	}
 
@@ -83,19 +80,7 @@
 	<div class="mb-6 rounded-lg border border-neutral-200 bg-primary-50 p-6 shadow-sm">
 		<div class="flex flex-col items-center gap-4 lg:flex-row">
 			{#if isLoading}
-				<!-- Skeleton for search input -->
-				<div class="min-w-0 flex-1">
-					<div class="h-10 animate-pulse rounded-md bg-neutral-300"></div>
-				</div>
-				<!-- Skeleton for department filter -->
-				<div class="w-48 flex-shrink-0">
-					<div class="h-10 animate-pulse rounded-md bg-neutral-300"></div>
-				</div>
-				<!-- Skeleton for checkbox -->
-				<div class="flex flex-shrink-0 items-center">
-					<div class="h-4 w-4 animate-pulse rounded bg-neutral-300"></div>
-					<div class="ml-2 h-4 w-24 animate-pulse rounded bg-neutral-300"></div>
-				</div>
+				<Skeleton type="search-panel" />
 			{:else}
 				<div class="min-w-0 flex-1">
 					<SearchInput
@@ -203,28 +188,5 @@
 	</div>
 </div>
 
-<!-- Modal with employee details -->
-<Modal
-	isOpen={showDetailModal && selectedEmployee !== null}
-	onClose={() => employeeStore.closeModal()}
-	title="Детали сотрудника"
->
-	{#snippet children()}
-		{#if selectedEmployee}
-			<UserDetails employee={selectedEmployee} />
-		{/if}
-	{/snippet}
-
-	{#snippet footer()}
-		<button
-			type="button"
-			onclick={() => employeeStore.closeModal()}
-			class="inline-flex justify-center rounded-md border border-neutral-300 bg-primary-50 px-4 py-2 text-sm font-medium text-neutral-700 shadow-sm hover:bg-neutral-100"
-		>
-			Закрыть
-		</button>
-	{/snippet}
-</Modal>
-
-<!-- Глобальная форма начисления -->
+<!-- Global accrual form -->
 <AccrualForm onSubmit={handleAccrualSubmit} />
