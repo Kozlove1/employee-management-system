@@ -1,5 +1,16 @@
 <script lang="ts">
 	import {
+		TypesOfAccrualsDataManager,
+		type CreateTypeOfAccrualData,
+		type UpdateTypeOfAccrualData
+	} from './mocks/typesOfAccrualsData'
+
+	import type { AccrualType } from '$lib/types/shared'
+	import type { TypeOfAccrualFormData } from './types'
+
+	import { typeOfAccrualFormStore } from './store/typeOfAccrualFormStore.svelte'
+
+	import {
 		ActionButton,
 		EmptyState,
 		FilterSelect,
@@ -7,16 +18,8 @@
 		SearchInput,
 		StatCard
 	} from '$lib/components/UI'
-	import type { AccrualType } from '$lib/types/shared'
 	import TypeOfAccrualForm from './Form/TypeOfAccrualForm.svelte'
 	import { TypeOfAccrualListItem } from './components'
-	import {
-		TypesOfAccrualsDataManager,
-		type CreateTypeOfAccrualData,
-		type UpdateTypeOfAccrualData
-	} from './mocks/typesOfAccrualsData'
-	import { typeOfAccrualFormStore } from './store/typeOfAccrualFormStore.svelte'
-	import type { TypeOfAccrualFormData } from './types'
 
 	let searchTerm = $state('')
 	let hasFixedAmount = $state('')
@@ -93,12 +96,6 @@
 		} else {
 			console.error('Failed to delete type: not found')
 		}
-	}
-
-	function resetFilters() {
-		searchTerm = ''
-		hasFixedAmount = ''
-		sortOrder = 'newest'
 	}
 
 	function handleFixedAmountChange(value: string) {

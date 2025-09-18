@@ -4,7 +4,7 @@ import { TypesOfAccrualsDataManager } from '../mocks/typesOfAccrualsData'
 class AccrualTypesStore {
 	private dataVersion = $state<number>(0)
 
-	getDataVersion(): number {
+	public getDataVersion(): number {
 		return this.dataVersion
 	}
 
@@ -17,15 +17,15 @@ class AccrualTypesStore {
 		this.dataVersion++
 	}
 
-	getTypeById(typeGuid: string): AccrualType | null {
+	public getTypeById(typeGuid: string): AccrualType | null {
 		return this.types.find((type) => type.type_guid === typeGuid) || null
 	}
 
-	getTypesWithFixedAmount(): AccrualType[] {
+	public getTypesWithFixedAmount(): AccrualType[] {
 		return this.types.filter((type) => type.ammo_coins_amount !== undefined)
 	}
 
-	getTypesWithVariableAmount(): AccrualType[] {
+	public getTypesWithVariableAmount(): AccrualType[] {
 		return this.types.filter((type) => type.ammo_coins_amount === undefined)
 	}
 }
