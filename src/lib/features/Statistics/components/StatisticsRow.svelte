@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { IconRow } from '$lib/components/UI'
-	import type { EmployeeStats } from '$lib/features/Employees/types'
+	import type { EmployeeStats } from '$lib/types/shared'
 	import type { AccrualTypeStats } from '../types'
 
 	interface Props {

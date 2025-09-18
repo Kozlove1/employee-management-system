@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Employee } from '$lib/features/Employees/types'
+	import type { Employee } from '$lib/types/shared'
 	import FormField from './FormField.svelte'
 
 	type Props = {

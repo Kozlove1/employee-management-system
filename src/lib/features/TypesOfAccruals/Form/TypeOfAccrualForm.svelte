@@ -1,8 +1,8 @@
 <script lang="ts">
 	import Modal from '$lib/components/UI/Modal.svelte'
+	import type { AccrualType } from '$lib/types/shared'
 	import type { TypeOfAccrualFormData } from '../store/typeOfAccrualFormStore.svelte'
 	import { typeOfAccrualFormStore } from '../store/typeOfAccrualFormStore.svelte'
-	import type { AccrualType } from '../types'
 	import { AmmoCoinsAmountInput, TypeNameInput } from './components'
 
 	type Props = {

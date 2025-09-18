@@ -1,5 +1,5 @@
 import { accrualTypesStore } from '$lib/features/TypesOfAccruals/store/accrualTypesStore.svelte'
-import type { AccrualType } from '../types'
+import type { AccrualType } from '$lib/types/shared'
 
 export interface TypeOfAccrualFormData {
 	type_name: string

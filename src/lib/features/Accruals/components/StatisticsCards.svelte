@@ -19,10 +19,9 @@
 			totalAccrualTypes: number
 			totalAmount: number
 		}
-		isLoading: boolean
 	}
 
-	let { statisticsValues, isLoading }: Props = $props()
+	let { statisticsValues }: Props = $props()
 
 	const statisticsCards: StatCardData[] = [
 		{

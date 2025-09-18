@@ -1,4 +1,4 @@
-import type { AccrualType } from '$lib/features/TypesOfAccruals/types'
+import type { AccrualType } from '$lib/types/shared'
 import { TypesOfAccrualsDataManager } from '../mocks/typesOfAccrualsData'
 
 class AccrualTypesStore {

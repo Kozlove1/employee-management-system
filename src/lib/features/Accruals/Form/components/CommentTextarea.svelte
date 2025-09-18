@@ -60,7 +60,6 @@
 				? 'border-red-300'
 				: ''}"
 		></textarea>
-		<!-- Подсказка по использованию -->
 		<div class="mt-1 text-xs text-gray-500">
 			Enter - выйти из режима ввода, Shift+Enter - новая строка
 		</div>

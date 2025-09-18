@@ -1,4 +1,4 @@
-import type { AccrualType } from './types'
+import type { AccrualType } from '$lib/types/shared'
 
 export function generateTypeId(): string {
 	return `type_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { EmployeeWithDetails } from '$lib/features/Employees/types'
+	import type { EmployeeWithDetails } from '$lib/types/shared'
 
 	type Props = {
 		employee: EmployeeWithDetails
@@ -99,7 +99,7 @@
 				<div>
 					<div class="text-sm font-medium text-neutral-500">Дата приема</div>
 					<p class="mt-1 text-sm text-neutral-900">
-						{formatDate(employee.dateemploy)}
+						{employee.dateemploy ? formatDate(employee.dateemploy) : 'Дата не указана'}
 					</p>
 				</div>
 

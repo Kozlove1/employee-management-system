@@ -1,4 +1,4 @@
-import type { EmployeeStats } from '$lib/features/Employees/types'
+import type { EmployeeStats } from '$lib/types/shared'
 import { getTopAccrualTypesByCount, getTopEmployeesByBalance } from '../mocks/statisticsMockData'
 import type { AccrualTypeStats } from '../types'
 

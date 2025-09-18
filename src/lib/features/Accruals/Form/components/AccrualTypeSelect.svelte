@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { AccrualType } from '$lib/features/TypesOfAccruals/types'
+	import type { AccrualType } from '$lib/types/shared'
 	import FormField from './FormField.svelte'
 
 	type Props = {

@@ -1,10 +1,11 @@
-import { mockEmployees } from '$lib/features/Employees/mocks/employeesMockData'
-import { accrualTypesStore } from '$lib/features/TypesOfAccruals/store/accrualTypesStore.svelte'
-import { generateAccrualId, mockAccrualsData } from '../mocks/mockAccrualsData'
 import type { AccrualFormData, AccrualWithDetails } from '../types'
 
+import { accrualTypesStore } from '$lib/features/TypesOfAccruals/store/accrualTypesStore.svelte'
+
+import { mockEmployees } from '$lib/features/Employees/mocks/employeesMockData'
+import { generateAccrualId, mockAccrualsData } from '../mocks/mockAccrualsData'
+
 class AccrualStore {
-	// Private reactive state
 	private accruals = $state<AccrualWithDetails[]>([])
 	private isLoading = $state<boolean>(false)
 	private error = $state<string | null>(null)
@@ -13,7 +14,6 @@ class AccrualStore {
 	private selectedType = $state<string>('')
 	private sortOrder = $state<'newest' | 'oldest'>('newest')
 
-	// Public getters
 	getAccruals(): AccrualWithDetails[] {
 		return this.accruals
 	}
@@ -42,11 +42,9 @@ class AccrualStore {
 		return this.sortOrder
 	}
 
-	// Computed values with $derived
 	filteredAccruals = $derived.by(() => {
 		let filtered = [...this.accruals]
 
-		// Поиск по тексту
 		if (this.searchTerm) {
 			const searchLower = this.searchTerm.toLowerCase()
 			filtered = filtered.filter(
@@ -57,21 +55,26 @@ class AccrualStore {
 			)
 		}
 
-		// Фильтр по сотруднику
 		if (this.selectedEmployee) {
 			filtered = filtered.filter((accrual) => accrual.employee_guid === this.selectedEmployee)
 		}
 
-		// Фильтр по типу
 		if (this.selectedType) {
 			filtered = filtered.filter((accrual) => accrual.type_guid === this.selectedType)
 		}
 
-		// Сортировка
 		if (this.sortOrder === 'oldest') {
-			filtered.sort((a, b) => new Date(a.datecreate).getTime() - new Date(b.datecreate).getTime())
+			filtered.sort((a, b) => {
+				const dateA = a.datecreate ? new Date(a.datecreate).getTime() : 0
+				const dateB = b.datecreate ? new Date(b.datecreate).getTime() : 0
+				return dateA - dateB
+			})
 		} else {
-			filtered.sort((a, b) => new Date(b.datecreate).getTime() - new Date(a.datecreate).getTime())
+			filtered.sort((a, b) => {
+				const dateA = a.datecreate ? new Date(a.datecreate).getTime() : 0
+				const dateB = b.datecreate ? new Date(b.datecreate).getTime() : 0
+				return dateB - dateA
+			})
 		}
 
 		return filtered
@@ -108,6 +111,7 @@ class AccrualStore {
 		const currentYear = new Date().getFullYear()
 
 		const monthlyAccruals = this.accruals.filter((accrual) => {
+			if (!accrual.datecreate) return false
 			const accrualDate = new Date(accrual.datecreate)
 			return accrualDate.getMonth() === currentMonth && accrualDate.getFullYear() === currentYear
 		})
@@ -121,7 +125,6 @@ class AccrualStore {
 		}
 	})
 
-	// Public methods for state management
 	setLoading(loading: boolean): void {
 		this.isLoading = loading
 	}
@@ -156,7 +159,6 @@ class AccrualStore {
 		this.selectedType = ''
 	}
 
-	// API methods
 	async fetchAccruals(): Promise<void> {
 		this.setLoading(true)
 		this.clearError()
@@ -171,7 +173,7 @@ class AccrualStore {
 		}
 	}
 
-	// Mock data methods (временные, пока API не готов)
+	// временные, пока API не готов
 	private async loadMockData(): Promise<void> {
 		// Имитируем задержку API
 		await new Promise(resolve => setTimeout(resolve, 500))
@@ -301,7 +303,6 @@ class AccrualStore {
 		this.accruals.splice(index, 1)
 	}
 
-	// Инициализация store
 	async initialize(): Promise<void> {
 		await this.fetchAccruals()
 	}

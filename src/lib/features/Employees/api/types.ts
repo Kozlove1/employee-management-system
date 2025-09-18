@@ -1,5 +1,5 @@
 import type { BaseFilterParams, PaginationParams } from '$lib/api/types'
-import type { Employee, EmployeeStats, EmployeeWithDetails } from '../types'
+import type { Employee, EmployeeStats, EmployeeWithDetails } from '$lib/types/shared'
 
 // API типы для сотрудников
 export interface EmployeeApiResponse {

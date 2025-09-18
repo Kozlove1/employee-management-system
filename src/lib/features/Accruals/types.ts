@@ -1,23 +1,18 @@
-export interface Accrual {
-	org_guid: string
-	post_guid: string
+import type { BaseDepartmentEntity, BaseEmployeeEntity, BaseEntity, BasePositionEntity, DateFields } from '$lib/types/shared'
+
+export interface Accrual extends BaseEntity, BasePositionEntity, BaseDepartmentEntity, DateFields {
 	post: string
-	department_guid: string
-	datecreate: string
-	datedisband: string
 }
 
-export interface AccrualWithDetails extends Accrual {
-	employee_name?: string
+export interface AccrualWithDetails extends Accrual, BaseEmployeeEntity {
 	type_name?: string
 	amount?: number
 	comment?: string
-	employee_guid?: string
 	type_guid?: string
 }
 
-// Типы для форм
 export interface AccrualFormData {
+	org_guid?: string
 	employee_guid: string
 	type_guid: string
 	amount: number

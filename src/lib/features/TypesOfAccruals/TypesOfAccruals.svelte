@@ -7,6 +7,7 @@
 		SearchInput,
 		StatCard
 	} from '$lib/components/UI'
+	import type { AccrualType } from '$lib/types/shared'
 	import TypeOfAccrualForm from './Form/TypeOfAccrualForm.svelte'
 	import { TypeOfAccrualListItem } from './components'
 	import {
@@ -15,7 +16,7 @@
 		type UpdateTypeOfAccrualData
 	} from './mocks/typesOfAccrualsData'
 	import { typeOfAccrualFormStore } from './store/typeOfAccrualFormStore.svelte'
-	import type { AccrualType, TypeOfAccrualFormData } from './types'
+	import type { TypeOfAccrualFormData } from './types'
 
 	let searchTerm = $state('')
 	let hasFixedAmount = $state('')

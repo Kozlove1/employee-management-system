@@ -1,5 +1,5 @@
 import type { BaseFilterParams } from '$lib/api/types'
-import type { EmployeeStats } from '$lib/features/Employees/types'
+import type { EmployeeStats } from '$lib/types/shared'
 import type { AccrualTypeStats, DepartmentStats, StatisticsSummary } from '../types'
 
 // API типы для статистики

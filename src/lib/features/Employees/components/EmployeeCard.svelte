@@ -3,8 +3,8 @@
 
 	import IconRow from '$lib/components/UI/IconRow.svelte'
 
+	import type { EmployeeWithDetails } from '$lib/types/shared'
 	import { accrualFormStore } from '../../Accruals/store/accrualFormStore.svelte'
-	import type { EmployeeWithDetails } from '../types'
 
 	type Props = {
 		employee: EmployeeWithDetails
@@ -89,7 +89,10 @@
 		{#if employee.email}
 			<IconRow icon="mail" title={employee.email} />
 		{/if}
-		<IconRow icon="calendar" title="Принят: {formatDate(employee.dateemploy)}" />
+		<IconRow
+			icon="calendar"
+			title="Принят: {employee.dateemploy ? formatDate(employee.dateemploy) : 'Дата не указана'}"
+		/>
 		<IconRow icon="venus-and-mars" title="Пол: {employee.sex}" />
 	</div>
 </div>

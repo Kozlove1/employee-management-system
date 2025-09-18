@@ -1,5 +1,5 @@
 import type { BaseFilterParams, PaginationParams } from '$lib/api/types'
-import type { AccrualType } from '../types'
+import type { AccrualType } from '$lib/types/shared'
 
 // API типы для типов начислений
 export interface AccrualTypeApiResponse {

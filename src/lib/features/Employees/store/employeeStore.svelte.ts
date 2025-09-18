@@ -1,5 +1,5 @@
 import { apiEmployeesData, mockDepartments } from '$lib/features/Employees/mocks/employeesMockData'
-import type { EmployeeWithDetails } from '../types'
+import type { EmployeeWithDetails } from '$lib/types/shared'
 
 //reference: https://medium.com/@chose/week-7-how-to-manage-shared-state-in-svelte-5-with-runes-77a4ad305b8a
 

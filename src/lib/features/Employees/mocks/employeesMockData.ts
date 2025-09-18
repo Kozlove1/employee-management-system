@@ -1,4 +1,4 @@
-import type { Employee } from '../types'
+import type { Employee } from '$lib/types/shared'
 
 export interface Department {
 	org_guid: string

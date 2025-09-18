@@ -111,7 +111,7 @@
 			<Skeleton type="stat-card" count={4} />
 		</div>
 	{:else}
-		<StatisticsCards statisticsValues={statisticsValues()} {isLoading} />
+		<StatisticsCards statisticsValues={statisticsValues()} />
 	{/if}
 
 	<!-- Заголовок и поиск -->

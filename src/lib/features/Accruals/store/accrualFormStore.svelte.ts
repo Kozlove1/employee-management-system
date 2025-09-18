@@ -1,9 +1,12 @@
-import { accrualTypesStore } from '$lib/features/TypesOfAccruals/store/accrualTypesStore.svelte'
-import type { AccrualType } from '$lib/features/TypesOfAccruals/types'
-import { getLocalDateTime } from '$lib/utils/dateUtils'
+import type { AccrualType } from '$lib/types/shared'
 import type { AccrualFormData, AccrualWithDetails } from '../types'
 
+import { accrualTypesStore } from '$lib/features/TypesOfAccruals/store/accrualTypesStore.svelte'
+
+import { getLocalDateTime } from '$lib/utils/dateUtils'
+
 interface FormErrors {
+	org_guid?: string
 	employee_guid?: string
 	type_guid?: string
 	amount?: string
@@ -12,7 +15,6 @@ interface FormErrors {
 }
 
 class AccrualFormStore {
-	// Private reactive state
 	private isOpen = $state<boolean>(false)
 	private formData = $state<AccrualFormData>({
 		employee_guid: '',
@@ -25,7 +27,6 @@ class AccrualFormStore {
 	private isSubmitting = $state<boolean>(false)
 	private errors = $state<FormErrors>({})
 
-	// Public getters
 	getIsOpen(): boolean {
 		return this.isOpen
 	}

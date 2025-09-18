@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { AccrualType } from '$lib/features/TypesOfAccruals/types'
+	import type { AccrualType } from '$lib/types/shared'
 	import FormField from './FormField.svelte'
 
 	type Props = {
@@ -24,7 +24,6 @@
 		onValueChange
 	}: Props = $props()
 
-	// Проверяем, имеет ли выбранный тип фиксированное количество АК
 	let hasFixedAmmoCoins = $derived(selectedType?.ammo_coins_amount !== undefined)
 
 	let hint = $derived(hasFixedAmmoCoins ? '(автоматически проставлено)' : undefined)
