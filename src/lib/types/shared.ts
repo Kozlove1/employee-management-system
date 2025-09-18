@@ -27,52 +27,10 @@ export interface DateFields {
 	datedismis?: string
 }
 
-// Общие типы для фильтрации
-export interface BaseFilterOptions {
-	search?: string
-	department_guid?: string
-	active_only?: boolean
-	date_from?: string
-	date_to?: string
+interface BaseDisplayEntity extends BaseEntity, DateFields {
 }
 
-// Общие типы для пагинации
-export interface PaginationOptions {
-	page?: number
-	limit?: number
-	sort?: string
-	order?: 'asc' | 'desc'
-}
-
-// Общие типы для сортировки
-export type SortDirection = 'asc' | 'desc'
-export type SortField = string
-
-// Общие типы для статусов
-export type EntityStatus = 'active' | 'inactive' | 'pending'
-export type ViewMode = 'employees' | 'accruals' | 'departments' | 'positions' | 'statistics'
-
-// Общие типы для форм
-export interface BaseFormData {
-	org_guid: string
-}
-
-export interface EmployeeFormData extends BaseFormData {
-	employee: string
-	ident: string
-	email: string
-	sex: 'Мужской' | 'Женский'
-	department_guid: string
-	position_name: string
-	dateemploy: string
-}
-
-// Общие типы для отображения
-export interface BaseDisplayEntity extends BaseEntity, DateFields {
-	// Базовые поля для отображения
-}
-
-export interface EmployeeDisplayEntity extends BaseDisplayEntity, BaseEmployeeEntity, BaseDepartmentEntity, BasePositionEntity {
+interface EmployeeDisplayEntity extends BaseDisplayEntity, BaseEmployeeEntity, BaseDepartmentEntity, BasePositionEntity {
 	ident: string
 	employee: string
 	email: string
@@ -94,23 +52,6 @@ export interface EmployeeStats {
 	ident: string
 	total_balance: number
 	department_name: string
-}
-
-// Общие типы для API
-export interface BaseApiEntity {
-	org_guid: string
-}
-
-export interface BaseApiResponse<T = any> {
-	data: T
-	message?: string
-	status: 'success' | 'error'
-}
-
-export interface BaseApiError {
-	message: string
-	code?: string | number
-	details?: any
 }
 
 // Общие типы для начислений
