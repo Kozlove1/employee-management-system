@@ -3,10 +3,11 @@ import { defineConfig } from 'vite'
 
 export default defineConfig({
   plugins: [sveltekit()],
-  optimizeDeps: {
-    exclude: ['lucide-svelte']
+  server: {
+    host: 'localhost',
+    port: 5173
   },
-  ssr: {
-    noExternal: process.env.NODE_ENV === 'production' ? [] : ['*']
+  optimizeDeps: {
+    include: ['@lucide/svelte']
   }
 })
