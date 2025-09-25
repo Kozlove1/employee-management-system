@@ -8,12 +8,14 @@
 		Coins,
 		Crown,
 		Funnel,
+		LogOut,
 		Mail,
 		Menu,
 		Plus,
 		Search,
 		Tags,
 		User,
+		Users,
 		VenusAndMars,
 		X
 	} from '@lucide/svelte'
@@ -27,6 +29,7 @@
 		| 'calendar'
 		| 'mail'
 		| 'user'
+		| 'users'
 		| 'venus-and-mars'
 		| 'menu'
 		| 'crown'
@@ -35,6 +38,7 @@
 		| 'filter'
 		| 'plus'
 		| 'search'
+		| 'logout'
 
 	export type IconColor = 'yellow' | 'black' | 'blue'
 
@@ -47,6 +51,7 @@
 		calendar: Calendar,
 		mail: Mail,
 		user: User,
+		users: Users,
 		'venus-and-mars': VenusAndMars,
 		menu: Menu,
 		crown: Crown,
@@ -54,7 +59,8 @@
 		x: X,
 		filter: Funnel,
 		plus: Plus,
-		search: Search
+		search: Search,
+		logout: LogOut
 	}
 
 	const iconSizes = {

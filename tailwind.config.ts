@@ -4,6 +4,17 @@ export default {
   content: ['./index.html', './src/**/*.{svelte,ts,js}'],
   theme: {
     extend: {
+      fontFamily: {
+        'sans': ['Arial', 'sans-serif'],
+        'primary': ['Arial', 'sans-serif'],
+        'secondary': ['Arial', 'sans-serif'],
+        'arial-regular': ['Arial', 'sans-serif'],
+        'arial-bold': ['Arial', 'sans-serif'],
+      },
+      fontWeight: {
+        'arial-regular': '400',
+        'arial-bold': '700',
+      },
       colors: {
         primary: {
           50: '#ffffff', // Белый как основной

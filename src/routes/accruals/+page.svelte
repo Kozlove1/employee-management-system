@@ -1,9 +1,17 @@
 <script lang="ts">
-	import AccrualRegistry from '$lib/screens/Accruals/AccrualRegistry.svelte'
+	import LoadingSpinner from '$lib/components/UI/LoadingSpinner.svelte'
+	import AccrualRegistry from '$lib/features/Accruals/AccrualRegistry.svelte'
+	import { authStore } from '$lib/features/Auth'
+
+	let isLoggingOut = $derived(authStore.getIsLoggingOut())
 </script>
 
 <svelte:head>
-	<title>Статистика | Система АммоКоинов</title>
+	<title>Начисления | Система АммоКоинов</title>
 </svelte:head>
 
-<AccrualRegistry />
+{#if isLoggingOut}
+	<LoadingSpinner title="Выход из системы..." size="lg" />
+{:else}
+	<AccrualRegistry />
+{/if}

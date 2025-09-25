@@ -85,7 +85,7 @@
 			<!-- Header -->
 			<div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
 				<div>
-					<h3 id="modal-title" class="text-lg font-medium text-gray-900">
+					<h3 id="modal-title" class="text-lg font-bold text-gray-900">
 						{title}
 					</h3>
 					{#if subtitle}

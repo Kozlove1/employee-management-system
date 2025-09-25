@@ -20,14 +20,14 @@
 	}: Props = $props()
 </script>
 
-<div class="py-6 text-center">
-	<div class="mx-auto max-w-lg rounded-lg border border-red-200 bg-red-50 p-6">
+<div class="pb-3 text-center">
+	<div class="mx-auto max-w-lg rounded-lg border border-red-200 bg-red-50 p-4">
 		<div class="flex items-start space-x-3">
 			<div class="flex-shrink-0">
 				<TriangleAlert class="h-6 w-6 text-red-600" />
 			</div>
 			<div class="flex-1 text-left">
-				<h3 class="text-sm font-medium text-red-800">{title}</h3>
+				<h3 class="text-sm font-bold text-red-800">{title}</h3>
 				<p class="mt-1 text-sm text-red-700">{message}</p>
 
 				{#if showRetry || showDismiss}
