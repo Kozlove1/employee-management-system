@@ -88,7 +88,7 @@
 							</span>
 						</div>
 						<div class="hidden md:block">
-							<p class="text-sm font-medium text-gray-900">{user?.name}</p>
+							<p class="text-sm font-bold text-gray-900">{user?.name}</p>
 							<p class="text-xs text-gray-500">{user?.email}</p>
 						</div>
 					</div>

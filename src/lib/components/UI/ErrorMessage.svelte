@@ -27,7 +27,7 @@
 				<TriangleAlert class="h-6 w-6 text-red-600" />
 			</div>
 			<div class="flex-1 text-left">
-				<h3 class="text-sm font-medium text-red-800">{title}</h3>
+				<h3 class="text-sm font-bold text-red-800">{title}</h3>
 				<p class="mt-1 text-sm text-red-700">{message}</p>
 
 				{#if showRetry || showDismiss}

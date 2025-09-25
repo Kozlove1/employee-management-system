@@ -12,7 +12,7 @@
 </script>
 
 <div class="space-y-2">
-	<label for={fieldId} class="block text-sm font-medium text-gray-700">
+	<label for={fieldId} class="block text-sm font-bold text-gray-700">
 		{label}
 		{#if required}
 			<span class="ml-1 text-red-500">*</span>

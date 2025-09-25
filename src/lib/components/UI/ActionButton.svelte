@@ -46,7 +46,7 @@
 	{disabled}
 	class="
     inline-flex max-w-full items-center overflow-hidden
-    rounded-lg font-medium transition-colors
+    rounded-lg transition-colors
     duration-200 focus:outline-none
     focus:ring-2 focus:ring-offset-2
     disabled:cursor-not-allowed disabled:opacity-50

@@ -29,7 +29,7 @@
 >
 	<div class="mb-1 flex items-start gap-2">
 		<div class="mb-5 flex h-10 w-10 items-center justify-center rounded-full bg-info-100 px-3">
-			<span class="title-sm font-medium text-info-700">
+			<span class="title-sm font-bold text-info-700">
 				{getInitials(employee.employee)}
 			</span>
 		</div>

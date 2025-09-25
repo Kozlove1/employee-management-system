@@ -14,13 +14,13 @@
 </script>
 
 <div class="space-y-1">
-	<label for={id} class="block text-sm font-medium text-gray-700">
+	<label for={id} class="block text-sm font-bold text-gray-700">
 		{label}
 		{#if required}
 			<span class="text-red-500">*</span>
 		{/if}
 		{#if hint}
-			<span class="ml-1 text-xs font-medium text-blue-700">
+			<span class="ml-1 text-xs text-blue-700">
 				{hint}
 			</span>
 		{/if}

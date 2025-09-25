@@ -73,7 +73,7 @@
 
 		<form onsubmit={handleSubmit} class="space-y-6">
 			<div>
-				<label for="email" class="mb-2 block text-sm font-medium text-gray-700">
+				<label for="email" class="mb-2 block text-sm font-bold text-gray-700">
 					Email Address
 				</label>
 				<input
@@ -93,9 +93,7 @@
 			</div>
 
 			<div>
-				<label for="password" class="mb-2 block text-sm font-medium text-gray-700">
-					Password
-				</label>
+				<label for="password" class="mb-2 block text-sm font-bold text-gray-700"> Password </label>
 				<input
 					id="password"
 					type="password"
@@ -115,7 +113,7 @@
 			<button
 				type="submit"
 				disabled={isLoading}
-				class="flex w-full items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+				class="flex w-full items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
 			>
 				{#if isLoading}
 					<LoadingSpinner size="sm" />
@@ -129,7 +127,7 @@
 		<div class="mt-6 text-center">
 			<p class="text-sm text-gray-600">
 				Don't have an account?
-				<span class="font-medium text-blue-600"> Contact administrator </span>
+				<span class="font-bold text-blue-600"> Contact administrator </span>
 			</p>
 		</div>
 	</div>

@@ -64,7 +64,7 @@
 		<div class="min-w-0 flex-1">
 			{#if isEmployee(data)}
 				<!-- Employee info -->
-				<p class="truncate text-sm font-medium text-gray-900" title={data.employee_name}>
+				<p class="truncate text-sm font-bold text-gray-900" title={data.employee_name}>
 					{data.employee_name}
 				</p>
 				<p class="truncate text-xs text-gray-500 sm:text-sm" title={`ID: ${employeeInfo}`}>
@@ -72,7 +72,7 @@
 				</p>
 			{:else if isAccrualType(data)}
 				<!-- Accrual type info -->
-				<p class="truncate text-sm font-medium text-gray-900" title={data.type_name}>
+				<p class="truncate text-sm font-bold text-gray-900" title={data.type_name}>
 					{data.type_name}
 				</p>
 				<p class="truncate text-xs text-gray-500 sm:text-sm" title={data.category}>
@@ -80,8 +80,7 @@
 				</p>
 				<div class="mt-1">
 					<span
-						class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium {getAmountType() ===
-						'fixed'
+						class="inline-flex items-center rounded px-2 py-0.5 text-xs {getAmountType() === 'fixed'
 							? 'bg-blue-100 text-blue-800'
 							: 'bg-green-100 text-green-800'}"
 					>
