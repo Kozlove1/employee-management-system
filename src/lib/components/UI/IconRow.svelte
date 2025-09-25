@@ -8,6 +8,7 @@
 		Coins,
 		Crown,
 		Funnel,
+		LogOut,
 		Mail,
 		Menu,
 		Plus,
@@ -37,6 +38,7 @@
 		| 'filter'
 		| 'plus'
 		| 'search'
+		| 'logout'
 
 	export type IconColor = 'yellow' | 'black' | 'blue'
 
@@ -57,7 +59,8 @@
 		x: X,
 		filter: Funnel,
 		plus: Plus,
-		search: Search
+		search: Search,
+		logout: LogOut
 	}
 
 	const iconSizes = {

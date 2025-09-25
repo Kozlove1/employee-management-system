@@ -20,8 +20,8 @@
 	}: Props = $props()
 </script>
 
-<div class="py-6 text-center">
-	<div class="mx-auto max-w-lg rounded-lg border border-red-200 bg-red-50 p-6">
+<div class="pb-3 text-center">
+	<div class="mx-auto max-w-lg rounded-lg border border-red-200 bg-red-50 p-4">
 		<div class="flex items-start space-x-3">
 			<div class="flex-shrink-0">
 				<TriangleAlert class="h-6 w-6 text-red-600" />

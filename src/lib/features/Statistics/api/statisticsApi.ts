@@ -1,104 +1,37 @@
-import { apiClient } from '$lib/api/client'
+import { ApiService } from '$lib/api'
 import { API_ENDPOINTS } from '$lib/api/endpoints'
 
 import type {
-	AccrualTypeStatsApiResponse,
-	CombinedStatisticsResponse,
-	DepartmentStatsApiResponse,
-	EmployeeStatsApiResponse,
-	StatisticsFilterParams,
-	StatisticsSummaryApiResponse,
+    AccrualTypeStatsApiResponse,
+    CombinedStatisticsResponse,
+    DepartmentStatsApiResponse,
+    EmployeeStatsApiResponse,
+    StatisticsFilterParams,
+    StatisticsSummaryApiResponse,
 } from './types'
 
-class StatisticsApiService {
+class StatisticsApiService extends ApiService {
+	constructor() {
+		super(API_ENDPOINTS.STATISTICS.BASE)
+	}
 	public async getSummary(params?: StatisticsFilterParams) {
-		const searchParams = new URLSearchParams()
-		
-		if (params) {
-			Object.entries(params).forEach(([key, value]) => {
-				if (value !== undefined && value !== null && value !== '') {
-					searchParams.append(key, String(value))
-				}
-			})
-		}
-
-		const endpoint = searchParams.toString()
-			? `${API_ENDPOINTS.STATISTICS.BASE}?${searchParams.toString()}`
-			: API_ENDPOINTS.STATISTICS.BASE
-
-		return apiClient.get<StatisticsSummaryApiResponse>(endpoint)
+		return this.get<StatisticsSummaryApiResponse>('', params)
 	}
 
 	public async getEmployeeStats(params?: StatisticsFilterParams) {
-		const searchParams = new URLSearchParams()
-		
-		if (params) {
-			Object.entries(params).forEach(([key, value]) => {
-				if (value !== undefined && value !== null && value !== '') {
-					searchParams.append(key, String(value))
-				}
-			})
-		}
-
-		const endpoint = searchParams.toString()
-			? `${API_ENDPOINTS.STATISTICS.EMPLOYEES}?${searchParams.toString()}`
-			: API_ENDPOINTS.STATISTICS.EMPLOYEES
-
-		return apiClient.get<EmployeeStatsApiResponse>(endpoint)
+		return this.get<EmployeeStatsApiResponse>('/employees', params)
 	}
 
 	public async getAccrualStats(params?: StatisticsFilterParams) {
-		const searchParams = new URLSearchParams()
-		
-		if (params) {
-			Object.entries(params).forEach(([key, value]) => {
-				if (value !== undefined && value !== null && value !== '') {
-					searchParams.append(key, String(value))
-				}
-			})
-		}
-
-		const endpoint = searchParams.toString()
-			? `${API_ENDPOINTS.STATISTICS.ACCRUALS}?${searchParams.toString()}`
-			: API_ENDPOINTS.STATISTICS.ACCRUALS
-
-		return apiClient.get<AccrualTypeStatsApiResponse>(endpoint)
+		return this.get<AccrualTypeStatsApiResponse>('/accruals', params)
 	}
 
 	public async getDepartmentStats(params?: StatisticsFilterParams) {
-		const searchParams = new URLSearchParams()
-		
-		if (params) {
-			Object.entries(params).forEach(([key, value]) => {
-				if (value !== undefined && value !== null && value !== '') {
-					searchParams.append(key, String(value))
-				}
-			})
-		}
-
-		const endpoint = searchParams.toString()
-			? `${API_ENDPOINTS.STATISTICS.DEPARTMENTS}?${searchParams.toString()}`
-			: API_ENDPOINTS.STATISTICS.DEPARTMENTS
-
-		return apiClient.get<DepartmentStatsApiResponse>(endpoint)
+		return this.get<DepartmentStatsApiResponse>('/departments', params)
 	}
 
 	public async getCombinedStats(params?: StatisticsFilterParams) {
-		const searchParams = new URLSearchParams()
-		
-		if (params) {
-			Object.entries(params).forEach(([key, value]) => {
-				if (value !== undefined && value !== null && value !== '') {
-					searchParams.append(key, String(value))
-				}
-			})
-		}
-
-		const endpoint = searchParams.toString()
-			? `${API_ENDPOINTS.STATISTICS.BASE}/combined?${searchParams.toString()}`
-			: `${API_ENDPOINTS.STATISTICS.BASE}/combined`
-
-		return apiClient.get<CombinedStatisticsResponse>(endpoint)
+		return this.get<CombinedStatisticsResponse>('/combined', params)
 	}
 }
 

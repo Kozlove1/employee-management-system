@@ -24,10 +24,12 @@ export interface BaseFilterParams {
 	active_only?: boolean
 }
 
-export type ErrorHandler = (error: unknown) => void
+// TODO: Add when needed
+// export type ErrorHandler = (error: unknown) => void
 
-export interface RequestConfig {
-	timeout?: number
-	retries?: number
-	headers?: Record<string, string>
-}
+// TODO: Add when needed
+// export interface RequestConfig {
+// 	timeout?: number
+// 	retries?: number
+// 	headers?: Record<string, string>
+// }

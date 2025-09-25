@@ -26,15 +26,17 @@ export const API_ENDPOINTS = {
 		DEPARTMENTS: '/statistics/departments',
 	},
 	
-	DEPARTMENTS: {
-		BASE: '/departments',
-		BY_ID: (id: string) => `/departments/${id}`,
-		EMPLOYEES: (id: string) => `/departments/${id}/employees`,
-	},
+	// TODO: Add when needed
+	// DEPARTMENTS: {
+	// 	BASE: '/departments',
+	// 	BY_ID: (id: string) => `/departments/${id}`,
+	// 	EMPLOYEES: (id: string) => `/departments/${id}/employees`,
+	// },
 	
-	POSITIONS: {
-		BASE: '/positions',
-		BY_ID: (id: string) => `/positions/${id}`,
-		BY_DEPARTMENT: (departmentId: string) => `/positions/department/${departmentId}`,
-	},
+	// TODO: Add when needed
+	// POSITIONS: {
+	// 	BASE: '/positions',
+	// 	BY_ID: (id: string) => `/positions/${id}`,
+	// 	BY_DEPARTMENT: (departmentId: string) => `/positions/department/${departmentId}`,
+	// },
 } as const

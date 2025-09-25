@@ -1,4 +1,4 @@
-import { apiClient } from '$lib/api/client'
+import { ApiService } from '$lib/api'
 import { API_ENDPOINTS } from '$lib/api/endpoints'
 import type {
 	AccrualTypeApiResponse,
@@ -9,51 +9,32 @@ import type {
 	UpdateAccrualTypeData,
 } from './types'
 
-class AccrualTypesApiService {
+class AccrualTypesApiService extends ApiService {
+	constructor() {
+		super(API_ENDPOINTS.ACCRUAL_TYPES.BASE)
+	}
 	public async getAll(params?: AccrualTypeSearchParams) {
-		const searchParams = new URLSearchParams()
-		
-		if (params) {
-			Object.entries(params).forEach(([key, value]) => {
-				if (value !== undefined && value !== null && value !== '') {
-					searchParams.append(key, String(value))
-				}
-			})
-		}
-
-		const endpoint = searchParams.toString() 
-			? `${API_ENDPOINTS.ACCRUAL_TYPES.BASE}?${searchParams.toString()}`
-			: API_ENDPOINTS.ACCRUAL_TYPES.BASE
-
-		return apiClient.get<AccrualTypesApiResponse>(endpoint)
+		return this.get<AccrualTypesApiResponse>('', params)
 	}
 
 	public async getById(typeGuid: string) {
-		return apiClient.get<AccrualTypeApiResponse>(
-			API_ENDPOINTS.ACCRUAL_TYPES.BY_ID(typeGuid)
-		)
+		return this.get<AccrualTypeApiResponse>(`/${typeGuid}`)
 	}
 
 	public async create(data: CreateAccrualTypeData) {
-		return apiClient.post<AccrualTypeApiResponse>(
-			API_ENDPOINTS.ACCRUAL_TYPES.BASE,
-			data
-		)
+		return this.post<AccrualTypeApiResponse>('', data)
 	}
 
 	public async update(data: UpdateAccrualTypeData) {
-		return apiClient.put<AccrualTypeApiResponse>(
-			API_ENDPOINTS.ACCRUAL_TYPES.BY_ID(data.type_guid),
-			data
-		)
+		return this.put<AccrualTypeApiResponse>(`/${data.type_guid}`, data)
 	}
 
-	public async delete(typeGuid: string) {
-		return apiClient.delete(API_ENDPOINTS.ACCRUAL_TYPES.BY_ID(typeGuid))
+	public async deleteType(typeGuid: string) {
+		return this.delete(`/${typeGuid}`)
 	}
 
 	public async getStats() {
-		return apiClient.get<{ stats: AccrualTypeStats }>(API_ENDPOINTS.ACCRUAL_TYPES.STATS)
+		return this.get<{ stats: AccrualTypeStats }>('/stats')
 	}
 }
 
