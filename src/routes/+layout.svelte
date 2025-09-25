@@ -9,11 +9,9 @@
 	const props = $props()
 	const children = props.children
 
-	// Reactive variables using $derived with getters
 	let isAuthenticated = $derived(authStore.isAuthenticated)
 	let isLoading = $derived(authStore.getIsLoading())
 
-	// Handle authentication redirects
 	$effect(() => {
 		if (!isLoading && typeof window !== 'undefined') {
 			handleAuthRedirect()
@@ -21,7 +19,6 @@
 	})
 
 	onMount(() => {
-		// Initialize auth status
 		authStore.initialize()
 	})
 </script>
@@ -31,10 +28,11 @@
 		<SimpleNavbar />
 	{/if}
 
-	<main class={getAppContainerStyle('py-6')}>
+	<main class="{getAppContainerStyle('py-6')} {isAuthenticated ? 'pt-20' : ''}">
 		{#if isLoading}
 			<div class="flex items-center justify-center py-12">
 				<div class="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
+				<span class="ml-2">Загрузка...</span>
 			</div>
 		{:else}
 			{@render children()}

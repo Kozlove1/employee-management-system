@@ -2,17 +2,10 @@
 	import { goto } from '$app/navigation'
 	import LoadingSpinner from '$lib/components/UI/LoadingSpinner.svelte'
 	import { authStore } from '$lib/features/Auth'
-	import { onMount } from 'svelte'
 
-	// Reactive variables using $derived with getters
 	let isAuthenticated = $derived(authStore.isAuthenticated)
 	let isLoading = $derived(authStore.getIsLoading())
 	let isLoggingOut = $derived(authStore.getIsLoggingOut())
-
-	onMount(() => {
-		// Initialize auth status
-		authStore.initialize()
-	})
 
 	$effect(() => {
 		if (!isLoading && typeof window !== 'undefined') {

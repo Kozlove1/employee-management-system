@@ -1,42 +1,36 @@
 <script lang="ts">
 	import { goto } from '$app/navigation'
-	import { page } from '$app/stores'
-	import ErrorMessage from '$lib/components/UI/ErrorMessage.svelte'
-
-	import LoadingSpinner from '$lib/components/UI/LoadingSpinner.svelte'
+	import { page } from '$app/state'
+	import { ErrorMessage, LoadingSpinner, Logo } from '$lib/components/UI'
 	import { authStore } from '../store/authStore.svelte'
 
-	// Reactive variables using $derived with getters
 	let isLoading = $derived(authStore.getIsLoading())
 	let error = $derived(authStore.getError())
 	let isAuthenticated = $derived(authStore.isAuthenticated)
 
-	// Form state
 	let email = $state('')
 	let password = $state('')
 	let formErrors = $state<Record<string, string>>({})
 
-	// Form validation
 	function validateForm() {
 		const errors: Record<string, string> = {}
 
 		if (!email.trim()) {
-			errors.email = 'Email is required'
+			errors.email = 'Email обязателен'
 		} else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-			errors.email = 'Please enter a valid email address'
+			errors.email = 'Введите корректный email адрес'
 		}
 
 		if (!password.trim()) {
-			errors.password = 'Password is required'
+			errors.password = 'Пароль обязателен'
 		} else if (password.length < 6) {
-			errors.password = 'Password must be at least 6 characters'
+			errors.password = 'Пароль должен содержать минимум 6 символов'
 		}
 
 		formErrors = errors
 		return Object.keys(errors).length === 0
 	}
 
-	// Handle form submission
 	async function handleSubmit(event: Event) {
 		event.preventDefault()
 		authStore.clearError()
@@ -45,14 +39,12 @@
 
 		await authStore.login({ email, password })
 
-		// Redirect after successful login
 		if (isAuthenticated) {
-			const redirectTo = $page.url.searchParams.get('redirect') || '/accruals'
+			const redirectTo = page.url.searchParams.get('redirect') || '/accruals'
 			goto(redirectTo)
 		}
 	}
 
-	// Handle Enter key press
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.key === 'Enter') {
 			handleSubmit(event)
@@ -61,10 +53,13 @@
 </script>
 
 <div class="mx-auto w-full max-w-md">
-	<div class="rounded-lg bg-white p-8 shadow-md">
+	<div class="rounded-lg bg-white p-8 shadow-2xl shadow-gray-300/60">
+		<!-- Logo Section -->
 		<div class="mb-8 text-center">
-			<h1 class="mb-2 text-2xl font-bold text-gray-900">Welcome Back</h1>
-			<p class="text-gray-600">Sign in to your account</p>
+			<Logo size="xxl" className="mb-6" />
+			<div class="mb-4">
+				<p class="text-sm text-gray-500">Управление активами сотрудников</p>
+			</div>
 		</div>
 
 		{#if error}
@@ -74,17 +69,17 @@
 		<form onsubmit={handleSubmit} class="space-y-6">
 			<div>
 				<label for="email" class="mb-2 block text-sm font-bold text-gray-700">
-					Email Address
+					Адрес электронной почты
 				</label>
 				<input
 					id="email"
 					type="email"
 					bind:value={email}
 					onkeydown={handleKeydown}
-					class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 {formErrors.email
+					class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 {formErrors.email
 						? 'border-red-500'
 						: ''}"
-					placeholder="Enter your email"
+					placeholder="Введите ваш email"
 					disabled={isLoading}
 				/>
 				{#if formErrors.email}
@@ -93,16 +88,16 @@
 			</div>
 
 			<div>
-				<label for="password" class="mb-2 block text-sm font-bold text-gray-700"> Password </label>
+				<label for="password" class="mb-2 block text-sm font-bold text-gray-700"> Пароль </label>
 				<input
 					id="password"
 					type="password"
 					bind:value={password}
 					onkeydown={handleKeydown}
-					class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 {formErrors.password
+					class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 {formErrors.password
 						? 'border-red-500'
 						: ''}"
-					placeholder="Enter your password"
+					placeholder="Введите ваш пароль"
 					disabled={isLoading}
 				/>
 				{#if formErrors.password}
@@ -113,22 +108,15 @@
 			<button
 				type="submit"
 				disabled={isLoading}
-				class="flex w-full items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+				class="flex w-full items-center justify-center rounded-md border border-transparent bg-primary-500 px-4 py-2 text-sm text-white shadow-sm hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
 			>
 				{#if isLoading}
 					<LoadingSpinner size="sm" />
-					<span class="ml-2">Signing in...</span>
+					<span class="ml-2">Вход в систему...</span>
 				{:else}
-					Sign In
+					Войти
 				{/if}
 			</button>
 		</form>
-
-		<div class="mt-6 text-center">
-			<p class="text-sm text-gray-600">
-				Don't have an account?
-				<span class="font-bold text-blue-600"> Contact administrator </span>
-			</p>
-		</div>
 	</div>
 </div>
