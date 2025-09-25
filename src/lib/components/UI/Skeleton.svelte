@@ -44,26 +44,17 @@
 	</div>
 {:else if type === 'search-panel'}
 	<!-- Loading skeleton for search panel with filters and pagination -->
-	<div class="flex flex-col items-center gap-4 lg:flex-row">
-		<div class="min-w-0 flex-1">
-			<div class="h-10 animate-pulse rounded-md bg-neutral-300"></div>
-		</div>
-		<div class="flex-2 w-48">
-			<div class="h-10 animate-pulse rounded-md bg-neutral-300"></div>
-		</div>
+	<div class="min-w-0 flex-1">
+		<div class="h-10 animate-pulse rounded-md bg-neutral-300"></div>
+	</div>
+	<div class="w-48">
+		<div class="h-10 animate-pulse rounded-md bg-neutral-300"></div>
+	</div>
+	<div class="flex-2 flex-row items-center justify-between sm:flex-row">
 		<div class="flex-3 flex items-center">
 			<div class="h-4 w-4 animate-pulse rounded bg-neutral-300"></div>
 			<div class="ml-2 h-4 w-24 animate-pulse rounded bg-neutral-300"></div>
 		</div>
-		<div class="h-10 w-24 animate-pulse rounded-md bg-primary-500"></div>
-	</div>
-	<div class="mt-4 flex flex-col items-center justify-between sm:flex-row">
-		<div class="flex flex-row gap-2">
-			<div class="h-4 w-32 animate-pulse rounded bg-neutral-300"></div>
-			<div class="h-4 w-2 animate-pulse rounded bg-neutral-300"></div>
-			<div class="h-4 w-24 animate-pulse rounded bg-neutral-300"></div>
-		</div>
-		<div class="h-8 w-32 animate-pulse rounded-md bg-neutral-300"></div>
 	</div>
 {:else if type === 'list-item'}
 	<!-- Loading skeleton for list items -->
