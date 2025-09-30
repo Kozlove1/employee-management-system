@@ -69,12 +69,13 @@ class AuthStore {
 			const response = await authApi.login(credentials)
 			
 			if (response.status === 'success') {
-				// Store user and access token in memory only
 				this.setUser(response.data.data.user)
 				this.setAccessToken(response.data.data.token)
 				
-				// Refresh token is handled by HttpOnly cookie on server
-				// No localStorage usage for security
+				if (typeof window !== 'undefined') {
+					localStorage.setItem('user', JSON.stringify(response.data.data.user))
+					localStorage.setItem('accessToken', response.data.data.token)
+				}
 			} else {
 				// Use server error message
 				this.setError(response.message || 'Login failed')
@@ -98,7 +99,11 @@ class AuthStore {
 			// Clear in-memory auth data
 			this.clearAuth()
 			
-			// Server will clear HttpOnly refresh token cookie
+			if (typeof window !== 'undefined') {
+				localStorage.removeItem('user')
+				localStorage.removeItem('accessToken')
+			}
+			
 			this.isLoggingOut = false
 		}
 	}
@@ -116,34 +121,21 @@ class AuthStore {
 		// If already checking auth, don't start another check
 		if (this.isCheckingAuth) return
 
-		// Check if we have refresh token cookie first
-		const hasRefreshToken = document.cookie.includes('refresh_token=')
-		if (!hasRefreshToken) {
-			// No refresh token, user is not authenticated
-			this.setLoading(false)
-			return
-		}
-
-		this.isCheckingAuth = true
-		this.setLoading(true)
-		this.clearError()
-
-		try {
-			// Try to get current user (server will handle refresh token via HttpOnly cookie)
-			const response = await authApi.getCurrentUser()
-			
-			if (response.status === 'success') {
-				this.setUser(response.data.user)
-				this.setAccessToken(response.data.accessToken)
-			} else {
-				this.clearAuth()
+		const storedUser = localStorage.getItem('user')
+		const storedToken = localStorage.getItem('accessToken')
+		
+		if (storedUser && storedToken) {
+			try {
+				this.setUser(JSON.parse(storedUser))
+				this.setAccessToken(storedToken)
+				return
+			} catch {
+				localStorage.removeItem('user')
+				localStorage.removeItem('accessToken')
 			}
-		} catch (error) {
-			this.clearAuth()
-		} finally {
-			this.setLoading(false)
-			this.isCheckingAuth = false
 		}
+
+		this.setLoading(false)
 	}
 
 	async refreshToken() {

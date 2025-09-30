@@ -1,2 +1,2 @@
-export { handleAuthRedirect, isProtectedRoute, isPublicRoute, requiresAuth } from './auth';
+export { handleAuthRedirect } from './auth';
 

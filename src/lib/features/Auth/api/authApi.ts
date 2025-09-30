@@ -1,44 +1,77 @@
 import type { ApiResponse } from '$lib/api/types'
-import { apiClient } from '../../../api'
+import { mockCredentials, mockLoginResponse } from '../mocks/authMockData'
 import type { LoginCredentials, LoginResponse } from '../types'
 
 class AuthApiService {
-	private useMockData = true // Set to false for production API
+	private useMockData = true
 
 	async login(credentials: LoginCredentials): Promise<ApiResponse<{ data: LoginResponse }>> {
 		if (this.useMockData) {
-			// Use mock server-side API for secure cookie handling
-			return apiClient.post<{ data: LoginResponse }>('/mocks/auth/login', credentials)
+			await new Promise(resolve => setTimeout(resolve, 500)) // Simulate network delay
+			
+			if (credentials.email === mockCredentials.email && credentials.password === mockCredentials.password) {
+				return {
+					status: 'success',
+					data: { data: mockLoginResponse },
+					message: 'Login successful'
+				}
+			} else {
+				return {
+					status: 'error',
+					data: { data: mockLoginResponse }, // Return mock data structure for consistency
+					message: 'Неверный email или пароль'
+				}
+			}
 		}
 
-		return apiClient.post<{ data: LoginResponse }>('/auth/login', credentials)
+		// TODO: Implement real API call when backend is ready
+		throw new Error('Real API not implemented yet')
 	}
 
 	async logout(): Promise<ApiResponse<void>> {
 		if (this.useMockData) {
-			// Use mock server-side API for secure cookie clearing
-			return apiClient.post<void>('/mocks/auth/logout')
+			await new Promise(resolve => setTimeout(resolve, 200))
+		return {
+			status: 'success',
+			data: undefined,
+			message: 'Logout successful'
+		}
 		}
 
-		return apiClient.post<void>('/auth/logout')
+		// TODO: Implement real API call when backend is ready
+		throw new Error('Real API not implemented yet')
 	}
 
 	async refreshToken(): Promise<ApiResponse<{ token: string }>> {
 		if (this.useMockData) {
-			// Use mock server-side API for secure refresh token handling
-			return apiClient.post<{ token: string }>('/mocks/auth/refresh')
+			await new Promise(resolve => setTimeout(resolve, 200))
+			return {
+				status: 'success',
+				data: { token: 'new-mock-token' },
+				message: 'Token refreshed'
+			}
 		}
 
-		return apiClient.post<{ token: string }>('/auth/refresh')
+		// TODO: Implement real API call when backend is ready
+		throw new Error('Real API not implemented yet')
 	}
 
 	async getCurrentUser(): Promise<ApiResponse<{ user: LoginResponse['user'], accessToken: string }>> {
 		if (this.useMockData) {
-			// Use mock server-side API for secure user data retrieval
-			return apiClient.get<{ user: LoginResponse['user'], accessToken: string }>('/mocks/auth/me')
+
+			await new Promise(resolve => setTimeout(resolve, 200))
+			return {
+				status: 'success',
+				data: { 
+					user: mockLoginResponse.user, 
+					accessToken: mockLoginResponse.token 
+				},
+				message: 'User data retrieved'
+			}
 		}
 
-		return apiClient.get<{ user: LoginResponse['user'], accessToken: string }>('/auth/me')
+		// TODO: Implement real API call when backend is ready
+		throw new Error('Real API not implemented yet')
 	}
 }
 

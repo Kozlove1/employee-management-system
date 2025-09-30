@@ -3,7 +3,6 @@
 	import { authStore } from '$lib/features/Auth'
 	import { handleAuthRedirect } from '$lib/features/Auth/middleware'
 	import { getAppContainerStyle } from '$lib/utils'
-	import { onMount } from 'svelte'
 	import '../app.css'
 
 	const props = $props()
@@ -13,13 +12,12 @@
 	let isLoading = $derived(authStore.getIsLoading())
 
 	$effect(() => {
-		if (!isLoading && typeof window !== 'undefined') {
-			handleAuthRedirect()
+		if (typeof window !== 'undefined') {
+			authStore.initialize()
+			if (!isLoading) {
+				handleAuthRedirect()
+			}
 		}
-	})
-
-	onMount(() => {
-		authStore.initialize()
 	})
 </script>
 
