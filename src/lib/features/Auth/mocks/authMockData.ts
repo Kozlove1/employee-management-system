@@ -11,7 +11,7 @@ export const mockUser: User = {
 export const mockLoginResponse: LoginResponse = {
 	user: mockUser,
 	token: 'mock-jwt-token',
-	refreshToken: 'mock-refresh-token'
+	refresh_token: 'mock-refresh-token'
 }
 
 export const mockCredentials = {

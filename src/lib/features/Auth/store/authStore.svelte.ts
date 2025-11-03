@@ -68,15 +68,15 @@ class AuthStore {
 		try {
 			const response = await authApi.login(credentials)
 			
-			if (response.status === 'success') {
-				this.setUser(response.data.data.user)
-				this.setAccessToken(response.data.data.token)
-				
-				if (typeof window !== 'undefined') {
-					localStorage.setItem('user', JSON.stringify(response.data.data.user))
-					localStorage.setItem('accessToken', response.data.data.token)
-				}
-			} else {
+		if (response.status === 'success') {
+			this.setUser(response.data.user)
+			this.setAccessToken(response.data.token)
+			
+			if (typeof window !== 'undefined') {
+				localStorage.setItem('user', JSON.stringify(response.data.user))
+				localStorage.setItem('accessToken', response.data.token)
+			}
+		} else {
 				// Use server error message
 				this.setError(response.message || 'Login failed')
 			}

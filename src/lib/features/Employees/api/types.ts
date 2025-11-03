@@ -36,7 +36,7 @@ export interface CreateEmployeeData {
 	sex: 'Мужской' | 'Женский'
 	department_guid: string
 	position_name: string
-	dateemploy: string
+	date_employ: string
 }
 
 export interface UpdateEmployeeData extends Partial<CreateEmployeeData> {

@@ -21,5 +21,5 @@ export interface AuthState {
 export interface LoginResponse {
 	user: User
 	token: string
-	refreshToken: string
+	refresh_token: string
 }

@@ -6,8 +6,8 @@ export interface Department {
 	department_guid: string
 	department_code: string
 	parentdep_guid?: string
-	datecreate: string
-	datedisband: string
+	date_create: string
+	date_disband: string
 	headofdep_guid?: string
 }
 
@@ -141,11 +141,11 @@ function generateAdditionalEmployees(count: number): Employee[] {
 		const year = 2010 + Math.floor(Math.random() * 15)
 		const month = String(1 + Math.floor(Math.random() * 12)).padStart(2, '0')
 		const day = String(1 + Math.floor(Math.random() * 28)).padStart(2, '0')
-		const dateemploy = `${day}.${month}.${year}`
+		const date_employ = `${day}.${month}.${year}`
 
 		// 10% сотрудников уволены
 		const isDismissed = Math.random() < 0.1
-		const datedismis = isDismissed ? '15.06.2024' : ''
+		const date_dismis = isDismissed ? '15.06.2024' : ''
 
 		const ident = `0000-${String(700 + i).padStart(5, '0')}`
 		const employeeGuid = `emp${String(i + 100).padStart(3, '0')}-a041-11ef-9dad-00155de8647c`
@@ -164,8 +164,8 @@ function generateAdditionalEmployees(count: number): Employee[] {
 			ident: ident,
 			employee: fullName,
 			employee_guid: employeeGuid,
-			dateemploy: dateemploy,
-			datedismis: datedismis,
+			date_employ: date_employ,
+			date_dismis: date_dismis,
 			email: email,
 			sex: sex,
 			person_guid: personGuid,
@@ -184,8 +184,8 @@ export const apiEmployeesData: Employee[] = [
 		ident: '0000-00283',
 		employee: 'Колногорова Оксана Викторовна',
 		employee_guid: '6b68a3b2-a041-11ef-9dad-00155de8647c',
-		dateemploy: '27.01.2014',
-		datedismis: '',
+		date_employ: '27.01.2014',
+		date_dismis: '',
 		email: 'kolnogorova.o@ammoni.ru',
 		sex: 'Женский',
 		person_guid: 'c9bc282f-a02c-11ef-9dad-00155de8647c',
@@ -197,8 +197,8 @@ export const apiEmployeesData: Employee[] = [
 		ident: '0000-00468',
 		employee: 'Ибрагимова Гузель Ильдаровна',
 		employee_guid: 'c604d015-a041-11ef-9dad-00155de8647c',
-		dateemploy: '16.02.2015',
-		datedismis: '',
+		date_employ: '16.02.2015',
+		date_dismis: '',
 		email: '',
 		sex: 'Женский',
 		person_guid: '05546027-a025-11ef-9dad-00155de8647c',
@@ -210,8 +210,8 @@ export const apiEmployeesData: Employee[] = [
 		ident: '0000-00501',
 		employee: 'Петров Михаил Александрович',
 		employee_guid: 'd604d015-a041-11ef-9dad-00155de8647c',
-		dateemploy: '15.03.2016',
-		datedismis: '20.12.2023',
+		date_employ: '15.03.2016',
+		date_dismis: '20.12.2023',
 		email: 'petrov.m@ammoni.ru',
 		sex: 'Мужской',
 		person_guid: '15546027-a025-11ef-9dad-00155de8647c',
@@ -223,8 +223,8 @@ export const apiEmployeesData: Employee[] = [
 		ident: '0000-00512',
 		employee: 'Сидорова Анна Сергеевна',
 		employee_guid: 'e604d015-a041-11ef-9dad-00155de8647c',
-		dateemploy: '10.09.2017',
-		datedismis: '',
+		date_employ: '10.09.2017',
+		date_dismis: '',
 		email: 'sidorova.a@ammoni.ru',
 		sex: 'Женский',
 		person_guid: '25546027-a025-11ef-9dad-00155de8647c',
@@ -236,8 +236,8 @@ export const apiEmployeesData: Employee[] = [
 		ident: '0000-00523',
 		employee: 'Иванов Дмитрий Петрович',
 		employee_guid: 'f604d015-a041-11ef-9dad-00155de8647c',
-		dateemploy: '22.11.2018',
-		datedismis: '',
+		date_employ: '22.11.2018',
+		date_dismis: '',
 		email: 'ivanov.d@ammoni.ru',
 		sex: 'Мужской',
 		person_guid: '35546027-a025-11ef-9dad-00155de8647c',
@@ -249,8 +249,8 @@ export const apiEmployeesData: Employee[] = [
 		ident: '0000-00534',
 		employee: 'Козлова Елена Владимировна',
 		employee_guid: 'a604d015-a041-11ef-9dad-00155de8647c',
-		dateemploy: '05.04.2019',
-		datedismis: '',
+		date_employ: '05.04.2019',
+		date_dismis: '',
 		email: 'kozlova.e@ammoni.ru',
 		sex: 'Женский',
 		person_guid: '45546027-a025-11ef-9dad-00155de8647c',
@@ -263,8 +263,8 @@ export const apiEmployeesData: Employee[] = [
 		ident: '0000-00545',
 		employee: 'Федоров Алексей Николаевич',
 		employee_guid: 'b604d015-a041-11ef-9dad-00155de8647c',
-		dateemploy: '12.06.2020',
-		datedismis: '',
+		date_employ: '12.06.2020',
+		date_dismis: '',
 		email: 'fedorov.a@ammoni.ru',
 		sex: 'Мужской',
 		person_guid: '55546027-a025-11ef-9dad-00155de8647c',
@@ -276,8 +276,8 @@ export const apiEmployeesData: Employee[] = [
 		ident: '0000-00556',
 		employee: 'Морозова Татьяна Ивановна',
 		employee_guid: 'c704d015-a041-11ef-9dad-00155de8647c',
-		dateemploy: '08.08.2021',
-		datedismis: '',
+		date_employ: '08.08.2021',
+		date_dismis: '',
 		email: 'morozova.t@ammoni.ru',
 		sex: 'Женский',
 		person_guid: '65546027-a025-11ef-9dad-00155de8647c',
@@ -289,8 +289,8 @@ export const apiEmployeesData: Employee[] = [
 		ident: '0000-00567',
 		employee: 'Соколов Владимир Петрович',
 		employee_guid: 'd804d015-a041-11ef-9dad-00155de8647c',
-		dateemploy: '03.12.2019',
-		datedismis: '15.06.2024',
+		date_employ: '03.12.2019',
+		date_dismis: '15.06.2024',
 		email: 'sokolov.v@ammoni.ru',
 		sex: 'Мужской',
 		person_guid: '75546027-a025-11ef-9dad-00155de8647c',
@@ -302,8 +302,8 @@ export const apiEmployeesData: Employee[] = [
 		ident: '0000-00578',
 		employee: 'Новикова Мария Александровна',
 		employee_guid: 'e904d015-a041-11ef-9dad-00155de8647c',
-		dateemploy: '20.01.2022',
-		datedismis: '',
+		date_employ: '20.01.2022',
+		date_dismis: '',
 		email: 'novikova.m@ammoni.ru',
 		sex: 'Женский',
 		person_guid: '85546027-a025-11ef-9dad-00155de8647c',
@@ -315,8 +315,8 @@ export const apiEmployeesData: Employee[] = [
 		ident: '0000-00589',
 		employee: 'Лебедев Сергей Михайлович',
 		employee_guid: 'fa04d015-a041-11ef-9dad-00155de8647c',
-		dateemploy: '14.07.2023',
-		datedismis: '',
+		date_employ: '14.07.2023',
+		date_dismis: '',
 		email: 'lebedev.s@ammoni.ru',
 		sex: 'Мужской',
 		person_guid: '95546027-a025-11ef-9dad-00155de8647c',
@@ -328,8 +328,8 @@ export const apiEmployeesData: Employee[] = [
 		ident: '0000-00590',
 		employee: 'Васильева Екатерина Дмитриевна',
 		employee_guid: 'ab04d015-a041-11ef-9dad-00155de8647c',
-		dateemploy: '09.03.2024',
-		datedismis: '',
+		date_employ: '09.03.2024',
+		date_dismis: '',
 		email: 'vasilieva.e@ammoni.ru',
 		sex: 'Женский',
 		person_guid: 'a5546027-a025-11ef-9dad-00155de8647c',
@@ -341,8 +341,8 @@ export const apiEmployeesData: Employee[] = [
 		ident: '0000-00601',
 		employee: 'Орлов Андрей Викторович',
 		employee_guid: 'bc04d015-a041-11ef-9dad-00155de8647c',
-		dateemploy: '25.05.2020',
-		datedismis: '',
+		date_employ: '25.05.2020',
+		date_dismis: '',
 		email: 'orlov.a@ammoni.ru',
 		sex: 'Мужской',
 		person_guid: 'b5546027-a025-11ef-9dad-00155de8647c',
@@ -354,8 +354,8 @@ export const apiEmployeesData: Employee[] = [
 		ident: '0000-00612',
 		employee: 'Смирнова Ольга Сергеевна',
 		employee_guid: 'cd04d015-a041-11ef-9dad-00155de8647c',
-		dateemploy: '11.11.2021',
-		datedismis: '',
+		date_employ: '11.11.2021',
+		date_dismis: '',
 		email: 'smirnova.o@ammoni.ru',
 		sex: 'Женский',
 		person_guid: 'c5546027-a025-11ef-9dad-00155de8647c',
@@ -367,8 +367,8 @@ export const apiEmployeesData: Employee[] = [
 		ident: '0000-00623',
 		employee: 'Павлов Игорь Александрович',
 		employee_guid: 'de04d015-a041-11ef-9dad-00155de8647c',
-		dateemploy: '07.02.2018',
-		datedismis: '30.08.2023',
+		date_employ: '07.02.2018',
+		date_dismis: '30.08.2023',
 		email: 'pavlov.i@ammoni.ru',
 		sex: 'Мужской',
 		person_guid: 'd5546027-a025-11ef-9dad-00155de8647c',
@@ -380,8 +380,8 @@ export const apiEmployeesData: Employee[] = [
 		ident: '0000-00634',
 		employee: 'Романова Наталья Викторовна',
 		employee_guid: 'ef04d015-a041-11ef-9dad-00155de8647c',
-		dateemploy: '18.09.2019',
-		datedismis: '',
+		date_employ: '18.09.2019',
+		date_dismis: '',
 		email: 'romanova.n@ammoni.ru',
 		sex: 'Женский',
 		person_guid: 'e5546027-a025-11ef-9dad-00155de8647c',
@@ -393,8 +393,8 @@ export const apiEmployeesData: Employee[] = [
 		ident: '0000-00645',
 		employee: 'Кузнецов Максим Игоревич',
 		employee_guid: 'f004d015-a041-11ef-9dad-00155de8647c',
-		dateemploy: '04.04.2022',
-		datedismis: '',
+		date_employ: '04.04.2022',
+		date_dismis: '',
 		email: 'kuznetsov.m@ammoni.ru',
 		sex: 'Мужской',
 		person_guid: 'f5546027-a025-11ef-9dad-00155de8647c',
@@ -406,8 +406,8 @@ export const apiEmployeesData: Employee[] = [
 		ident: '0000-00656',
 		employee: 'Белова Анастасия Олеговна',
 		employee_guid: 'a104d015-a041-11ef-9dad-00155de8647c',
-		dateemploy: '16.10.2023',
-		datedismis: '',
+		date_employ: '16.10.2023',
+		date_dismis: '',
 		email: 'belova.a@ammoni.ru',
 		sex: 'Женский',
 		person_guid: 'a1546027-a025-11ef-9dad-00155de8647c',
@@ -424,8 +424,8 @@ export const mockDepartments: Department[] = [
 		department_guid: '86253ef6-4e33-11ee-9d85-00155de8647c',
 		department_code: '1750200',
 		parentdep_guid: '862539c4-4e33-11ee-9d85-00155de8647c',
-		datecreate: '01.05.2024',
-		datedisband: '',
+		date_create: '01.05.2024',
+		date_disband: '',
 		headofdep_guid: 'e46ff3e0-a0c4-11ef-9dad-00155de8647c'
 	},
 	{
@@ -434,8 +434,8 @@ export const mockDepartments: Department[] = [
 		department_guid: '86253b1a-4e33-11ee-9d85-00155de8647c',
 		department_code: '1755200',
 		parentdep_guid: '86253a36-4e33-11ee-9d85-00155de8647c',
-		datecreate: '01.01.2024',
-		datedisband: '',
+		date_create: '01.01.2024',
+		date_disband: '',
 		headofdep_guid: ''
 	},
 	{
@@ -443,8 +443,8 @@ export const mockDepartments: Department[] = [
 		department: 'Цех химводоподготовки',
 		department_guid: '86253e12-4e33-11ee-9d85-00155de8647c',
 		department_code: '1760200',
-		datecreate: '01.01.2024',
-		datedisband: '',
+		date_create: '01.01.2024',
+		date_disband: '',
 		headofdep_guid: ''
 	}
 ]

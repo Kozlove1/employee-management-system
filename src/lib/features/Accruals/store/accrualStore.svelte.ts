@@ -65,14 +65,14 @@ class AccrualStore {
 
 		if (this.sortOrder === 'oldest') {
 			filtered.sort((a, b) => {
-				const dateA = a.datecreate ? new Date(a.datecreate).getTime() : 0
-				const dateB = b.datecreate ? new Date(b.datecreate).getTime() : 0
+				const dateA = a.date_create ? new Date(a.date_create).getTime() : 0
+				const dateB = b.date_create ? new Date(b.date_create).getTime() : 0
 				return dateA - dateB
 			})
 		} else {
 			filtered.sort((a, b) => {
-				const dateA = a.datecreate ? new Date(a.datecreate).getTime() : 0
-				const dateB = b.datecreate ? new Date(b.datecreate).getTime() : 0
+				const dateA = a.date_create ? new Date(a.date_create).getTime() : 0
+				const dateB = b.date_create ? new Date(b.date_create).getTime() : 0
 				return dateB - dateA
 			})
 		}
@@ -111,8 +111,8 @@ class AccrualStore {
 		const currentYear = new Date().getFullYear()
 
 		const monthlyAccruals = this.accruals.filter((accrual) => {
-			if (!accrual.datecreate) return false
-			const accrualDate = new Date(accrual.datecreate)
+			if (!accrual.date_create) return false
+			const accrualDate = new Date(accrual.date_create)
 			return accrualDate.getMonth() === currentMonth && accrualDate.getFullYear() === currentYear
 		})
 
@@ -211,8 +211,8 @@ class AccrualStore {
 			post_guid: generateAccrualId(),
 			post: `${type.type_name} - ${data.amount} ${type.ammo_coins_amount ? 'АК' : 'руб'}`,
 			department_guid: employee.department_guid,
-			datecreate: data.date,
-			datedisband: '',
+			date_create: data.date,
+			date_disband: '',
 
 			employee_name: employee.employee,
 			employee_guid: data.employee_guid,
@@ -262,7 +262,7 @@ class AccrualStore {
 			...this.accruals[index],
 			post: `${type.type_name} - ${data.amount} ${type.ammo_coins_amount ? 'АК' : 'руб'}`,
 			department_guid: employee.department_guid,
-			datecreate: data.date,
+			date_create: data.date,
 
 			employee_name: employee.employee,
 			employee_guid: data.employee_guid,

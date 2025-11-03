@@ -6,15 +6,15 @@ export interface StatisticsSummaryApiResponse {
 }
 
 export interface EmployeeStatsApiResponse {
-	employeeStats: EmployeeStats[]
+	employee_stats: EmployeeStats[]
 }
 
 export interface AccrualTypeStatsApiResponse {
-	accrualTypeStats: AccrualTypeStats[]
+	accrual_type_stats: AccrualTypeStats[]
 }
 
 export interface DepartmentStatsApiResponse {
-	departmentStats: DepartmentStats[]
+	department_stats: DepartmentStats[]
 }
 
 export interface StatisticsFilterParams extends BaseFilterParams {
@@ -24,7 +24,7 @@ export interface StatisticsFilterParams extends BaseFilterParams {
 
 export interface CombinedStatisticsResponse {
 	summary: StatisticsSummary
-	topEmployees: EmployeeStats[]
-	topAccrualTypes: AccrualTypeStats[]
-	departmentStats: DepartmentStats[]
+	top_employees: EmployeeStats[]
+	top_accrual_types: AccrualTypeStats[]
+	department_stats: DepartmentStats[]
 }

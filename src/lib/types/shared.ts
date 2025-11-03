@@ -21,10 +21,10 @@ export interface BasePositionEntity extends BaseEntity {
 
 // Общие поля для дат
 export interface DateFields {
-	datecreate?: string
-	datedisband?: string
-	dateemploy?: string
-	datedismis?: string
+	date_create?: string
+	date_disband?: string
+	date_employ?: string
+	date_dismis?: string
 }
 
 interface BaseDisplayEntity extends BaseEntity, DateFields {

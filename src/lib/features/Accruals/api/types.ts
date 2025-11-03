@@ -40,11 +40,11 @@ export interface UpdateAccrual extends Partial<CreateAccrual> {
 }
 
 export interface AccrualStats {
-	totalAccruals: number
-	totalAmount: number
-	averageAmount: number
-	monthlyAccruals: number
-	topTypes: Array<{
+	total_accruals: number
+	total_amount: number
+	average_amount: number
+	monthly_accruals: number
+	top_types: Array<{
 		type_guid: string
 		type_name: string
 		count: number

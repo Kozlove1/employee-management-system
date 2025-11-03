@@ -199,8 +199,8 @@ export function getStatisticsSummary() {
 	const averageBalance = Math.round(totalBalance / statisticsEmployees.length)
 
 	return {
-		totalEmployees: statisticsEmployees.length,
-		totalBalance,
-		averageBalance
+		total_employees: statisticsEmployees.length,
+		total_balance: totalBalance,
+		average_balance: averageBalance
 	}
 }

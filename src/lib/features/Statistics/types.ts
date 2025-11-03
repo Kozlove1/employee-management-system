@@ -18,7 +18,7 @@ export interface DepartmentStats {
 }
 
 export interface StatisticsSummary {
-	totalEmployees: number
-	totalBalance: number
-	averageBalance: number
+	total_employees: number
+	total_balance: number
+	average_balance: number
 }

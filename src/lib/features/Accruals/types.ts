@@ -5,6 +5,7 @@ export interface Accrual extends BaseEntity, BasePositionEntity, BaseDepartmentE
 }
 
 export interface AccrualWithDetails extends Accrual, BaseEmployeeEntity {
+	accrual_guid?: string  // Для URL эндпоинтов (PUT, DELETE)
 	type_name?: string
 	amount?: number
 	comment?: string

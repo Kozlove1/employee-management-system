@@ -52,20 +52,22 @@ export class ApiClient {
 
 			clearTimeout(timeoutId)
 
-			const data = await response.json()
+			const serverResponse = await response.json()
 
 			if (!response.ok) {
 				return {
 					data: {} as T,
-					status: 'error',
-					message: data.message || `HTTP ${response.status}: ${response.statusText}`
+					status: (serverResponse.status as 'error') || 'error',
+					message: serverResponse.message || `HTTP ${response.status}: ${response.statusText}`
 				}
 			}
+			const serverStatus = serverResponse.status || 'success'
+			const serverMessage = serverResponse.message
 
 			return {
-				data,
-				status: 'success',
-				message: data.message
+				data: serverResponse.data || serverResponse,
+				status: serverStatus === 'success' ? 'success' : 'error',
+				message: serverMessage
 			}
 		} catch (error) {
 			clearTimeout(timeoutId)

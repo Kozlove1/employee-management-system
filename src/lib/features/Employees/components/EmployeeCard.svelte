@@ -15,7 +15,7 @@
 	let { employee, onAccrualAdded }: Props = $props()
 
 	function getStatusBadge(employee: EmployeeWithDetails) {
-		return employee.datedismis ? 'Уволен' : 'Активен'
+		return employee.date_dismis ? 'Уволен' : 'Активен'
 	}
 
 	function handleAccrualClick() {
@@ -43,13 +43,13 @@
 		<div class="ml-auto flex-shrink-0">
 			<div class="flex flex-col items-end gap-2 md:flex-row md:items-center">
 				<span
-					class="inline-flex items-center whitespace-nowrap rounded-full px-2 py-1 text-xs font-medium {employee.datedismis
+					class="inline-flex items-center whitespace-nowrap rounded-full px-2 py-1 text-xs font-medium {employee.date_dismis
 						? 'bg-danger-100 text-danger-700'
 						: 'bg-success-100 text-success-700'}"
 				>
 					{getStatusBadge(employee)}
 				</span>
-				{#if !employee.datedismis}
+				{#if !employee.date_dismis}
 					<button
 						onclick={handleAccrualClick}
 						class="btn my-0 inline-flex items-center whitespace-nowrap rounded-lg border-2 border-success-100 px-1 font-normal text-success-700 transition-colors hover:bg-success-50"
@@ -92,7 +92,7 @@
 		{/if}
 		<IconRow
 			icon="calendar"
-			title="Принят: {employee.dateemploy ? formatDate(employee.dateemploy) : 'Дата не указана'}"
+			title="Принят: {employee.date_employ ? formatDate(employee.date_employ) : 'Дата не указана'}"
 		/>
 		<IconRow icon="venus-and-mars" title="Пол: {employee.sex}" />
 	</div>

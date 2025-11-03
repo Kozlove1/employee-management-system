@@ -95,7 +95,7 @@ class AccrualFormStore {
 			employee_guid: accrual.employee_guid || '',
 			type_guid: accrual.type_guid || '',
 			amount: accrual.amount || 0,
-			date: accrual.datecreate || getLocalDateTime(),
+			date: accrual.date_create || getLocalDateTime(),
 			comment: accrual.comment || ''
 		}
 		this.isOpen = true

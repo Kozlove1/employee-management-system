@@ -1,9 +1,17 @@
 export const API_ENDPOINTS = {
+	AUTH: {
+		LOGIN: '/auth/login',
+		LOGOUT: '/auth/logout',
+		REFRESH: '/auth/refresh',
+		ME: '/auth/me',
+	},
+	
 	EMPLOYEES: {
 		BASE: '/employees',
 		BY_ID: (id: string) => `/employees/${id}`,
 		SEARCH: '/employees/search',
 		STATS: '/employees/stats',
+		BY_DEPARTMENT: (departmentGuid: string) => `/employees/department/${departmentGuid}`,
 	},
 	
 	ACCRUALS: {
@@ -24,19 +32,18 @@ export const API_ENDPOINTS = {
 		EMPLOYEES: '/statistics/employees',
 		ACCRUALS: '/statistics/accruals',
 		DEPARTMENTS: '/statistics/departments',
+		COMBINED: '/statistics/combined',
 	},
 	
-	// TODO: Add when needed
-	// DEPARTMENTS: {
-	// 	BASE: '/departments',
-	// 	BY_ID: (id: string) => `/departments/${id}`,
-	// 	EMPLOYEES: (id: string) => `/departments/${id}/employees`,
-	// },
+	DEPARTMENTS: {
+		BASE: '/departments',
+		BY_ID: (id: string) => `/departments/${id}`,
+		EMPLOYEES: (id: string) => `/departments/${id}/employees`,
+	},
 	
-	// TODO: Add when needed
-	// POSITIONS: {
-	// 	BASE: '/positions',
-	// 	BY_ID: (id: string) => `/positions/${id}`,
-	// 	BY_DEPARTMENT: (departmentId: string) => `/positions/department/${departmentId}`,
-	// },
-} as const
+	POSITIONS: {
+		BASE: '/positions',
+		BY_ID: (id: string) => `/positions/${id}`,
+		BY_DEPARTMENT: (departmentId: string) => `/positions/department/${departmentId}`,
+	},
+}

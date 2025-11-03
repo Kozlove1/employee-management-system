@@ -27,10 +27,10 @@ export interface UpdateAccrualTypeData extends Partial<CreateAccrualTypeData> {
 }
 
 export interface AccrualTypeStats {
-	totalTypes: number
-	typesWithFixedAmount: number
-	typesWithVariableAmount: number
-	mostUsedTypes: Array<{
+	total_types: number
+	types_with_fixed_amount: number
+	types_with_variable_amount: number
+	most_used_types: Array<{
 		type_guid: string
 		type_name: string
 		usage_count: number

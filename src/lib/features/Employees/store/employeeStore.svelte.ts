@@ -63,7 +63,7 @@ class EmployeeStore {
 		}
 
 		if (this.activeOnly) {
-			filtered = filtered.filter((emp) => !emp.datedismis)
+			filtered = filtered.filter((emp) => !emp.date_dismis)
 		}
 
 		return filtered
@@ -194,7 +194,7 @@ class EmployeeStore {
 	}
 
 	getStatusBadge(employee: EmployeeWithDetails) {
-		return employee.datedismis ? 'Уволен' : 'Активен'
+		return employee.date_dismis ? 'Уволен' : 'Активен'
 	}
 }
 

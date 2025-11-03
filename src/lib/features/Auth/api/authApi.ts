@@ -5,20 +5,20 @@ import type { LoginCredentials, LoginResponse } from '../types'
 class AuthApiService {
 	private useMockData = true
 
-	async login(credentials: LoginCredentials): Promise<ApiResponse<{ data: LoginResponse }>> {
+	async login(credentials: LoginCredentials): Promise<ApiResponse<LoginResponse>> {
 		if (this.useMockData) {
 			await new Promise(resolve => setTimeout(resolve, 500)) // Simulate network delay
 			
 			if (credentials.email === mockCredentials.email && credentials.password === mockCredentials.password) {
 				return {
 					status: 'success',
-					data: { data: mockLoginResponse },
+					data: mockLoginResponse,
 					message: 'Login successful'
 				}
 			} else {
 				return {
 					status: 'error',
-					data: { data: mockLoginResponse }, // Return mock data structure for consistency
+					data: mockLoginResponse, // Return mock data structure for consistency
 					message: 'Неверный email или пароль'
 				}
 			}
@@ -56,7 +56,7 @@ class AuthApiService {
 		throw new Error('Real API not implemented yet')
 	}
 
-	async getCurrentUser(): Promise<ApiResponse<{ user: LoginResponse['user'], accessToken: string }>> {
+	async getCurrentUser(): Promise<ApiResponse<{ user: LoginResponse['user'], access_token: string }>> {
 		if (this.useMockData) {
 
 			await new Promise(resolve => setTimeout(resolve, 200))
@@ -64,7 +64,7 @@ class AuthApiService {
 				status: 'success',
 				data: { 
 					user: mockLoginResponse.user, 
-					accessToken: mockLoginResponse.token 
+					access_token: mockLoginResponse.token 
 				},
 				message: 'User data retrieved'
 			}
