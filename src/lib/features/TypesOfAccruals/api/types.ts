@@ -5,8 +5,13 @@ export interface AccrualTypeApiResponse {
 	accrualType: AccrualType;
 }
 
+// API returns objects with 'id' field instead of 'type_guid'
+export interface AccrualTypeFromApi extends Omit<AccrualType, "type_guid"> {
+	id: string;
+}
+
 // API returns array directly in data field
-export type AccrualTypesApiResponse = AccrualType[];
+export type AccrualTypesApiResponse = AccrualTypeFromApi[];
 
 export interface AccrualTypeFilterParams extends BaseFilterParams {
 	has_fixed_amount?: boolean;

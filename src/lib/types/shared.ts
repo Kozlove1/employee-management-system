@@ -21,10 +21,8 @@ export interface BasePositionEntity extends BaseEntity {
 
 // Общие поля для дат
 export interface DateFields {
-	date_create?: string
-	date_disband?: string
-	date_employ?: string
-	date_dismis?: string
+	date_create: string
+	date_delete: string
 }
 
 interface BaseDisplayEntity extends BaseEntity, DateFields {
@@ -56,10 +54,11 @@ export interface EmployeeStats {
 
 // Общие типы для начислений
 export interface AccrualType {
-	org_guid?: string
+	org_guid: string
 	type_guid: string
 	type_name: string
 	ammo_coins_amount?: number
+	date_create: string
 }
 
 // Базовый тип сотрудника

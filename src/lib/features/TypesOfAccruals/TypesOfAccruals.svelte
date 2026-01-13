@@ -1,100 +1,145 @@
 <script lang="ts">
 	import {
-		TypesOfAccrualsDataManager,
-		type CreateTypeOfAccrualData,
-		type UpdateTypeOfAccrualData
-	} from './mocks/typesOfAccrualsData'
-
-	import type { AccrualType } from '$lib/types/shared'
-	import type { TypeOfAccrualFormData } from './types'
-
-	import { typeOfAccrualFormStore } from './store/typeOfAccrualFormStore.svelte'
-
-	import {
 		ActionButton,
 		EmptyState,
+		ErrorMessage,
 		FilterSelect,
 		IconRow,
 		SearchInput,
+		Skeleton,
 		StatCard
 	} from '$lib/components/UI'
-	import TypeOfAccrualForm from './Form/TypeOfAccrualForm.svelte'
+	import type { AccrualType } from '$lib/types/shared'
+	import { accrualTypesApi } from './api/accrualTypesApi'
 	import { TypeOfAccrualListItem } from './components'
+	import TypeOfAccrualForm from './Form/TypeOfAccrualForm.svelte'
+	import { accrualTypesStore } from './store/accrualTypesStore.svelte'
+	import { typeOfAccrualFormStore } from './store/typeOfAccrualFormStore.svelte'
+	import type { TypeOfAccrualFormData } from './types'
+	import { authStore } from '$lib/features/Auth/store/authStore.svelte'
 
 	let searchTerm = $state('')
 	let hasFixedAmount = $state('')
 	let sortOrder = $state('newest')
 
-	let dataVersion = $state(0) // Триггер для обновления
-	let isLoading = $state(false)
+	const isLoading = $derived(accrualTypesStore.getIsLoading())
+	const error = $derived(accrualTypesStore.getError())
+	const types = $derived(accrualTypesStore.types)
 
-	let types = $derived(() => {
-		dataVersion // Зависимость для принудительного обновления
-		return TypesOfAccrualsDataManager.getAll()
-	})
+	let initialized = $state(false)
 
 	$effect(() => {
-		dataVersion = 1 // Принудительно обновляем данные
+		if (!initialized) {
+			initialized = true
+			accrualTypesStore.initialize()
+		}
 	})
 
-	let filteredTypes = $derived(() => {
-		const allTypes = types()
+	const filteredTypes = $derived.by(() => {
+		let filtered: AccrualType[] = [...types]
 
-		const result = TypesOfAccrualsDataManager.search({
-			searchTerm: searchTerm || undefined,
-			hasFixedAmount:
-				hasFixedAmount === 'fixed' ? true : hasFixedAmount === 'variable' ? false : undefined,
-			sortOrder: sortOrder as 'newest' | 'oldest' | 'name_asc' | 'name_desc'
-		})
-
-		return result
-	})
-
-	let stats = $derived(() => {
-		dataVersion // Зависимость для принудительного обновления
-		return TypesOfAccrualsDataManager.getStats()
-	})
-
-	function handleAddType(data: TypeOfAccrualFormData) {
-		console.log('handleAddType', data)
-		const createData: CreateTypeOfAccrualData = {
-			type_name: data.type_name,
-			ammo_coins_amount: data.ammo_coins_amount
+		if (searchTerm) {
+			const searchLower = searchTerm.toLowerCase()
+			filtered = filtered.filter((type) => type.type_name.toLowerCase().includes(searchLower))
 		}
 
-		TypesOfAccrualsDataManager.create(createData)
-		dataVersion++
+		if (hasFixedAmount === 'fixed') {
+			filtered = filtered.filter((type) => (type.ammo_coins_amount ?? 0) > 0)
+		} else if (hasFixedAmount === 'variable') {
+			filtered = filtered.filter((type) => (type.ammo_coins_amount ?? 0) === 0)
+		}
+
+		if (sortOrder === 'newest') {
+			console.log('filtered', filtered[1])
+			filtered.sort((a, b) => {
+				const dateA = a.date_create ? new Date(a.date_create).getTime() : 0
+				const dateB = b.date_create ? new Date(b.date_create).getTime() : 0
+				return dateB - dateA
+			})
+		} else if (sortOrder === 'oldest') {
+			filtered.sort((a, b) => {
+				const dateA = a.date_create ? new Date(a.date_create).getTime() : 0
+				const dateB = b.date_create ? new Date(b.date_create).getTime() : 0
+				return dateA - dateB
+			})
+		} else if (sortOrder === 'name_asc') {
+			filtered.sort((a, b) => a.type_name.localeCompare(b.type_name))
+		} else if (sortOrder === 'name_desc') {
+			filtered.sort((a, b) => b.type_name.localeCompare(a.type_name))
+		}
+
+		return filtered
+	})
+
+	const stats = $derived.by(() => {
+		return {
+			total: types.length,
+			withFixedAmount: types.filter((t) => (t.ammo_coins_amount ?? 0) > 0).length,
+			withVariableAmount: types.filter((t) => (t.ammo_coins_amount ?? 0) === 0).length
+		}
+	})
+
+	async function handleAddType(data: TypeOfAccrualFormData) {
+		try {
+			// Получаем org_guid из текущего пользователя
+			const user = authStore.getUser()
+			if (!user?.org_guid) {
+				throw new Error('Не удалось получить идентификатор организации')
+			}
+
+			// Переменный тип: ammo_coins_amount = 0
+			// Фиксированный тип: ammo_coins_amount > 0
+			const payload = {
+				type_name: data.type_name,
+				ammo_coins_amount: data.ammo_coins_amount === undefined ? 0 : data.ammo_coins_amount,
+				org_guid: user.org_guid,
+				date_create: new Date().toISOString(),
+				date_delete: '',
+				id: crypto.randomUUID()
+			}
+
+			console.log('[TypesOfAccruals] Creating type with payload:', payload)
+
+			await accrualTypesApi.create(payload)
+			// refresh() вызывается в typeOfAccrualFormStore.submitForm()
+		} catch (error) {
+			console.error('Error creating accrual type:', error)
+			throw error
+		}
 	}
 
 	function handleEditType(typeToEdit: AccrualType) {
 		typeOfAccrualFormStore.openForEdit(typeToEdit)
 	}
 
-	function handleUpdateType(data: TypeOfAccrualFormData) {
+	async function handleUpdateType(data: TypeOfAccrualFormData) {
 		const currentType = typeOfAccrualFormStore.getCurrentType()
 
 		if (!currentType) return
 
-		const updateData: UpdateTypeOfAccrualData = {
-			type_guid: currentType.type_guid,
-			type_name: data.type_name,
-			ammo_coins_amount: data.ammo_coins_amount
-		}
+		try {
+			// Переменный тип: ammo_coins_amount = 0
+			// Фиксированный тип: ammo_coins_amount > 0
+			const payload: any = {
+				type_guid: currentType.type_guid,
+				type_name: data.type_name,
+				ammo_coins_amount: data.ammo_coins_amount === undefined ? 0 : data.ammo_coins_amount
+			}
 
-		const result = TypesOfAccrualsDataManager.update(updateData)
-
-		if (result) {
-			dataVersion++
+			await accrualTypesApi.update(payload)
+			// refresh() вызывается в typeOfAccrualFormStore.submitForm()
+		} catch (error) {
+			console.error('Error updating accrual type:', error)
+			throw error
 		}
 	}
 
-	function handleDeleteType(typeGuid: string) {
-		const success = TypesOfAccrualsDataManager.delete(typeGuid)
-
-		if (success) {
-			dataVersion++
-		} else {
-			console.error('Failed to delete type: not found')
+	async function handleDeleteType(typeGuid: string) {
+		try {
+			await accrualTypesApi.deleteType(typeGuid)
+			accrualTypesStore.refresh()
+		} catch (error) {
+			console.error('Error deleting type:', error)
 		}
 	}
 
@@ -106,41 +151,57 @@
 		sortOrder = value
 	}
 
-	function handleFormSubmit(data: TypeOfAccrualFormData) {
+	async function handleFormSubmit(data: TypeOfAccrualFormData) {
 		const currentType = typeOfAccrualFormStore.getCurrentType()
 
 		if (currentType) {
-			handleUpdateType(data)
+			await handleUpdateType(data)
 		} else {
-			handleAddType(data)
+			await handleAddType(data)
 		}
 	}
 </script>
 
 <div class="space-y-6">
-	<div class="grid grid-cols-2 gap-4 lg:grid-cols-3">
-		<StatCard
-			title="Всего типов"
-			value={String(stats().total)}
-			subtitle="Типов начислений"
-			icon="award"
-			color="blue"
+	{#if error}
+		<ErrorMessage
+			message={error}
+			onRetry={() => accrualTypesStore.refresh()}
+			onDismiss={() => accrualTypesStore.clearError()}
 		/>
-		<StatCard
-			title="С фиксированной суммой"
-			value={String(stats().withFixedAmount)}
-			subtitle="АК автоматически"
-			icon="coins"
-			color="green"
-		/>
-		<StatCard
-			title="С переменной суммой"
-			value={String(stats().withVariableAmount)}
-			subtitle="Сумма вручную"
-			icon="chart"
-			color="gray"
-		/>
-	</div>
+	{/if}
+
+	{#if isLoading}
+		<div class="grid grid-cols-2 gap-4 lg:grid-cols-3">
+			<Skeleton type="stat-card" />
+			<Skeleton type="stat-card" />
+			<Skeleton type="stat-card" />
+		</div>
+	{:else}
+		<div class="grid grid-cols-2 gap-4 lg:grid-cols-3">
+			<StatCard
+				title="Всего типов"
+				value={String(stats.total)}
+				subtitle="Типов начислений"
+				icon="award"
+				color="blue"
+			/>
+			<StatCard
+				title="С фиксированной суммой"
+				value={String(stats.withFixedAmount)}
+				subtitle="АК автоматически"
+				icon="coins"
+				color="green"
+			/>
+			<StatCard
+				title="С переменной суммой"
+				value={String(stats.withVariableAmount)}
+				subtitle="Сумма вручную"
+				icon="chart"
+				color="gray"
+			/>
+		</div>
+	{/if}
 
 	<div class="rounded-lg border border-gray-200 bg-white shadow-sm">
 		<div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
@@ -167,7 +228,7 @@
 				<div class="lg:col-span-2">
 					<SearchInput
 						value={searchTerm}
-						placeholder="Поиск по названию или ID типа"
+						placeholder="Поиск по названию"
 						bgColor="bg-white"
 						borderColor="border-gray-300"
 						rounded="rounded-lg"
@@ -198,27 +259,39 @@
 			</div>
 
 			<div class="mt-4 text-sm text-gray-600">
-				Всего: <span class="font-semibold">{filteredTypes().length} типов</span>
+				Всего: <span class="font-semibold">{filteredTypes.length} типов</span>
 			</div>
 		</div>
 	</div>
 
-	<div class="space-y-3">
-		{#each filteredTypes() as typeOfAccrual}
-			<TypeOfAccrualListItem {typeOfAccrual} onEdit={handleEditType} onDelete={handleDeleteType} />
-		{/each}
+	{#if isLoading}
+		<div class="space-y-3">
+			<Skeleton type="list-item" />
+			<Skeleton type="list-item" />
+			<Skeleton type="list-item" />
+		</div>
+	{:else}
+		<div class="space-y-3">
+			{#each filteredTypes as typeOfAccrual}
+				<TypeOfAccrualListItem
+					{typeOfAccrual}
+					onEdit={handleEditType}
+					onDelete={handleDeleteType}
+				/>
+			{/each}
 
-		{#if filteredTypes().length === 0}
-			<EmptyState
-				showButton={true}
-				buttonText="Добавить тип"
-				buttonAction={() => typeOfAccrualFormStore.openForCreate()}
-				title="Нет типов начислений"
-				description="Начните с добавления первого типа начисления"
-				disabled={isLoading}
-			/>
-		{/if}
-	</div>
+			{#if filteredTypes.length === 0}
+				<EmptyState
+					showButton={true}
+					buttonText="Добавить тип"
+					buttonAction={() => typeOfAccrualFormStore.openForCreate()}
+					title="Нет типов начислений"
+					description="Начните с добавления первого типа начисления"
+					disabled={isLoading}
+				/>
+			{/if}
+		</div>
+	{/if}
 </div>
 
 <TypeOfAccrualForm onSubmit={handleFormSubmit} />
