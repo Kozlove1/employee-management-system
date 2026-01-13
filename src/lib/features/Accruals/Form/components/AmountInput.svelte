@@ -13,7 +13,7 @@
 		onValueChange?: (value: number) => void
 	}
 
-	let {
+	const {
 		value,
 		selectedType = null,
 		required = false,
@@ -24,11 +24,11 @@
 		onValueChange
 	}: Props = $props()
 
-	let hasFixedAmmoCoins = $derived(selectedType?.ammo_coins_amount !== undefined)
+	const hasFixedAmmoCoins = $derived((selectedType?.ammo_coins_amount ?? 0) > 0)
 
-	let hint = $derived(hasFixedAmmoCoins ? '(автоматически проставлено)' : undefined)
+	const hint = $derived(hasFixedAmmoCoins ? '(автоматически проставлено)' : undefined)
 
-	let additionalInfo = $derived(
+	const additionalInfo = $derived(
 		hasFixedAmmoCoins && selectedType
 			? `Этот тип начисления имеет фиксированное количество АК: ${selectedType.ammo_coins_amount}`
 			: undefined

@@ -10,7 +10,7 @@
 		onValueChange?: (value: string) => void
 	}
 
-	let {
+	const {
 		value,
 		required = false,
 		disabled = false,
@@ -19,10 +19,30 @@
 		onValueChange
 	}: Props = $props()
 
+	// Convert ISO string to datetime-local format (YYYY-MM-DDTHH:mm)
+	const localValue = $derived.by(() => {
+		if (!value) return ''
+		try {
+			const date = new Date(value)
+			const year = date.getFullYear()
+			const month = String(date.getMonth() + 1).padStart(2, '0')
+			const day = String(date.getDate()).padStart(2, '0')
+			const hours = String(date.getHours()).padStart(2, '0')
+			const minutes = String(date.getMinutes()).padStart(2, '0')
+			return `${year}-${month}-${day}T${hours}:${minutes}`
+		} catch (error) {
+			console.error('DateTimeInput: Error converting date', error)
+			return value
+		}
+	})
+
 	function handleInput(event: Event) {
 		const target = event.target as HTMLInputElement
-		if (onValueChange) {
-			onValueChange(target.value)
+
+		if (onValueChange && target.value) {
+			// Convert datetime-local format to ISO string
+			const date = new Date(target.value)
+			onValueChange(date.toISOString())
 		}
 	}
 </script>
@@ -33,7 +53,7 @@
 			<input
 				id="datetime-input"
 				type="datetime-local"
-				{value}
+				value={localValue}
 				{required}
 				{disabled}
 				oninput={handleInput}

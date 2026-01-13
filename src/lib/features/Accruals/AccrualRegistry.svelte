@@ -7,7 +7,8 @@
 		SearchInput,
 		Skeleton
 	} from '$lib/components/UI'
-	import { mockEmployees } from '$lib/features/Employees/mocks/employeesMockData'
+	import { authStore } from '$lib/features/Auth'
+	import { employeeStore } from '$lib/features/Employees/store/employeeStore.svelte'
 	import { accrualTypesStore } from '$lib/features/TypesOfAccruals/store/accrualTypesStore.svelte'
 	import { AccrualListItem, StatisticsCards } from './components'
 	import AccrualForm from './Form/AccrualForm.svelte'
@@ -16,33 +17,40 @@
 	import type { AccrualFormData, AccrualWithDetails } from './types'
 
 	// Reactive variables using $derived with store getters
-	let isLoading = $derived(accrualStore.getIsLoading())
-	let error = $derived(accrualStore.getError())
-	let accruals = $derived(accrualStore.getAccruals())
-	let filteredAccruals = $derived(accrualStore.filteredAccruals)
-	let searchTerm = $derived(accrualStore.getSearchTerm())
-	let selectedEmployee = $derived(accrualStore.getSelectedEmployee())
-	let selectedType = $derived(accrualStore.getSelectedType())
-	let sortOrder = $derived(accrualStore.getSortOrder())
-	let uniqueEmployees = $derived(accrualStore.uniqueEmployees)
-	let uniqueTypes = $derived(accrualStore.uniqueTypes)
-	let stats = $derived(accrualStore.stats)
+	const isLoading = $derived(accrualStore.getIsLoading())
+	const error = $derived(accrualStore.getError())
+	const filteredAccruals = $derived(accrualStore.filteredAccruals)
+	const searchTerm = $derived(accrualStore.getSearchTerm())
+	const selectedEmployee = $derived(accrualStore.getSelectedEmployee())
+	const selectedType = $derived(accrualStore.getSelectedType())
+	const sortOrder = $derived(accrualStore.getSortOrder())
+	const uniqueEmployees = $derived(accrualStore.uniqueEmployees)
+	const uniqueTypes = $derived(accrualStore.uniqueTypes)
+	const stats = $derived(accrualStore.stats)
 
-	let totalEmployees = $derived(() => mockEmployees.length)
-	let totalAccrualTypes = $derived(() => accrualTypesStore.types.length)
+	const apiEmployees = $derived(employeeStore.getApiEmployees())
+	const totalEmployees = $derived(apiEmployees.filter((employee) => !employee.date_delete).length)
+	const totalAccrualTypes = $derived(accrualTypesStore.types.length)
 
 	let statisticsValues = $derived(() => {
 		return {
-			totalEmployees: totalEmployees(),
+			totalEmployees: totalEmployees,
 			monthlyAccruals: stats.monthlyCount,
-			totalAccrualTypes: totalAccrualTypes(),
+			totalAccrualTypes: totalAccrualTypes,
 			totalAmount: stats.monthlyAmount
 		}
 	})
 
-	// Initialize store on component mount
+	// Check authentication before initializing
+	const isAuthenticated = $derived(authStore.isAuthenticated);
+	let hasInitialized = $state(false);
+
+	// Initialize store on component mount only if authenticated and not yet initialized
 	$effect(() => {
-		accrualStore.initialize()
+		if (isAuthenticated && !hasInitialized && !isLoading && !error) {
+			hasInitialized = true;
+			accrualStore.initialize();
+		}
 	})
 
 	async function handleAddAccrual(data: AccrualFormData) {
@@ -61,7 +69,7 @@
 			return
 		}
 
-		await accrualStore.updateAccrual(currentAccrual.post_guid, data)
+		await accrualStore.updateAccrual(currentAccrual.accrual_guid, data)
 	}
 
 	async function handleDeleteAccrual(accrualGuid: string) {
@@ -73,9 +81,9 @@
 		}
 	}
 
-	function resetFilters() {
-		accrualStore.resetFilters()
-	}
+	// function resetFilters() {
+	// 	accrualStore.resetFilters()
+	// }
 
 	function handleSearchChange(value: string) {
 		accrualStore.setSearchTerm(value)
@@ -164,6 +172,7 @@
 								label: employee.employee_name
 							}))
 						]}
+						dropdownWidth="min-w-80"
 						onChange={handleEmployeeChange}
 					/>
 

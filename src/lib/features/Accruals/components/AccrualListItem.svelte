@@ -8,7 +8,7 @@
 		onDelete: (guid: string) => void
 	}
 
-	let { accrual, onEdit, onDelete }: Props = $props()
+	const { accrual, onEdit, onDelete }: Props = $props()
 
 	function formatDate(dateString: string): string {
 		const date = new Date(dateString)
@@ -30,16 +30,24 @@
 <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
 	<div class="flex items-center justify-between">
 		<div class="flex items-center space-x-4">
-			<div class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200">
-				<span class="text-sm font-medium text-gray-600">
-					{accrual.employee_name?.charAt(0) || '?'}
+			<div class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-500">
+				<span class="text-sm font-medium text-white">
+					{#if accrual.employee_name}
+						{accrual.employee_name
+							.split(' ')
+							.map((word) => word.charAt(0))
+							.slice(0, 2)
+							.join('')}
+					{:else}
+						?
+					{/if}
 				</span>
 			</div>
 			<div class="flex-1">
 				<h3 class="text-sm font-medium text-gray-900">
-					{accrual.employee_name}
+					{accrual.employee_name || 'Сотрудник не указан'}
 				</h3>
-				<p class="text-sm text-gray-500">{accrual.type_name}</p>
+				<p class="text-sm text-gray-500">{accrual.type_name || 'Тип не указан'}</p>
 				<div class="mt-1 flex items-center text-xs text-gray-400">
 					<svg class="mr-1 h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 						<path
@@ -49,7 +57,7 @@
 							d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
 						/>
 					</svg>
-					{accrual.date_create ? formatDate(accrual.date_create) : 'Дата не указана'}
+					{accrual.date ? formatDate(accrual.date) : 'Дата не указана'}
 				</div>
 			</div>
 		</div>
@@ -70,7 +78,7 @@
 					<SquarePen class="h-4 w-4" />
 				</button>
 				<button
-					onclick={() => onDelete(accrual.post_guid)}
+					onclick={() => onDelete(accrual.accrual_guid || accrual.post_guid)}
 					class="text-gray-400 hover:text-red-600"
 					title="Удалить"
 					aria-label="Удалить начисление"

@@ -8,7 +8,7 @@
 		error?: string
 	}
 
-	let { value, onValueChange, required = false, error }: Props = $props()
+	const { value, onValueChange, required = false, error }: Props = $props()
 
 	let hasFixedAmount = $state(value !== undefined)
 
@@ -31,7 +31,8 @@
 
 	// Синхронизируем состояние checkbox с value
 	$effect(() => {
-		hasFixedAmount = value !== undefined
+		const newHasFixedAmount = value !== undefined
+		hasFixedAmount = newHasFixedAmount
 	})
 </script>
 

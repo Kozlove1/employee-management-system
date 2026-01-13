@@ -8,18 +8,18 @@
 		onDelete: (guid: string) => void
 	}
 
-	let { typeOfAccrual, onEdit, onDelete } = $props()
+	let { typeOfAccrual, onEdit, onDelete }: Props = $props()
 
 	function getAmountDisplay(): string {
-		if (typeOfAccrual.ammo_coins_amount !== undefined) {
+		if (typeOfAccrual.ammo_coins_amount  && typeOfAccrual.ammo_coins_amount > 0) {
 			return `${typeOfAccrual.ammo_coins_amount} АК (фиксированная)`
 		} else {
-			return `0 АК (переменная)`
+			return `Переменная`
 		}
 	}
 
 	function getAmountType(): 'fixed' | 'variable' {
-		return typeOfAccrual.ammo_coins_amount !== undefined ? 'fixed' : 'variable'
+		return typeOfAccrual.ammo_coins_amount  && typeOfAccrual.ammo_coins_amount > 0 ? 'fixed' : 'variable'
 	}
 </script>
 
