@@ -1,4 +1,5 @@
 import type { AccrualType } from "$lib/types/shared";
+import type { AccrualTypeFromApi } from "../api/types";
 import { accrualTypesApi } from "../api/accrualTypesApi";
 
 class AccrualTypesStore {
@@ -36,7 +37,11 @@ class AccrualTypesStore {
 			const response = await accrualTypesApi.getAll();
 
 			if (response.status === "success") {
-				this.accrualTypes = response.data 
+				// API возвращает AccrualTypeFromApi[] (с полем id), маппим в AccrualType (с type_guid)
+				this.accrualTypes = response.data.map((type: AccrualTypeFromApi): AccrualType => ({
+					...type,
+					type_guid: type.id,
+				}));
 			} else {
 				this.setError(response.message || "Ошибка загрузки типов начислений");
 			}

@@ -14,6 +14,9 @@ class AuthStore {
 	constructor() {
 		// Register token provider with API client
 		apiClient.setTokenProvider(() => this.accessToken);
+		// Register refresh and logout handlers
+		apiClient.setRefreshHandler(() => this.refreshToken());
+		apiClient.setLogoutHandler(() => this.logout());
 
 		// Restore auth state from localStorage immediately on initialization
 		if (typeof window !== "undefined") {
@@ -176,11 +179,18 @@ class AuthStore {
 
 			if (response.status === "success") {
 				this.setAccessToken(response.data.token);
+				if (typeof window !== "undefined") {
+					localStorage.setItem("accessToken", response.data.token);
+				}
 				return true;
 			}
 		} catch {
 			// Refresh failed, clear auth
 			this.clearAuth();
+			if (typeof window !== "undefined") {
+				localStorage.removeItem("user");
+				localStorage.removeItem("accessToken");
+			}
 		}
 
 		return false;

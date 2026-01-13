@@ -18,17 +18,13 @@ class AuthApiService {
 	}
 
 	async logout(): Promise<ApiResponse<void>> {
-		return apiClient.post<void>(API_ENDPOINTS.AUTH.LOGOUT);
+		return apiClient.get<void>(API_ENDPOINTS.AUTH.LOGOUT);
 	}
 
 	async refreshToken(): Promise<ApiResponse<{ token: string }>> {
-		return apiClient.post<{ token: string }>(
-			API_ENDPOINTS.AUTH.REFRESH,
-			undefined,
-			{
-				skipAuth: true,
-			},
-		);
+		return apiClient.get<{ token: string }>(API_ENDPOINTS.AUTH.REFRESH, {
+			skipAuth: true,
+		});
 	}
 
 	async getCurrentUser(): Promise<ApiResponse<LoginResponse["user"]>> {

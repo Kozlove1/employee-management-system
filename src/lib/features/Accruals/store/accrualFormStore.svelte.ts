@@ -91,12 +91,23 @@ class AccrualFormStore {
 
 		// Сравниваем редактируемые поля с исходными значениями
 		const original = this.currentAccrual;
+
+		// Нормализуем даты к ISO для сравнения
+		const normalizeDate = (date: string | undefined | null): string => {
+			if (!date) return "";
+			try {
+				return new Date(date).toISOString();
+			} catch {
+				return date;
+			}
+		};
+
 		return (
-			this.formData.employee_guid !== original.employee_guid ||
-			this.formData.type_guid !== original.type_guid ||
-			this.formData.amount !== original.amount ||
-			this.formData.date !== original.date ||
-			this.formData.comment !== original.comment
+			this.formData.employee_guid !== (original.employee_guid || "") ||
+			this.formData.type_guid !== (original.type_guid || "") ||
+			(this.formData.amount ?? 0) !== (original.amount ?? 0) ||
+			normalizeDate(this.formData.date) !== normalizeDate(original.date) ||
+			(this.formData.comment ?? "") !== (original.comment ?? "")
 		);
 	});
 
