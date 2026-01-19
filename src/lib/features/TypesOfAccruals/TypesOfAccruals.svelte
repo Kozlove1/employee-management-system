@@ -3,12 +3,14 @@
 		ActionButton,
 		EmptyState,
 		ErrorMessage,
-		FilterSelect,
 		IconRow,
-		SearchInput,
+		PaginationButton,
+		RefreshButton,
+		SearchFiltersPanel,
 		Skeleton,
 		StatCard
 	} from '$lib/components/UI'
+	import { authStore } from '$lib/features/Auth/store/authStore.svelte'
 	import type { AccrualType } from '$lib/types/shared'
 	import { accrualTypesApi } from './api/accrualTypesApi'
 	import { TypeOfAccrualListItem } from './components'
@@ -16,59 +18,29 @@
 	import { accrualTypesStore } from './store/accrualTypesStore.svelte'
 	import { typeOfAccrualFormStore } from './store/typeOfAccrualFormStore.svelte'
 	import type { TypeOfAccrualFormData } from './types'
-	import { authStore } from '$lib/features/Auth/store/authStore.svelte'
-
-	let searchTerm = $state('')
-	let hasFixedAmount = $state('')
-	let sortOrder = $state('newest')
 
 	const isLoading = $derived(accrualTypesStore.getIsLoading())
 	const error = $derived(accrualTypesStore.getError())
 	const types = $derived(accrualTypesStore.types)
-
-	let initialized = $state(false)
+	const totalCount = $derived(accrualTypesStore.getTotalCount())
+	const currentPage = $derived(accrualTypesStore.getCurrentPage())
+	const totalPages = $derived(accrualTypesStore.totalPages)
+	const itemsPerPage = $derived(accrualTypesStore.getItemsPerPage())
+	const searchTerm = $derived(accrualTypesStore.getSearchTerm())
+	const sortOrder = $derived(accrualTypesStore.getSortOrder() === 'desc' ? 'newest' : 'oldest')
 
 	$effect(() => {
-		if (!initialized) {
-			initialized = true
+		if (types.length === 0 && !isLoading && !error) {
 			accrualTypesStore.initialize()
 		}
 	})
 
 	const filteredTypes = $derived.by(() => {
-		let filtered: AccrualType[] = [...types]
-
-		if (searchTerm) {
-			const searchLower = searchTerm.toLowerCase()
-			filtered = filtered.filter((type) => type.type_name.toLowerCase().includes(searchLower))
+		const hasFixed = accrualTypesStore.getHasFixedAmount()
+		if (hasFixed === 'fixed') {
+			return types.filter((type) => (type.ammo_coins_amount ?? 0) > 0)
 		}
-
-		if (hasFixedAmount === 'fixed') {
-			filtered = filtered.filter((type) => (type.ammo_coins_amount ?? 0) > 0)
-		} else if (hasFixedAmount === 'variable') {
-			filtered = filtered.filter((type) => (type.ammo_coins_amount ?? 0) === 0)
-		}
-
-		if (sortOrder === 'newest') {
-			console.log('filtered', filtered[1])
-			filtered.sort((a, b) => {
-				const dateA = a.date_create ? new Date(a.date_create).getTime() : 0
-				const dateB = b.date_create ? new Date(b.date_create).getTime() : 0
-				return dateB - dateA
-			})
-		} else if (sortOrder === 'oldest') {
-			filtered.sort((a, b) => {
-				const dateA = a.date_create ? new Date(a.date_create).getTime() : 0
-				const dateB = b.date_create ? new Date(b.date_create).getTime() : 0
-				return dateA - dateB
-			})
-		} else if (sortOrder === 'name_asc') {
-			filtered.sort((a, b) => a.type_name.localeCompare(b.type_name))
-		} else if (sortOrder === 'name_desc') {
-			filtered.sort((a, b) => b.type_name.localeCompare(a.type_name))
-		}
-
-		return filtered
+		return types
 	})
 
 	const stats = $derived.by(() => {
@@ -80,32 +52,19 @@
 	})
 
 	async function handleAddType(data: TypeOfAccrualFormData) {
-		try {
-			// Получаем org_guid из текущего пользователя
-			const user = authStore.getUser()
-			if (!user?.org_guid) {
-				throw new Error('Не удалось получить идентификатор организации')
-			}
-
-			// Переменный тип: ammo_coins_amount = 0
-			// Фиксированный тип: ammo_coins_amount > 0
-			const payload = {
-				type_name: data.type_name,
-				ammo_coins_amount: data.ammo_coins_amount === undefined ? 0 : data.ammo_coins_amount,
-				org_guid: user.org_guid,
-				date_create: new Date().toISOString(),
-				date_delete: '',
-				id: crypto.randomUUID()
-			}
-
-			console.log('[TypesOfAccruals] Creating type with payload:', payload)
-
-			await accrualTypesApi.create(payload)
-			// refresh() вызывается в typeOfAccrualFormStore.submitForm()
-		} catch (error) {
-			console.error('Error creating accrual type:', error)
-			throw error
+		const user = authStore.getUser()
+		if (!user?.org_guid) {
+			throw new Error('Не удалось получить идентификатор организации')
 		}
+
+		const payload = {
+			type_name: data.type_name,
+			ammo_coins_amount: data.ammo_coins_amount ?? 0,
+			org_guid: user.org_guid,
+			date_create: new Date().toISOString()
+		}
+
+		await accrualTypesApi.create(payload)
 	}
 
 	function handleEditType(typeToEdit: AccrualType) {
@@ -114,46 +73,23 @@
 
 	async function handleUpdateType(data: TypeOfAccrualFormData) {
 		const currentType = typeOfAccrualFormStore.getCurrentType()
-
 		if (!currentType) return
 
-		try {
-			// Переменный тип: ammo_coins_amount = 0
-			// Фиксированный тип: ammo_coins_amount > 0
-			const payload: any = {
-				type_guid: currentType.type_guid,
-				type_name: data.type_name,
-				ammo_coins_amount: data.ammo_coins_amount === undefined ? 0 : data.ammo_coins_amount
-			}
-
-			await accrualTypesApi.update(payload)
-			// refresh() вызывается в typeOfAccrualFormStore.submitForm()
-		} catch (error) {
-			console.error('Error updating accrual type:', error)
-			throw error
+		const payload = {
+			type_name: data.type_name,
+			ammo_coins_amount: data.ammo_coins_amount ?? 0
 		}
+
+		await accrualTypesApi.update(currentType.type_guid, payload)
 	}
 
 	async function handleDeleteType(typeGuid: string) {
-		try {
-			await accrualTypesApi.deleteType(typeGuid)
-			accrualTypesStore.refresh()
-		} catch (error) {
-			console.error('Error deleting type:', error)
-		}
-	}
-
-	function handleFixedAmountChange(value: string) {
-		hasFixedAmount = value
-	}
-
-	function handleSortOrderChange(value: string) {
-		sortOrder = value
+		await accrualTypesApi.deleteType(typeGuid)
+		accrualTypesStore.refresh()
 	}
 
 	async function handleFormSubmit(data: TypeOfAccrualFormData) {
 		const currentType = typeOfAccrualFormStore.getCurrentType()
-
 		if (currentType) {
 			await handleUpdateType(data)
 		} else {
@@ -214,52 +150,80 @@
 				iconColor="blue"
 			/>
 			<ActionButton
-				onClick={() => {
-					typeOfAccrualFormStore.openForCreate()
-				}}
+				onClick={() => typeOfAccrualFormStore.openForCreate()}
 				disabled={isLoading}
 				text="Добавить тип"
 			/>
 		</div>
 
 		<div class="p-6">
-			<div class="grid grid-cols-1 gap-4 lg:grid-cols-4">
-				<!-- Поисковая строка -->
-				<div class="lg:col-span-2">
-					<SearchInput
-						value={searchTerm}
-						placeholder="Поиск по названию"
-						bgColor="bg-white"
-						borderColor="border-gray-300"
-						rounded="rounded-lg"
-						onChange={(value: string) => (searchTerm = value)}
-					/>
+			<SearchFiltersPanel
+				searchValue={searchTerm}
+				searchPlaceholder="Поиск по названию"
+				disabled={isLoading}
+				resetDisabled={isLoading}
+				onSearch={(value) => {
+					accrualTypesStore.setSearchTerm(value)
+					accrualTypesStore.fetchTypes()
+				}}
+				onReset={() => {
+					accrualTypesStore.setSearchTerm('')
+					accrualTypesStore.setHasFixedAmount('')
+					accrualTypesStore.setSort('date_create', 'desc')
+					accrualTypesStore.fetchTypes()
+				}}
+				showCustomTypeFilter={true}
+				customTypeValue={accrualTypesStore.getHasFixedAmount()}
+				customTypeOptions={[
+					{ value: '', label: 'Все типы' },
+					{ value: 'fixed', label: 'Фиксированная сумма' },
+					{ value: 'variable', label: 'Переменная сумма' }
+				]}
+				onCustomTypeChange={(value) => {
+					accrualTypesStore.setHasFixedAmount(value)
+					accrualTypesStore.fetchTypes()
+				}}
+				showSortFilter={true}
+				sortValue={sortOrder}
+				sortOptions={[
+					{ value: 'newest', label: 'От новых к старым' },
+					{ value: 'oldest', label: 'От старых к новым' }
+				]}
+				onSortChange={(value) => {
+					const order = value === 'newest' ? 'desc' : 'asc'
+					accrualTypesStore.setSort('date_create', order)
+					accrualTypesStore.fetchTypes()
+				}}
+				showItemsPerPage={true}
+				itemsPerPageValue={itemsPerPage}
+				itemsPerPageOptions={[
+					{ value: '25', label: '25 на странице' },
+					{ value: '50', label: '50 на странице' },
+					{ value: '100', label: '100 на странице' }
+				]}
+				onItemsPerPageChange={(value) => accrualTypesStore.setItemsPerPage(value)}
+				customFilters={true}
+			>
+				<RefreshButton onClick={() => accrualTypesStore.refresh()} {isLoading} variant="info" />
+			</SearchFiltersPanel>
+			
+			<div class="mt-4">
+				<div class="flex flex-col items-center justify-between sm:flex-row">
+					<div class="mb-2 flex flex-row gap-2 text-sm text-neutral-500 sm:mb-0">
+						<div>Найдено {totalCount} типов</div>
+						<div class="text-neutral-500">•</div>
+						<div>Показано {filteredTypes.length} на странице {currentPage} из {totalPages}</div>
+					</div>
+
+					{#if totalPages > 1}
+						<PaginationButton
+							{currentPage}
+							{totalPages}
+							onPrevPage={() => accrualTypesStore.prevPage()}
+							onNextPage={() => accrualTypesStore.nextPage()}
+						/>
+					{/if}
 				</div>
-
-				<FilterSelect
-					value={hasFixedAmount}
-					options={[
-						{ value: '', label: 'Все типы' },
-						{ value: 'fixed', label: 'Фиксированная сумма' },
-						{ value: 'variable', label: 'Переменная сумма' }
-					]}
-					onChange={handleFixedAmountChange}
-				/>
-
-				<FilterSelect
-					value={sortOrder}
-					options={[
-						{ value: 'newest', label: 'От новых к старым' },
-						{ value: 'oldest', label: 'От старых к новым' },
-						{ value: 'name_asc', label: 'По названию А-Я' },
-						{ value: 'name_desc', label: 'По названию Я-А' }
-					]}
-					onChange={handleSortOrderChange}
-				/>
-			</div>
-
-			<div class="mt-4 text-sm text-gray-600">
-				Всего: <span class="font-semibold">{filteredTypes.length} типов</span>
 			</div>
 		</div>
 	</div>
@@ -290,6 +254,17 @@
 					disabled={isLoading}
 				/>
 			{/if}
+		</div>
+	{/if}
+
+	{#if totalPages > 1}
+		<div class="mt-8">
+			<PaginationButton
+				{currentPage}
+				{totalPages}
+				onPrevPage={() => accrualTypesStore.prevPage()}
+				onNextPage={() => accrualTypesStore.nextPage()}
+			/>
 		</div>
 	{/if}
 </div>

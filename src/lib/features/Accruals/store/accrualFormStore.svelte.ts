@@ -1,6 +1,7 @@
 import { employeeStore } from "$lib/features/Employees/store/employeeStore.svelte";
 import { accrualTypesStore } from "$lib/features/TypesOfAccruals/store/accrualTypesStore.svelte";
 import type { AccrualType } from "$lib/types/shared";
+import type { EmployeeWithDetails } from "$lib/types/shared";
 import { getLocalDateTime } from "$lib/utils/dateUtils";
 import type { AccrualFormData, AccrualWithDetails } from "../types";
 
@@ -11,6 +12,7 @@ interface FormErrors {
 	amount?: string;
 	date?: string;
 	comment?: string;
+	general?: string;
 }
 
 class AccrualFormStore {
@@ -56,43 +58,34 @@ class AccrualFormStore {
 	});
 
 	isFormValid = $derived.by((): boolean => {
-		// type_guid обязателен
-		if (!this.formData.type_guid || this.formData.type_guid === "") {
+		if (!this.formData.type_guid) {
 			return false;
 		}
 
 		const selectedType = this.selectedType;
-
-		// Если тип не найден, форма невалидна
 		if (!selectedType) {
 			return false;
 		}
 
-		// Для фиксированного типа (ammo_coins_amount > 0) сумма автоматическая
-		// Для переменного типа (ammo_coins_amount === 0) сумма должна быть > 0
 		const hasValidAmount =
 			selectedType.ammo_coins_amount && selectedType.ammo_coins_amount > 0
-				? true // Фиксированный тип - сумма проставится автоматически
-				: this.formData.amount > 0; // Переменный тип - пользователь должен ввести сумму > 0
+				? true
+				: this.formData.amount > 0;
 
-		const isValid =
+		return (
 			this.formData.employee_guid !== "" &&
 			this.formData.type_guid !== "" &&
 			hasValidAmount &&
-			this.formData.date !== "";
-		return isValid;
+			this.formData.date !== ""
+		);
 	});
 
 	hasChanges = $derived.by((): boolean => {
-		// Если это создание нового начисления, изменения всегда есть
 		if (!this.currentAccrual) {
 			return true;
 		}
 
-		// Сравниваем редактируемые поля с исходными значениями
 		const original = this.currentAccrual;
-
-		// Нормализуем даты к ISO для сравнения
 		const normalizeDate = (date: string | undefined | null): string => {
 			if (!date) return "";
 			try {
@@ -123,23 +116,60 @@ class AccrualFormStore {
 
 	updateAmountFromType(): void {
 		if (this.selectedType?.ammo_coins_amount) {
-			// Фиксированный тип (ammo_coins_amount > 0) - автоматически проставляем с‰умму
 			if (this.selectedType.ammo_coins_amount > 0) {
 				this.formData.amount = this.selectedType.ammo_coins_amount;
-			}
-			// Переменный тип (ammo_coins_amount === 0) - сбрасываем сумму, если это новое начисление
-			else if (!this.currentAccrual) {
+			} else if (!this.currentAccrual) {
 				this.formData.amount = 0;
 			}
+		}
+	}
+
+	private findEmployee(employeeGuid: string): EmployeeWithDetails | undefined {
+		const lookupEmployees = employeeStore.getLookupEmployees();
+		const apiEmployees = employeeStore.getApiEmployees();
+		return (
+			lookupEmployees.find((emp) => emp.employee_guid === employeeGuid) ||
+			apiEmployees.find((emp) => emp.employee_guid === employeeGuid)
+		);
+	}
+
+	private fillEmployeeFields(employee: EmployeeWithDetails): void {
+		if (employee.org_guid) {
+			this.formData.org_guid = employee.org_guid;
+		}
+		if (employee.department_guid) {
+			this.formData.department_guid = employee.department_guid;
+		}
+		if (employee.post_guid) {
+			this.formData.post_guid = employee.post_guid;
+		}
+		if (employee.date_create) {
+			this.formData.date_create = employee.date_create;
+		}
+		if (employee.date_delete) {
+			this.formData.date_delete = employee.date_delete;
 		}
 	}
 
 	openForCreate(prefilledData?: Partial<AccrualFormData>): void {
 		this.currentAccrual = null;
 		this.resetForm();
+		
 		if (prefilledData) {
 			this.formData = { ...this.formData, ...prefilledData };
+			
+			if (prefilledData.employee_guid) {
+				const employee = this.findEmployee(prefilledData.employee_guid);
+				if (employee) {
+					if (!this.formData.org_guid) this.formData.org_guid = employee.org_guid || "";
+					if (!this.formData.department_guid) this.formData.department_guid = employee.department_guid || "";
+					if (!this.formData.post_guid) this.formData.post_guid = employee.post_guid || "";
+					if (!this.formData.date_create) this.formData.date_create = employee.date_create || "";
+					if (!this.formData.date_delete) this.formData.date_delete = employee.date_delete || "";
+				}
+			}
 		}
+		
 		this.isOpen = true;
 		this.clearErrors();
 	}
@@ -152,11 +182,11 @@ class AccrualFormStore {
 			amount: accrual.amount || 0,
 			date: accrual.date || getLocalDateTime(),
 			comment: accrual.comment || "",
-			org_guid: accrual.org_guid,
-			department_guid: accrual.department_guid,
-			post_guid: accrual.post_guid,
-			date_create: accrual.date_create,
-			date_delete: accrual.date_delete,
+			org_guid: accrual.org_guid || "",
+			department_guid: accrual.department_guid || "",
+			post_guid: accrual.post_guid || "",
+			date_create: accrual.date_create || "",
+			date_delete: accrual.date_delete || "",
 		};
 		this.isOpen = true;
 		this.clearErrors();
@@ -183,32 +213,11 @@ class AccrualFormStore {
 		this.updateField("employee_guid", employeeGuid);
 
 		if (employeeGuid) {
-			// Получаем данные сотрудника из employeeStore
-			const employees = employeeStore.getApiEmployees();
-			const selectedEmployee = employees.find(
-				(emp) => emp.employee_guid === employeeGuid,
-			);
-
-			if (selectedEmployee) {
-				// Автоматически заполняем связанные поля из данных сотрудника
-				if (selectedEmployee.org_guid) {
-					this.updateField("org_guid", selectedEmployee.org_guid);
-				}
-				if (selectedEmployee.department_guid) {
-					this.updateField("department_guid", selectedEmployee.department_guid);
-				}
-				if (selectedEmployee.post_guid) {
-					this.updateField("post_guid", selectedEmployee.post_guid);
-				}
-				if (selectedEmployee.date_create) {
-					this.updateField("date_create", selectedEmployee.date_create);
-				}
-				if (selectedEmployee.date_delete) {
-					this.updateField("date_delete", selectedEmployee.date_delete);
-				}
+			const employee = this.findEmployee(employeeGuid);
+			if (employee) {
+				this.fillEmployeeFields(employee);
 			}
 		} else {
-			// Очищаем поля при сбросе выбора
 			this.updateField("org_guid", "");
 			this.updateField("department_guid", "");
 			this.updateField("post_guid", "");
@@ -232,14 +241,13 @@ class AccrualFormStore {
 			await onSubmit(this.formData);
 			this.close();
 		} catch (error) {
-			console.error("Form submission error:", error);
 			this.errors = {
 				...this.errors,
 				general:
 					error instanceof Error
 						? error.message
 						: "Произошла ошибка при сохранении",
-			} as any;
+			};
 		} finally {
 			this.isSubmitting = false;
 		}
@@ -267,15 +275,14 @@ class AccrualFormStore {
 	private validateForm(): void {
 		const newErrors: FormErrors = {};
 
-		if (!this.formData.employee_guid || this.formData.employee_guid === "") {
+		if (!this.formData.employee_guid) {
 			newErrors.employee_guid = "Выберите сотрудника";
 		}
 
-		if (!this.formData.type_guid || this.formData.type_guid === "") {
+		if (!this.formData.type_guid) {
 			newErrors.type_guid = "Выберите тип начисления";
 		}
 
-		// Проверяем сумму для переменного типа
 		const selectedType = this.selectedType;
 		const isVariableType = selectedType && selectedType.ammo_coins_amount === 0;
 
@@ -284,7 +291,7 @@ class AccrualFormStore {
 				"Для переменного типа начисления сумма должна быть больше нуля";
 		}
 
-		if (!this.formData.date || this.formData.date === "") {
+		if (!this.formData.date) {
 			newErrors.date = "Выберите дату";
 		}
 

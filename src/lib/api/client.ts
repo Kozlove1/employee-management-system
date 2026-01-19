@@ -129,7 +129,17 @@ export class ApiClient {
 			skipAuth = false,
 		} = options;
 
-		const url = `${this.baseURL}${endpoint}`;
+		// Формируем URL, убирая лишние слеши
+		// Убираем слеши в начале endpoint
+		const cleanEndpoint = endpoint.replace(/^\/+/, "");
+		// Убираем слеши в конце baseURL
+		const cleanBaseURL = this.baseURL.replace(/\/+$/, "");
+		// Собираем URL
+		let url = cleanBaseURL + (cleanEndpoint ? `/${cleanEndpoint}` : "");
+		// Убираем двойные слеши
+		url = url.replace(/\/+/g, "/");
+		// Убираем слеш перед query string (если есть) - это критично для правильного URL
+		url = url.replace(/\/\?/, "?");
 		this.logRequest(method, url, body);
 
 		// Create abort controller for initial request

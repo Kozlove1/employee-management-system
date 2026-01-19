@@ -37,7 +37,6 @@ class AuthStore {
 
 	// Public getters for accessing state
 	getUser() {
-		console.log("this.user", this.user);
 		return this.user;
 	}
 

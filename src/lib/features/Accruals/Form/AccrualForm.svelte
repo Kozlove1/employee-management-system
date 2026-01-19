@@ -32,7 +32,7 @@
 	// Get only active employees, sorted by name
 	const employees = $derived(
 		employeeStore
-			.getApiEmployees()
+			.getLookupEmployees()
 			.filter((emp) => !emp.date_delete)
 			.sort((a, b) => a.employee.localeCompare(b.employee))
 	)
@@ -50,12 +50,17 @@
 			hasLoadedData = true
 
 			// Load employees if empty
-			if (employees.length === 0 && !employeeStore.getIsLoading()) {
-				employeeStore.fetchEmployees()
+			if (employees.length === 0 && !employeeStore.getIsLookupLoading()) {
+				employeeStore.fetchLookupEmployees()
 			}
 			// Always refresh accrual types when form opens to get newly created types
+			// Use page=-1 to get all types without limit
 			if (!accrualTypesStore.getIsLoading()) {
-				accrualTypesStore.fetchTypes()
+				accrualTypesStore.fetchTypes({
+					page: -1,
+					sort: 'date_create',
+					order: 'desc'
+				})
 			}
 		} else if (!isOpen && hasLoadedData) {
 			// Reset flag when form closes

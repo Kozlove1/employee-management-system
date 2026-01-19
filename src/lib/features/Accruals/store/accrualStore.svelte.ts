@@ -1,7 +1,16 @@
 import { employeeStore } from "$lib/features/Employees/store/employeeStore.svelte";
 import { accrualTypesStore } from "$lib/features/TypesOfAccruals/store/accrualTypesStore.svelte";
 import { accrualsApi } from "../api/accrualsApi";
+import type {
+	AccrualSearchParams,
+	AccrualsWithDetails,
+	ApiAccrualItem,
+	CreateAccrual,
+	UpdateAccrual,
+} from "../api/types";
 import type { AccrualFormData, AccrualWithDetails } from "../types";
+import type { EmployeeWithDetails } from "$lib/types/shared";
+import type { AccrualType } from "$lib/types/shared";
 
 class AccrualStore {
 	private accruals = $state<AccrualWithDetails[]>([]);
@@ -10,8 +19,13 @@ class AccrualStore {
 	private searchTerm = $state<string>("");
 	private selectedEmployee = $state<string>("");
 	private selectedType = $state<string>("");
+	private selectedDepartment = $state<string>("");
 	private sortOrder = $state<"newest" | "oldest">("newest");
 	private hasInitialized = $state<boolean>(false);
+	private currentPage = $state<number>(1);
+	private itemsPerPage = $state<number>(50);
+	private totalCount = $state<number>(0);
+	private totalPagesFromApi = $state<number>(1);
 
 	getAccruals(): AccrualWithDetails[] {
 		return this.accruals;
@@ -37,101 +51,85 @@ class AccrualStore {
 		return this.selectedType;
 	}
 
+	getSelectedDepartment(): string {
+		return this.selectedDepartment;
+	}
+
 	getSortOrder(): "newest" | "oldest" {
 		return this.sortOrder;
 	}
 
-	filteredAccruals = $derived.by(() => {
-		let filtered = [...this.accruals];
+	getCurrentPage(): number {
+		return this.currentPage;
+	}
 
-		if (this.searchTerm) {
-			const searchLower = this.searchTerm.toLowerCase();
-			filtered = filtered.filter(
-				(accrual) =>
-					accrual.employee_name?.toLowerCase().includes(searchLower) ||
-					accrual.type_name?.toLowerCase().includes(searchLower) ||
-					accrual.comment?.toLowerCase().includes(searchLower),
-			);
-		}
+	getItemsPerPage(): number {
+		return this.itemsPerPage;
+	}
 
-		if (this.selectedEmployee) {
-			filtered = filtered.filter(
-				(accrual) => accrual.employee_guid === this.selectedEmployee,
-			);
-		}
+	getTotalCount(): number {
+		return this.totalCount;
+	}
 
-		if (this.selectedType) {
-			filtered = filtered.filter(
-				(accrual) => accrual.type_guid === this.selectedType,
-			);
-		}
-
-		if (this.sortOrder === "oldest") {
-			filtered.sort((a, b) => {
-				const dateA = a.date ? new Date(a.date).getTime() : 0;
-				const dateB = b.date ? new Date(b.date).getTime() : 0;
-				return dateA - dateB;
-			});
-		} else {
-			filtered.sort((a, b) => {
-				const dateA = a.date ? new Date(a.date).getTime() : 0;
-				const dateB = b.date ? new Date(b.date).getTime() : 0;
-				return dateB - dateA;
-			});
-		}
-
-		return filtered;
+	totalPages = $derived.by(() => {
+		return this.totalPagesFromApi > 0
+			? this.totalPagesFromApi
+			: this.totalCount > 0
+				? Math.ceil(this.totalCount / this.itemsPerPage)
+				: this.accruals.length > 0
+					? 1
+					: 0;
 	});
 
-	uniqueEmployees = $derived.by(() => {
-		const employeeMap = new Map();
-		this.accruals.forEach((accrual) => {
-			if (accrual.employee_guid && accrual.employee_name) {
-				employeeMap.set(accrual.employee_guid, {
-					employee_guid: accrual.employee_guid,
-					employee_name: accrual.employee_name,
-				});
-			}
-		});
-		return Array.from(employeeMap.values());
-	});
+	filteredAccruals = $derived(this.accruals);
 
-	uniqueTypes = $derived.by(() => {
-		const typeMap = new Map();
-		this.accruals.forEach((accrual) => {
-			if (accrual.type_guid && accrual.type_name) {
-				typeMap.set(accrual.type_guid, {
-					type_guid: accrual.type_guid,
-					type_name: accrual.type_name,
-				});
-			}
-		});
-		return Array.from(typeMap.values());
-	});
+	private _statsCache: {
+		total: number;
+		monthlyCount: number;
+		monthlyAmount: number;
+	} | null = null;
+	private _statsCacheKey: string = "";
 
 	stats = $derived.by(() => {
-		const currentMonth = new Date().getMonth();
-		const currentYear = new Date().getFullYear();
+		const cacheKey = `${this.accruals.length}-${this.accruals.map(a => `${a.date}-${a.amount}`).join(',')}`;
+		
+		if (this._statsCache && this._statsCacheKey === cacheKey) {
+			return this._statsCache;
+		}
 
-		const monthlyAccruals = this.accruals.filter((accrual) => {
-			if (!accrual.date) return false;
-			const accrualDate = new Date(accrual.date);
-			return (
-				accrualDate.getMonth() === currentMonth &&
-				accrualDate.getFullYear() === currentYear
-			);
-		});
+		const accrualsLength = this.accruals.length;
+		if (accrualsLength === 0) {
+			this._statsCache = {
+				total: 0,
+				monthlyCount: 0,
+				monthlyAmount: 0,
+			};
+			this._statsCacheKey = cacheKey;
+			return this._statsCache;
+		}
 
-		const monthlyAmount = monthlyAccruals.reduce(
-			(sum, accrual) => sum + (accrual.amount || 0),
-			0,
-		);
+		const now = new Date();
+		const currentMonth = now.getMonth();
+		const currentYear = now.getFullYear();
+		const monthStart = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-`;
+		
+		let monthlyCount = 0;
+		let monthlyAmount = 0;
 
-		return {
-			total: this.accruals.length,
-			monthlyCount: monthlyAccruals.length,
+		for (const accrual of this.accruals) {
+			if (accrual.date?.startsWith(monthStart)) {
+				monthlyCount++;
+				monthlyAmount += accrual.amount || 0;
+			}
+		}
+
+		this._statsCache = {
+			total: accrualsLength,
+			monthlyCount,
 			monthlyAmount,
 		};
+		this._statsCacheKey = cacheKey;
+		return this._statsCache;
 	});
 
 	setLoading(loading: boolean): void {
@@ -146,112 +144,213 @@ class AccrualStore {
 		this.error = null;
 	}
 
-	setSearchTerm(term: string): void {
+	setSearchTerm(term: string, skipFetch = false): void {
 		this.searchTerm = term;
+		this.currentPage = 1;
+		if (!skipFetch) {
+			this.fetchAccruals();
+		}
 	}
 
-	setSelectedEmployee(employeeGuid: string): void {
+	setSelectedEmployee(employeeGuid: string, skipFetch = false): void {
 		this.selectedEmployee = employeeGuid;
+		this.currentPage = 1;
+		if (!skipFetch) {
+			this.fetchAccruals();
+		}
 	}
 
-	setSelectedType(typeGuid: string): void {
+	setSelectedType(typeGuid: string, skipFetch = false): void {
 		this.selectedType = typeGuid;
+		this.currentPage = 1;
+		if (!skipFetch) {
+			this.fetchAccruals();
+		}
 	}
 
-	setSortOrder(order: "newest" | "oldest"): void {
+	setSelectedDepartment(departmentGuid: string, skipFetch = false): void {
+		this.selectedDepartment = departmentGuid;
+		this.currentPage = 1;
+		if (!skipFetch) {
+			this.fetchAccruals();
+		}
+	}
+
+	setSortOrder(order: "newest" | "oldest", skipFetch = false): void {
 		this.sortOrder = order;
+		this.currentPage = 1;
+		if (!skipFetch) {
+			this.fetchAccruals();
+		}
 	}
 
 	public resetFilters(): void {
-		this.searchTerm = "";
-		this.selectedEmployee = "";
-		this.selectedType = "";
+		this.setSearchTerm("", true);
+		this.setSelectedEmployee("", true);
+		this.setSelectedType("", true);
+		this.setSelectedDepartment("", true);
+		this.setSortOrder("newest", true);
+		this.currentPage = 1;
+		this.fetchAccruals();
 	}
 
-	private async fetchAccruals(): Promise<void> {
+	public refresh(): void {
+		this.fetchAccruals();
+	}
+
+	nextPage(): void {
+		if (this.currentPage < this.totalPages) {
+			this.currentPage++;
+			this.fetchAccruals();
+		}
+	}
+
+	prevPage(): void {
+		if (this.currentPage > 1) {
+			this.currentPage--;
+			this.fetchAccruals();
+		}
+	}
+
+	goToPage(page: number): void {
+		if (page >= 1 && page <= this.totalPages) {
+			this.currentPage = page;
+			this.fetchAccruals();
+		}
+	}
+
+	private buildFetchParams(): AccrualSearchParams {
+		const params: AccrualSearchParams = {
+			page: this.currentPage,
+			limit: this.itemsPerPage,
+			sort: "date",
+			order: this.sortOrder === "newest" ? "desc" : "asc",
+		};
+
+		const trimmedSearch = this.searchTerm.trim();
+		if (trimmedSearch) {
+			params.search = trimmedSearch;
+		}
+
+		if (this.selectedEmployee) {
+			params.employee_guid = this.selectedEmployee;
+		}
+
+		if (this.selectedType) {
+			params.type_guid = this.selectedType;
+		}
+
+		if (this.selectedDepartment) {
+			params.department_guid = this.selectedDepartment;
+		}
+
+		return params;
+	}
+
+	private createEmployeeMap(): Map<string, EmployeeWithDetails> {
+		const lookupEmployees = employeeStore.getLookupEmployees();
+		const employees = lookupEmployees.length > 0
+			? lookupEmployees
+			: employeeStore.getApiEmployees();
+		
+		const employeeMap = new Map<string, EmployeeWithDetails>();
+		for (const emp of employees) {
+			if (emp.employee_guid) {
+				employeeMap.set(emp.employee_guid, emp);
+			}
+		}
+		return employeeMap;
+	}
+
+	private createTypeMap(): Map<string, AccrualType> {
+		const types = accrualTypesStore.types;
+		const typeMap = new Map<string, AccrualType>();
+		for (const t of types) {
+			if (t.type_guid) {
+				typeMap.set(t.type_guid, t);
+			}
+		}
+		return typeMap;
+	}
+
+	private mapApiAccrual(
+		item: ApiAccrualItem,
+		employeeMap: Map<string, EmployeeWithDetails>,
+		typeMap: Map<string, AccrualType>,
+	): AccrualWithDetails {
+		const employeeGuid = item.employee_guid || item.employee?.employee_guid || item.employee?.id || "";
+		const typeGuid = item.type_guid || item.type?.type_guid || item.type?.id || "";
+		
+		const employee = employeeGuid ? employeeMap.get(employeeGuid) : undefined;
+		const type = typeGuid ? typeMap.get(typeGuid) : undefined;
+
+		return {
+			accrual_guid: item.accrual_guid || item.id || "",
+			org_guid: item.org_guid || employee?.org_guid || "",
+			employee_guid: employeeGuid || employee?.employee_guid || "",
+			type_guid: typeGuid || type?.type_guid || "",
+			department_guid: item.department_guid || employee?.department_guid || "",
+			post_guid: item.post_guid || employee?.post_guid || "",
+			amount: item.amount ?? 0,
+			date: item.date || "",
+			comment: item.comment || "",
+			date_create: item.date_create || "",
+			date_delete: item.date_delete || "",
+			employee_name: employee?.employee || employee?.employee_name || item.employee?.employee,
+			type_name: type?.type_name || item.type?.type_name || "",
+			post: employee?.post || item.post || item.employee?.post || "",
+			position_name: employee?.position_name || item.position_name || item.employee?.position_name,
+			department_name: employee?.department_name || item.employee?.department_name,
+		};
+	}
+
+	public async fetchAccruals(): Promise<void> {
 		this.setLoading(true);
 		this.clearError();
 
 		try {
-			const response = await accrualsApi.getAll();
+			const response = await accrualsApi.getAll(this.buildFetchParams());
 
 			if (response.status === "success") {
-				// API returns { data: [...] } directly
-				const data = response.data;
+				const listResponse = (response.data ?? {}) as AccrualsWithDetails;
+				const accrualsList = listResponse.list || [];
 
-				if (Array.isArray(data)) {
-					// Map API response fields to our interface and enrich with employee/type names
-					this.accruals = data.map((item: any) => {
-						// Find employee name from employeeStore
-						const employees = employeeStore.getApiEmployees();
-						const employee = employees.find(
-							(emp) => emp.employee_guid === item.employee_guid,
-						);
+				const employeeMap = this.createEmployeeMap();
+				const typeMap = this.createTypeMap();
 
-						// Find type name from accrualTypesStore
-						const types = accrualTypesStore.types;
-						const type = types.find((t) => t.type_guid === item.type_guid);
+				this.accruals = accrualsList.map((item) =>
+					this.mapApiAccrual(item, employeeMap, typeMap),
+				);
 
-						return {
-							...item,
-							accrual_guid: item.id || item.accrual_guid,
-							post_guid: item.post_guid,
-							employee_name: employee?.employee,
-							type_name: type?.type_name,
-							org_guid: item.org_guid,
-							department_guid: item.department_guid,
-							date: item.date,
-							date_create: employee?.date_create,
-							date_delete: employee?.date_delete,
-						};
-					});
-				} else if (data && typeof data === "object" && "accruals" in data) {
-					const accrualsList = (data as any).accruals || [];
-					this.accruals = accrualsList.map((item: any) => {
-						const employees = employeeStore.getApiEmployees();
-						const employee = employees.find(
-							(emp) => emp.employee_guid === item.employee_guid,
-						);
-
-						const types = accrualTypesStore.types;
-						const type = types.find((t) => t.type_guid === item.type_guid);
-
-						return {
-							...item,
-							accrual_guid: item.id || item.accrual_guid,
-							post_guid: item.post_guid,
-							employee_name: employee?.employee,
-							type_name: type?.type_name,
-							org_guid: item.org_guid,
-							department_guid: item.department_guid,
-							date: item.date,
-							date_create: employee?.date_create,
-							date_delete: employee?.date_delete,
-						};
-					});
-				} else {
-					this.accruals = [];
-				}
+				this.totalCount = listResponse.total || 0;
+				this.totalPagesFromApi = listResponse.total_page || 1;
+				
+				this._statsCache = null;
+				this._statsCacheKey = "";
 			} else {
-				console.error("[AccrualStore] API error:", response.message);
 				this.setError(response.message || "Ошибка загрузки начислений");
+				this.totalCount = 0;
+				this.totalPagesFromApi = 0;
 			}
 		} catch (err) {
-			console.error("[AccrualStore] Exception:", err);
 			this.setError(
 				err instanceof Error ? err.message : "Ошибка загрузки начислений",
 			);
+			this.totalCount = 0;
+			this.totalPagesFromApi = 0;
 		} finally {
 			this.setLoading(false);
 		}
 	}
 
-	async createAccrual(data: AccrualFormData): Promise<void> {
-		// Валидация обязательных полей перед отправкой
-		if (!data.type_guid || data.type_guid === "") {
+	async createAccrual(
+		data: AccrualFormData,
+		options: { refreshAccruals?: boolean } = {},
+	): Promise<void> {
+		if (!data.type_guid) {
 			throw new Error("Тип начисления обязателен для заполнения");
 		}
-		if (!data.employee_guid || data.employee_guid === "") {
+		if (!data.employee_guid) {
 			throw new Error("Сотрудник обязателен для заполнения");
 		}
 
@@ -259,29 +358,30 @@ class AccrualStore {
 		this.clearError();
 
 		try {
-			const response = await accrualsApi.create({
+			const payload: CreateAccrual = {
 				employee_guid: data.employee_guid,
 				type_guid: data.type_guid,
 				amount: data.amount,
 				date: data.date,
-				comment: data.comment,
-				org_guid: data.org_guid,
-				department_guid: data.department_guid,
-				post_guid: data.post_guid,
-				date_create: data.date_create,
-				date_delete: data.date_delete,
-			});
+				comment: data.comment || "",
+				org_guid: data.org_guid || "",
+				department_guid: data.department_guid || "",
+				post_guid: data.post_guid || "",
+				date_create: data.date_create || "",
+				date_delete: data.date_delete || "",
+			};
+
+			const response = await accrualsApi.create(payload);
 
 			if (response.status === "success") {
-				// Refresh accruals list after creating
-				await this.fetchAccruals();
+				if (options.refreshAccruals ?? true) {
+					await this.fetchAccruals();
+				}
 			} else {
-				console.error("[AccrualStore] Create failed:", response.message);
 				this.setError(response.message || "Ошибка создания начисления");
 				throw new Error(response.message || "Ошибка создания начисления");
 			}
 		} catch (err) {
-			console.error("[AccrualStore] Create exception:", err);
 			this.setError(
 				err instanceof Error ? err.message : "Ошибка создания начисления",
 			);
@@ -295,11 +395,10 @@ class AccrualStore {
 		accrualGuid: string,
 		data: AccrualFormData,
 	): Promise<void> {
-		// Валидация обязательных полей перед отправкой
-		if (!data.type_guid || data.type_guid === "") {
+		if (!data.type_guid) {
 			throw new Error("Тип начисления обязателен для заполнения");
 		}
-		if (!data.employee_guid || data.employee_guid === "") {
+		if (!data.employee_guid) {
 			throw new Error("Сотрудник обязателен для заполнения");
 		}
 
@@ -307,22 +406,23 @@ class AccrualStore {
 		this.clearError();
 
 		try {
-			const response = await accrualsApi.update({
+			const payload: UpdateAccrual = {
 				accrual_guid: accrualGuid,
 				employee_guid: data.employee_guid,
 				type_guid: data.type_guid,
 				amount: data.amount,
 				date: data.date,
-				comment: data.comment,
-				org_guid: data.org_guid,
-				department_guid: data.department_guid,
-				post_guid: data.post_guid,
-				date_create: data.date_create,
-				date_delete: data.date_delete,
-			});
+				comment: data.comment || "",
+				org_guid: data.org_guid || "",
+				department_guid: data.department_guid || "",
+				post_guid: data.post_guid || "",
+				date_create: data.date_create || "",
+				date_delete: data.date_delete || "",
+			};
+
+			const response = await accrualsApi.update(payload);
 
 			if (response.status === "success") {
-				// Refresh accruals list after updating
 				await this.fetchAccruals();
 			} else {
 				this.setError(response.message || "Ошибка обновления начисления");
@@ -346,7 +446,6 @@ class AccrualStore {
 			const response = await accrualsApi.deleteAccrual(accrualGuid);
 
 			if (response.status === "success") {
-				// Refresh accruals list after deleting
 				await this.fetchAccruals();
 			} else {
 				this.setError(response.message || "Ошибка удаления начисления");
@@ -363,26 +462,41 @@ class AccrualStore {
 	}
 
 	async initialize(): Promise<void> {
-		// Prevent multiple initializations
 		if (this.hasInitialized || this.isLoading) {
 			return;
 		}
 
 		this.hasInitialized = true;
+		this.setLoading(true);
 
-		// Ensure employees and types are loaded first
-		const employees = employeeStore.getApiEmployees();
-		const types = accrualTypesStore.types;
+		try {
+			const promises: Promise<void>[] = [];
 
-		// If stores are empty, fetch them first
-		if (employees.length === 0 && !employeeStore.getIsLoading()) {
-			await employeeStore.fetchEmployees();
+			const types = accrualTypesStore.types;
+			if (types.length === 0 && !accrualTypesStore.getIsLoading()) {
+				promises.push(accrualTypesStore.fetchTypes({ 
+					page: -1, 
+					sort: 'date_create', 
+					order: 'desc' 
+				}));
+			}
+
+			const isLookupLoaded = employeeStore.getIsLookupLoaded();
+			if (!isLookupLoaded && !employeeStore.getIsLookupLoading()) {
+				promises.push(employeeStore.fetchLookupEmployees());
+			}
+
+			if (promises.length > 0) {
+				await Promise.all(promises);
+			}
+
+			await this.fetchAccruals();
+		} catch (err) {
+			this.setError(
+				err instanceof Error ? err.message : "Ошибка инициализации"
+			);
+			this.setLoading(false);
 		}
-
-		if (types.length === 0 && !accrualTypesStore.getIsLoading()) {
-			await accrualTypesStore.fetchTypes();
-		}
-		await this.fetchAccruals();
 	}
 }
 

@@ -1,5 +1,5 @@
 import type { EmployeeStats } from '$lib/types/shared'
-import { getTopAccrualTypesByCount, getTopEmployeesByBalance } from '../mocks/statisticsMockData'
+import { statisticsApi } from '../api/statisticsApi'
 import type { AccrualTypeStats } from '../types'
 
 class StatisticsStore {
@@ -69,16 +69,18 @@ class StatisticsStore {
 		this.clearError()
 
 		try {
-			// Mock API request
-			await new Promise((resolve) => setTimeout(resolve, 1500))
+			const response = await statisticsApi.getCombinedStats()
 
-			const employeesData = getTopEmployeesByBalance(this.topEmployeesCount)
-			const accrualTypesData = getTopAccrualTypesByCount(this.topAccrualTypesCount)
-			
-			this.topEmployees = employeesData
-			this.topAccrualTypes = accrualTypesData
+			if (response.status === 'success') {
+				this.topEmployees = response.data.top_employees?.slice(0, this.topEmployeesCount) || []
+				this.topAccrualTypes =
+					response.data.top_accrual_types?.slice(0, this.topAccrualTypesCount) || []
+			} else {
+				this.setError(response.message || 'Ошибка загрузки статистики')
+				this.topEmployees = []
+				this.topAccrualTypes = []
+			}
 		} catch (err) {
-			console.error('Error fetching statistics:', err)
 			this.setError(
 				err instanceof Error ? err.message : 'Произошла неизвестная ошибка при загрузке статистики'
 			)
@@ -100,6 +102,10 @@ class StatisticsStore {
 
 	simulateError() {
 		this.setError('Демонстрация ошибки: Не удалось загрузить статистику с сервера.')
+	}
+
+	async initialize() {
+		await this.fetchStatistics()
 	}
 }
 

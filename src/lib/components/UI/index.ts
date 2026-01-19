@@ -9,6 +9,7 @@ export { default as Modal } from './Modal.svelte'
 export { default as PaginationButton } from './PaginationButton.svelte'
 export { default as RefreshButton } from './RefreshButton.svelte'
 export { default as SearchInput } from './SearchInput.svelte'
+export { default as SearchFiltersPanel } from './SearchFiltersPanel.svelte'
 export { default as Skeleton } from './Skeleton.svelte'
 export { default as StatCard } from './StatCard.svelte'
 

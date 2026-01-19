@@ -1,43 +1,28 @@
 <script lang="ts">
-	// biome-ignore lint/correctness/noUnusedImports: Search используется в шаблоне
+	import { departmentsStore } from '$lib/stores/departmentsStore.svelte'
 	import { ChevronDown, Search, X } from '@lucide/svelte'
-
-	interface Option {
-		value: string
-		label: string
-	}
 
 	interface Props {
 		value: string
-		options: Option[]
-		minWidth?: string
-		maxWidth?: string
 		bgColor?: string
-		placeholder?: string
-		dropdownWidth?: string // Ширина выпадающего списка (например, 'min-w-80' или 'w-96')
-		allowClear?: boolean // Разрешить очистку значения
+		dropdownWidth?: string
 		disabled?: boolean
 		onChange: (value: string) => void
+		fullWidth?: boolean
+		widthClass?: string
 	}
 
 	const {
 		value,
-		options,
-		// biome-ignore lint/correctness/noUnusedVariables: используются в шаблоне
-		minWidth = '',
-		// biome-ignore lint/correctness/noUnusedVariables: используются в шаблоне
-		maxWidth = '',
-		// biome-ignore lint/correctness/noUnusedVariables: используются в шаблоне
 		bgColor = 'bg-white',
-		// biome-ignore lint/correctness/noUnusedVariables: используются в шаблоне
-		placeholder = 'Выберите...',
-		// biome-ignore lint/correctness/noUnusedVariables: используются в шаблоне
-		dropdownWidth = '', // По умолчанию равна ширине кнопки
-		// biome-ignore lint/correctness/noUnusedVariables: используются в шаблоне
-		allowClear = true, // По умолчанию разрешена очистка
+		dropdownWidth = 'min-w-80',
 		disabled = false,
-		onChange
+		onChange,
+		fullWidth = false,
+		widthClass = 'w-48'
 	}: Props = $props()
+
+	const containerClass = fullWidth ? 'w-full' : widthClass
 
 	let isOpen = $state(false)
 	let searchTerm = $state('')
@@ -48,23 +33,21 @@
 	// biome-ignore lint/style/useConst: bind:this requires let, not const
 	let buttonRef: HTMLDivElement | null = $state(null)
 	
-	// biome-ignore lint/correctness/noUnusedVariables: используются в шаблоне
 	let dropdownPosition = $state<'bottom' | 'top'>('bottom')
-	// biome-ignore lint/correctness/noUnusedVariables: используются в шаблоне
 	let dropdownLeft = $state<number | null>(null)
-	// biome-ignore lint/correctness/noUnusedVariables: используются в шаблоне
 	let isPositionCalculated = $state(false)
 
-	// Фильтрация опций по поисковому запросу
-	// biome-ignore lint/correctness/noUnusedVariables: используется в шаблоне
-	const filteredOptions = $derived(
-		searchTerm.trim()
-			? options.filter((opt) => opt.label.toLowerCase().includes(searchTerm.toLowerCase()))
-			: options
-	)
+	const departments = $derived(departmentsStore.getDepartments())
+	const isLoading = $derived(departmentsStore.getIsLoading())
 
-	// Текущая выбранная опция
-	// biome-ignore lint/correctness/noUnusedVariables: используется в шаблоне
+	const options = $derived([
+		{ value: '', label: 'Все подразделения' },
+		...departments.map((dept) => ({
+			value: dept.id,
+			label: dept.department
+		}))
+	])
+
 	const selectedOption = $derived(options.find((opt) => opt.value === value))
 
 	function calculateDropdownPosition() {
@@ -117,13 +100,16 @@
 		isPositionCalculated = true
 	}
 	
-	// biome-ignore lint/correctness/noUnusedVariables: используется в шаблоне
 	function toggleDropdown() {
 		if (disabled) return
 		isOpen = !isOpen
 		if (isOpen) {
 			searchTerm = ''
 			isPositionCalculated = false
+			// При открытии загружаем все департаменты, если список пуст
+			if (departments.length === 0) {
+				departmentsStore.initialize()
+			}
 			// Используем requestAnimationFrame для расчета позиции после рендера
 			requestAnimationFrame(() => {
 				requestAnimationFrame(() => {
@@ -135,19 +121,25 @@
 		}
 	}
 
-	// biome-ignore lint/correctness/noUnusedVariables: используется в шаблоне
 	function selectOption(optionValue: string) {
 		onChange(optionValue)
 		isOpen = false
 		searchTerm = ''
 	}
 
-	// biome-ignore lint/correctness/noUnusedVariables: используется в шаблоне (onclick={clearSelection})
 	function clearSelection(e: Event) {
 		e.stopPropagation()
 		onChange('')
 		isOpen = false
 		searchTerm = ''
+	}
+
+	function handleSearchInput(e: Event) {
+		const input = e.target as HTMLInputElement
+		const value = input.value
+		searchTerm = value
+		// Вызываем поиск через API (если пусто, загружаются все департаменты)
+		departmentsStore.searchDepartments(value)
 	}
 
 	function handleClickOutside(event: MouseEvent) {
@@ -172,7 +164,7 @@
 	})
 </script>
 
-<div class="relative {minWidth} {maxWidth}" bind:this={dropdownRef}>
+<div class="relative {containerClass} flex-shrink-0" bind:this={dropdownRef}>
 	<!-- Кнопка выбора -->
 	<div
 		role="button"
@@ -189,10 +181,10 @@
 		title={selectedOption?.label}
 	>
 		<span class="block flex-1 truncate">
-			{selectedOption?.label || placeholder}
+			{selectedOption?.label || 'Выберите подразделение...'}
 		</span>
 		<div class="ml-2 flex items-center gap-1">
-			{#if value && selectedOption && allowClear}
+			{#if value && selectedOption}
 				<button
 					type="button"
 					onclick={clearSelection}
@@ -212,34 +204,32 @@
 	{#if isOpen}
 		<div
 			bind:this={dropdownMenuRef}
-			class="absolute z-50 {dropdownWidth ||
-				'w-full'} rounded-md border border-neutral-300 bg-white shadow-lg {dropdownPosition === 'top' ? 'bottom-full mb-1' : 'top-full mt-1'} {dropdownWidth
-				? (dropdownLeft !== null ? '' : 'left-1/2 -translate-x-1/2')
-				: ''} {isPositionCalculated ? 'opacity-100' : 'opacity-0 pointer-events-none'}"
+			class="absolute z-50 {dropdownWidth} rounded-md border border-neutral-300 bg-white shadow-lg {dropdownPosition === 'top' ? 'bottom-full mb-1' : 'top-full mt-1'} {dropdownLeft !== null ? '' : 'left-1/2 -translate-x-1/2'} {isPositionCalculated ? 'opacity-100' : 'opacity-0 pointer-events-none'}"
 			style={dropdownLeft !== null ? `left: ${dropdownLeft}px; transform: none;` : ''}
 		>
 			<!-- Поле поиска -->
-			{#if options.length > 5}
-				<div class="border-b border-neutral-200 p-2">
-					<div class="relative">
-						<Search class="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
-						<input
-							type="text"
-							bind:value={searchTerm}
-							placeholder="Поиск..."
-							class="w-full rounded border border-neutral-300 py-1.5 pl-8 pr-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-							onclick={(e) => e.stopPropagation()}
-						/>
-					</div>
+			<div class="border-b border-neutral-200 p-2">
+				<div class="relative">
+					<Search class="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+					<input
+						type="text"
+						value={searchTerm}
+						oninput={handleSearchInput}
+						placeholder="Поиск..."
+						class="w-full rounded border border-neutral-300 py-1.5 pl-8 pr-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+						onclick={(e) => e.stopPropagation()}
+					/>
 				</div>
-			{/if}
+			</div>
 
 			<!-- Список опций -->
 			<div class="max-h-60 overflow-y-auto">
-				{#if filteredOptions.length === 0}
+				{#if isLoading}
+					<div class="px-3 py-2 text-center text-sm text-neutral-500">Загрузка...</div>
+				{:else if options.length === 0}
 					<div class="px-3 py-2 text-center text-sm text-neutral-500">Ничего не найдено</div>
 				{:else}
-					{#each filteredOptions as option (option.value)}
+					{#each options as option (option.value)}
 						<button
 							type="button"
 							onclick={() => selectOption(option.value)}

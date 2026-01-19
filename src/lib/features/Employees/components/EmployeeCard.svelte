@@ -1,26 +1,28 @@
 <script lang="ts">
-	import { formatDate, getInitials } from '$lib/utils'
-
-	import { accrualFormStore } from '../../Accruals/store/accrualFormStore.svelte'
-
-	import type { EmployeeWithDetails } from '$lib/types/shared'
-
 	import IconRow from '$lib/components/UI/IconRow.svelte'
+	import type { EmployeeWithDetails } from '$lib/types/shared'
+	import { formatDate, getInitials } from '$lib/utils'
+	import { accrualFormStore } from '../../Accruals/store/accrualFormStore.svelte'
 
 	type Props = {
 		employee: EmployeeWithDetails
-		onAccrualAdded?: () => void
 	}
 
-	let { employee, onAccrualAdded }: Props = $props()
+	const { employee }: Props = $props()
 
 	function getStatusBadge(employee: EmployeeWithDetails) {
-		return employee.date_dismis ? 'Уволен' : 'Активен'
+		return employee.date_delete ? 'Уволен' : 'Активен'
 	}
 
 	function handleAccrualClick() {
-		accrualFormStore.openForCreate()
-		accrualFormStore.updateField('employee_guid', employee.employee_guid)
+		accrualFormStore.openForCreate({
+			employee_guid: employee.employee_guid,
+			org_guid: employee.org_guid,
+			department_guid: employee.department_guid,
+			post_guid: employee.post_guid,
+			date_create: employee.date_create || "",
+			date_delete: employee.date_delete || ""
+		})
 	}
 </script>
 
@@ -43,13 +45,13 @@
 		<div class="ml-auto flex-shrink-0">
 			<div class="flex flex-col items-end gap-2 md:flex-row md:items-center">
 				<span
-					class="inline-flex items-center whitespace-nowrap rounded-full px-2 py-1 text-xs font-medium {employee.date_dismis
+					class="inline-flex items-center whitespace-nowrap rounded-full px-2 py-1 text-xs font-medium {employee.date_delete
 						? 'bg-danger-100 text-danger-700'
 						: 'bg-success-100 text-success-700'}"
 				>
 					{getStatusBadge(employee)}
 				</span>
-				{#if !employee.date_dismis}
+				{#if !employee.date_delete}
 					<button
 						onclick={handleAccrualClick}
 						class="btn my-0 inline-flex items-center whitespace-nowrap rounded-lg border-2 border-success-100 px-1 font-normal text-success-700 transition-colors hover:bg-success-50"
@@ -76,24 +78,28 @@
 	<!-- Balance -->
 	<IconRow
 		icon="coins"
-		title="Баланс: {employee.balance} АК"
+		title="Баланс: {employee.balance ?? 0} АК"
 		titleColor="text-neutral-900"
 		backgroundColor={'bg-neutral-100'}
 	/>
 
 	<!-- Department -->
-	<IconRow icon="building" title={employee.department_name} />
+	<IconRow icon="building" title={employee.department_name || 'Подразделение не указано'} />
 
-	<!-- Position and other details -->
+	<!-- Position -->
+	<IconRow
+		icon="briefcase"
+		title={employee.position_name || employee.post || 'Должность не указана'}
+	/>
+
+	<!-- Other details -->
 	<div class="mb-3">
-		<IconRow icon="briefcase" title={employee.position_name} />
 		{#if employee.email}
 			<IconRow icon="mail" title={employee.email} />
 		{/if}
-		<IconRow
-			icon="calendar"
-			title="Принят: {employee.date_employ ? formatDate(employee.date_employ) : 'Дата не указана'}"
-		/>
+		{#if employee.date_create}
+			<IconRow icon="calendar" title="Принят: {formatDate(employee.date_create || '')}" />
+		{/if}
 		<IconRow icon="venus-and-mars" title="Пол: {employee.sex}" />
 	</div>
 </div>

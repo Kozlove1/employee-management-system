@@ -1,33 +1,32 @@
 import type { BaseFilterParams, PaginationParams } from '$lib/api/types'
-import type { Employee, EmployeeStats, EmployeeWithDetails } from '$lib/types/shared'
+import type { Employee, EmployeeWithDetails } from '$lib/types/shared'
 
 export interface EmployeeApiResponse {
 	employee: Employee
 }
 
-export interface EmployeesApiResponse {
-	employees: Employee[]
+export interface EmployeesListApiResponse {
+	data: EmployeeWithDetails[]
+	meta?: {
+		total?: number
+		page?: number
+		limit?: number
+		totalPages?: number
+	}
 }
 
 export interface EmployeeWithDetailsApiResponse {
 	employee: EmployeeWithDetails
 }
 
-export interface EmployeesWithDetailsApiResponse {
-	employees: EmployeeWithDetails[]
-}
-
-export interface EmployeeStatsApiResponse {
-	stats: EmployeeStats[]
-}
-
-export interface EmployeeFilterParams extends BaseFilterParams {
+export interface EmployeeSearchParams extends PaginationParams, BaseFilterParams {
+	// Все параметры уже включены через PaginationParams и BaseFilterParams:
+	// page, limit, sort, order (из PaginationParams)
+	// search, date_from, date_to, active_only (из BaseFilterParams)
+	
+	// Дополнительные фильтры (API принимает любые поля Employee)
 	department_guid?: string
-	position_guid?: string
-	sex?: string
 }
-
-export interface EmployeeSearchParams extends PaginationParams, EmployeeFilterParams {}
 
 export interface CreateEmployeeData {
 	employee: string
@@ -40,5 +39,5 @@ export interface CreateEmployeeData {
 }
 
 export interface UpdateEmployeeData extends Partial<CreateEmployeeData> {
-	employee_guid: string
+	// employee_guid передается в URL, не в body
 }

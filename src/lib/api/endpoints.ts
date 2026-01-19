@@ -9,10 +9,6 @@ export const API_ENDPOINTS = {
 	EMPLOYEES: {
 		BASE: "/employees",
 		BY_ID: (id: string) => `/employees/${id}`,
-		SEARCH: "/employees/search",
-		STATS: "/employees/stats",
-		BY_DEPARTMENT: (departmentGuid: string) =>
-			`/employees/department/${departmentGuid}`,
 	},
 
 	ACCRUALS: {

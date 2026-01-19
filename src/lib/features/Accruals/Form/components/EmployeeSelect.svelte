@@ -13,7 +13,7 @@
 		onValueChange?: (value: string) => void
 	}
 
-	let {
+	const {
 		value,
 		employees,
 		required = false,
@@ -25,9 +25,13 @@
 
 	let isOpen = $state(false)
 	let searchTerm = $state('')
+	// biome-ignore lint/style/useConst: bind:this requires let, not const
 	let dropdownRef: HTMLDivElement | null = $state(null)
 
-	let selectedEmployee = $derived(employees.find((emp) => emp.employee_guid === value))
+	const selectedEmployee = $derived(employees.find((emp) => emp.employee_guid === value))
+
+	// Проверяем, уволен ли сотрудник (используем date_delete)
+	const isDismissed = $derived(selectedEmployee ? !!selectedEmployee.date_delete : false)
 
 	const filteredEmployees = $derived(() => {
 		if (!searchTerm) return employees
@@ -93,7 +97,7 @@
 				<div class="flex items-center justify-between">
 					<span class={selectedEmployee ? 'text-gray-900' : 'text-gray-500'}>
 						{selectedEmployee
-							? `${selectedEmployee.employee} (${selectedEmployee.ident})`
+							? `${selectedEmployee.employee} (${selectedEmployee.ident})${isDismissed ? ' - Уволен' : ''}`
 							: placeholder}
 					</span>
 					<div class="flex items-center gap-1">
