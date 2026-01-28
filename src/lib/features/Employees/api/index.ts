@@ -1,7 +1,11 @@
 // Экспорт API сервисов для модуля Employees
 export { employeesApi } from './employeesApi'
 export type {
-    CreateEmployeeData, EmployeeApiResponse, EmployeeFilterParams,
-    EmployeeSearchParams, EmployeeStatsApiResponse, EmployeeWithDetailsApiResponse, EmployeesApiResponse, EmployeesWithDetailsApiResponse, UpdateEmployeeData
+    CreateEmployeeData,
+    EmployeeApiResponse,
+    EmployeeSearchParams,
+    EmployeesListApiResponse,
+    EmployeeWithDetailsApiResponse,
+    UpdateEmployeeData
 } from './types'
 

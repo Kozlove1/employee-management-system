@@ -11,5 +11,5 @@ export type {
 export { accrualsApi } from '../features/Accruals/api'
 export { employeesApi } from '../features/Employees/api'
 export { statisticsApi } from '../features/Statistics/api'
-export { accrualTypesApi } from '../features/TypesOfAccruals/api'
+export { accrualTypesApi } from '../features/TypesOfAccruals/api/accrualTypesApi'
 

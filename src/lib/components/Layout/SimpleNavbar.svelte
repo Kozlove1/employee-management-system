@@ -12,9 +12,9 @@
 	let isNavbarVisible = $state(true)
 	let lastScrollY = $state(0)
 
-	let user = $derived(authStore.getUser())
-	let isAuthenticated = $derived(authStore.isAuthenticated)
-	let isLoggingOut = $derived(authStore.getIsLoggingOut())
+	const user = $derived(authStore.getUser())
+	const isAuthenticated = $derived(authStore.isAuthenticated)
+	const isLoggingOut = $derived(authStore.getIsLoggingOut())
 
 	async function handleLogout() {
 		await authStore.logout()
@@ -73,7 +73,7 @@
 					window.removeEventListener('scroll', scrollHandler)
 				}
 
-				const isMobile = window.innerWidth < 1024 // lg breakpoint
+				const isMobile = window.innerWidth < 1024
 
 				if (isMobile) {
 					scrollHandler = handleScroll

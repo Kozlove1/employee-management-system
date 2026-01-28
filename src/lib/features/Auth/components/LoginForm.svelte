@@ -10,32 +10,34 @@
 
 	let email = $state('')
 	let password = $state('')
-	let formErrors = $state<Record<string, string>>({})
 
-	function validateForm() {
-		const errors: Record<string, string> = {}
+	// let formErrors = $state<Record<string, string>>({})
 
-		if (!email.trim()) {
-			errors.email = 'Email обязателен'
-		} else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-			errors.email = 'Введите корректный email адрес'
-		}
+// function validateForm() {
+// 	const errors: Record<string, string> = {}
 
-		if (!password.trim()) {
-			errors.password = 'Пароль обязателен'
-		} else if (password.length < 6) {
-			errors.password = 'Пароль должен содержать минимум 6 символов'
-		}
+// 	if (!email.trim()) {
+// 		errors.email = 'Email обязателен'
+// 	} else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+// 		errors.email = 'Введите корректный email адрес'
+// 	}
 
-		formErrors = errors
-		return Object.keys(errors).length === 0
-	}
+// 	if (!password.trim()) {
+// 		errors.password = 'Пароль обязателен'
+// 	} else if (password.length < 6) {
+// 		errors.password = 'Пароль должен содержать минимум 6 символов'
+// 	}
+
+// 	formErrors = errors
+// 	return Object.keys(errors).length === 0
+// }
 
 	async function handleSubmit(event: Event) {
 		event.preventDefault()
 		authStore.clearError()
 
-		if (!validateForm()) return
+		// if (!validateForm()) return
+
 
 		await authStore.login({ email, password })
 
@@ -73,18 +75,16 @@
 				</label>
 				<input
 					id="email"
-					type="email"
+					type="text"
 					bind:value={email}
 					onkeydown={handleKeydown}
-					class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 {formErrors.email
-						? 'border-red-500'
-						: ''}"
+					class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
 					placeholder="Введите ваш email"
 					disabled={isLoading}
 				/>
-				{#if formErrors.email}
-					<p class="mt-1 text-sm text-red-600">{formErrors.email}</p>
-				{/if}
+				<!-- {#if formErrors.email}
+				<p class="mt-1 text-sm text-red-600">{formErrors.email}</p>
+			{/if} -->
 			</div>
 
 			<div>
@@ -94,15 +94,13 @@
 					type="password"
 					bind:value={password}
 					onkeydown={handleKeydown}
-					class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 {formErrors.password
-						? 'border-red-500'
-						: ''}"
+					class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
 					placeholder="Введите ваш пароль"
 					disabled={isLoading}
 				/>
-				{#if formErrors.password}
-					<p class="mt-1 text-sm text-red-600">{formErrors.password}</p>
-				{/if}
+				<!-- {#if formErrors.password}
+				<p class="mt-1 text-sm text-red-600">{formErrors.password}</p>
+			{/if} -->
 			</div>
 
 			<button

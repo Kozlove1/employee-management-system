@@ -8,6 +8,7 @@
 		text?: string
 		loadingText?: string
 		variant?: 'primary' | 'info'
+		fullWidth?: boolean
 	}
 
 	let {
@@ -16,7 +17,8 @@
 		disabled = false,
 		text = 'Обновить',
 		loadingText = 'Загрузка...',
-		variant = 'primary'
+		variant = 'primary',
+		fullWidth = false
 	}: Props = $props()
 
 	const buttonClasses = {
@@ -28,9 +30,9 @@
 <button
 	onclick={onClick}
 	disabled={disabled || isLoading}
-	class="btn flex items-center gap-2 rounded-lg px-3 py-2 transition-colors disabled:cursor-not-allowed disabled:opacity-50 {buttonClasses[
+	class="btn flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50 {buttonClasses[
 		variant
-	]}"
+	]} {fullWidth ? 'w-full' : ''}"
 >
 	<RefreshCw class="h-4 w-4 {isLoading ? 'animate-spin' : ''}" />
 	<span>{isLoading ? loadingText : text}</span>

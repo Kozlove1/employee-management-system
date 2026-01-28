@@ -2,12 +2,14 @@
 	import {
 		ActionButton,
 		EmptyState,
-		FilterSelect,
 		IconRow,
-		SearchInput,
+		PaginationButton,
+		RefreshButton,
 		Skeleton
 	} from '$lib/components/UI'
-	import { mockEmployees } from '$lib/features/Employees/mocks/employeesMockData'
+	import SearchFiltersPanel from '$lib/components/UI/SearchFiltersPanel.svelte'
+	import { authStore } from '$lib/features/Auth'
+	import { employeeStore } from '$lib/features/Employees/store/employeeStore.svelte'
 	import { accrualTypesStore } from '$lib/features/TypesOfAccruals/store/accrualTypesStore.svelte'
 	import { AccrualListItem, StatisticsCards } from './components'
 	import AccrualForm from './Form/AccrualForm.svelte'
@@ -15,106 +17,71 @@
 	import { accrualStore } from './store/accrualStore.svelte'
 	import type { AccrualFormData, AccrualWithDetails } from './types'
 
-	// Reactive variables using $derived with store getters
-	let isLoading = $derived(accrualStore.getIsLoading())
-	let error = $derived(accrualStore.getError())
-	let accruals = $derived(accrualStore.getAccruals())
-	let filteredAccruals = $derived(accrualStore.filteredAccruals)
-	let searchTerm = $derived(accrualStore.getSearchTerm())
-	let selectedEmployee = $derived(accrualStore.getSelectedEmployee())
-	let selectedType = $derived(accrualStore.getSelectedType())
-	let sortOrder = $derived(accrualStore.getSortOrder())
-	let uniqueEmployees = $derived(accrualStore.uniqueEmployees)
-	let uniqueTypes = $derived(accrualStore.uniqueTypes)
-	let stats = $derived(accrualStore.stats)
+	// Reactive state from stores
+	const isLoading = $derived(accrualStore.getIsLoading())
+	const error = $derived(accrualStore.getError())
+	const filteredAccruals = $derived(accrualStore.filteredAccruals)
+	const searchTerm = $derived(accrualStore.getSearchTerm())
+	const selectedEmployee = $derived(accrualStore.getSelectedEmployee())
+	const selectedType = $derived(accrualStore.getSelectedType())
+	const selectedDepartment = $derived(accrualStore.getSelectedDepartment())
+	const sortOrder = $derived(accrualStore.getSortOrder())
+	const stats = $derived(accrualStore.getStats())
+	const isStatsLoading = $derived(accrualStore.getIsStatsLoading())
+	const currentPage = $derived(accrualStore.getCurrentPage())
+	const totalPages = $derived(accrualStore.totalPages)
+	const totalCount = $derived(accrualStore.getTotalCount())
+	const accrualsCount = $derived(accrualStore.getAccruals().length)
 
-	let totalEmployees = $derived(() => mockEmployees.length)
-	let totalAccrualTypes = $derived(() => accrualTypesStore.types.length)
-
-	let statisticsValues = $derived(() => {
-		return {
-			totalEmployees: totalEmployees(),
-			monthlyAccruals: stats.monthlyCount,
-			totalAccrualTypes: totalAccrualTypes(),
-			totalAmount: stats.monthlyAmount
-		}
+	// Statistics data
+	const statisticsValues = $derived({
+		totalEmployees: employeeStore.getActiveEmployeesCount(),
+		monthlyAccruals: stats?.monthly_accruals ?? 0,
+		totalAccrualTypes: accrualTypesStore.getTotalCount(),
+		totalAmount: stats?.total_amount ?? 0
 	})
 
-	// Initialize store on component mount
+	// Filter options
+	const employeeOptions = $derived(employeeStore.employeeOptions)
+	const typeOptions = $derived(accrualTypesStore.typeOptions)
+
+	// Initialize on mount
 	$effect(() => {
-		accrualStore.initialize()
+		if (authStore.isAuthenticated && !isLoading && !error && accrualsCount === 0) {
+			accrualStore.initialize()
+		}
 	})
 
-	async function handleAddAccrual(data: AccrualFormData) {
-		await accrualStore.createAccrual(data)
-	}
-
-	function handleEditAccrual(accrualToEdit: AccrualWithDetails) {
-		accrualFormStore.openForEdit(accrualToEdit)
-	}
-
-	async function handleUpdateAccrual(data: AccrualFormData) {
+	// Form handlers
+	async function handleFormSubmit(data: AccrualFormData) {
 		const currentAccrual = accrualFormStore.getCurrentAccrual()
-
-		if (!currentAccrual) {
-			console.error('Failed to update accrual: not found')
-			return
+		if (currentAccrual) {
+			await accrualStore.updateAccrual(currentAccrual.accrual_guid, data)
+		} else {
+			await accrualStore.createAccrual(data)
 		}
+	}
 
-		await accrualStore.updateAccrual(currentAccrual.post_guid, data)
+	function handleEditAccrual(accrual: AccrualWithDetails) {
+		accrualFormStore.openForEdit(accrual)
 	}
 
 	async function handleDeleteAccrual(accrualGuid: string) {
-		try {
-			await accrualStore.deleteAccrual(accrualGuid)
-		} catch (error) {
-			// Ошибка уже обработана в store
-			console.error('Failed to delete accrual:', error)
-		}
-	}
-
-	function resetFilters() {
-		accrualStore.resetFilters()
-	}
-
-	function handleSearchChange(value: string) {
-		accrualStore.setSearchTerm(value)
-	}
-
-	function handleEmployeeChange(value: string) {
-		accrualStore.setSelectedEmployee(value)
-	}
-
-	function handleTypeChange(value: string) {
-		accrualStore.setSelectedType(value)
-	}
-
-	function handleSortOrderChange(value: string) {
-		accrualStore.setSortOrder(value as 'newest' | 'oldest')
-	}
-
-	async function handleFormSubmit(data: AccrualFormData) {
-		const currentAccrual = accrualFormStore.getCurrentAccrual()
-
-		if (currentAccrual) {
-			await handleUpdateAccrual(data)
-		} else {
-			await handleAddAccrual(data)
-		}
+		await accrualStore.deleteAccrual(accrualGuid)
 	}
 </script>
 
 <div class="space-y-6">
-	<!-- Карточки статистики -->
-	{#if isLoading}
+	<!-- Statistics Cards -->
+	{#if isStatsLoading}
 		<div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
 			<Skeleton type="stat-card" count={4} />
 		</div>
 	{:else}
-		<StatisticsCards statisticsValues={statisticsValues()} />
+		<StatisticsCards {statisticsValues} />
 	{/if}
 
-	<!-- Заголовок и поиск -->
+	<!-- Header and Filters -->
 	<div class="rounded-lg border border-gray-200 bg-white shadow-sm">
 		<div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
 			<IconRow
@@ -126,98 +93,93 @@
 				iconColor="blue"
 			/>
 			<ActionButton
-				onClick={() => {
-					accrualFormStore.openForCreate()
-				}}
+				onClick={() => accrualFormStore.openForCreate()}
 				disabled={isLoading}
 				text="Добавить начисление"
 			/>
 		</div>
 
 		<div class="p-6">
-			{#if isLoading}
-				<Skeleton type="search-filters" />
-			{:else}
-				<div class="grid grid-cols-1 gap-4 lg:grid-cols-5">
-					<!-- Поисковая строка -->
-					<div class="lg:col-span-2">
-						<SearchInput
-							value={searchTerm}
-							placeholder="Поиск по сотруднику, типу, комментарию"
-							bgColor="bg-white"
-							borderColor="border-gray-300"
-							rounded="rounded-lg"
-							onChange={handleSearchChange}
-						/>
+			<SearchFiltersPanel
+				searchValue={searchTerm}
+				searchPlaceholder="Поиск по комментарию"
+				disabled={isLoading}
+				resetDisabled={isLoading}
+				onSearch={(value) => accrualStore.setSearchTerm(value)}
+				onReset={() => accrualStore.resetFilters()}
+				showEmployeeFilter={true}
+				employeeValue={selectedEmployee}
+				{employeeOptions}
+				onEmployeeChange={(value) => accrualStore.setSelectedEmployee(value)}
+				showDepartmentFilter={true}
+				departmentValue={selectedDepartment}
+				onDepartmentChange={(value) => accrualStore.setSelectedDepartment(value)}
+				showTypeFilter={true}
+				typeValue={selectedType}
+				{typeOptions}
+				onTypeChange={(value) => accrualStore.setSelectedType(value)}
+				showSortFilter={true}
+				sortValue={sortOrder}
+				onSortChange={(value) => accrualStore.setSortOrder(value as 'newest' | 'oldest')}
+				customFilters={true}
+			>
+				<RefreshButton onClick={() => accrualStore.refresh()} {isLoading} variant="info" />
+			</SearchFiltersPanel>
+
+			<!-- Pagination Info -->
+			<div class="mt-4">
+				<div class="flex flex-col items-center justify-between sm:flex-row">
+					<div class="mb-2 flex flex-row gap-2 text-sm text-neutral-500 sm:mb-0">
+						<div>Найдено {totalCount} начислений</div>
+						<div class="text-neutral-500">•</div>
+						<div>Показано {filteredAccruals.length} на странице {currentPage} из {totalPages}</div>
 					</div>
 
-					<!-- Селектор сотрудников -->
-					<FilterSelect
-						value={selectedEmployee}
-						options={[
-							{
-								value: '',
-								label: `Все сотрудники (${uniqueEmployees.length})`
-							},
-							...uniqueEmployees.map((employee) => ({
-								value: employee.employee_guid,
-								label: employee.employee_name
-							}))
-						]}
-						onChange={handleEmployeeChange}
-					/>
-
-					<!-- Селектор типов -->
-					<FilterSelect
-						value={selectedType}
-						options={[
-							{ value: '', label: `Все типы (${uniqueTypes.length})` },
-							...uniqueTypes.map((type) => ({ value: type.type_guid, label: type.type_name }))
-						]}
-						onChange={handleTypeChange}
-					/>
-
-					<!-- Селектор сортировки -->
-					<FilterSelect
-						value={sortOrder}
-						options={[
-							{ value: 'newest', label: 'От новых к старым' },
-							{ value: 'oldest', label: 'От старым к новым' }
-						]}
-						onChange={handleSortOrderChange}
-					/>
+					{#if totalPages > 1}
+						<PaginationButton
+							{currentPage}
+							{totalPages}
+							onPrevPage={() => accrualStore.prevPage()}
+							onNextPage={() => accrualStore.nextPage()}
+						/>
+					{/if}
 				</div>
-
-				<!-- Статистика по фильтрам -->
-				<div class="mt-4 text-sm text-gray-600">
-					Всего: <span class="font-semibold">{filteredAccruals.length} начислений</span>
-				</div>
-			{/if}
+			</div>
 		</div>
 	</div>
 
-	<!-- Список начислений -->
+	<!-- Accruals List -->
 	<div class="space-y-3">
-		{#if isLoading}
+		{#if isLoading && accrualsCount === 0}
 			<Skeleton type="list-item" count={5} />
+		{:else if filteredAccruals.length === 0}
+			<EmptyState
+				showButton={true}
+				buttonText="Добавить начисление"
+				buttonAction={() => accrualFormStore.openForCreate()}
+				title="Нет начислений"
+				description="Начните с добавления первого начисления"
+				disabled={isLoading}
+			/>
 		{:else}
 			{#each filteredAccruals as accrual}
 				<AccrualListItem {accrual} onEdit={handleEditAccrual} onDelete={handleDeleteAccrual} />
 			{/each}
-
-			{#if filteredAccruals.length === 0}
-				<EmptyState
-					showButton={true}
-					buttonText="Добавить начисление"
-					buttonAction={() => accrualFormStore.openForCreate()}
-					title="Нет начислений"
-					description="Начните с добавления первого начисления"
-					disabled={isLoading}
-				/>
-			{/if}
 		{/if}
 	</div>
+
+	<!-- Bottom Pagination -->
+	{#if totalPages > 1}
+		<div class="flex justify-center">
+			<PaginationButton
+				{currentPage}
+				{totalPages}
+				onPrevPage={() => accrualStore.prevPage()}
+				onNextPage={() => accrualStore.nextPage()}
+			/>
+		</div>
+	{/if}
 </div>
 
-<!-- Модальная форма -->
+<!-- Accrual Form Modal -->
 <AccrualForm onSubmit={handleFormSubmit} />

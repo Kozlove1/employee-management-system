@@ -2,7 +2,7 @@ import { ApiService } from '$lib/api'
 import { API_ENDPOINTS } from '$lib/api/endpoints'
 import type {
 	AccrualTypeApiResponse,
-	AccrualTypesApiResponse,
+	AccrualTypesListApiResponse,
 	AccrualTypeSearchParams,
 	AccrualTypeStats,
 	CreateAccrualTypeData,
@@ -13,24 +13,25 @@ class AccrualTypesApiService extends ApiService {
 	constructor() {
 		super(API_ENDPOINTS.ACCRUAL_TYPES.BASE)
 	}
+
 	public async getAll(params?: AccrualTypeSearchParams) {
-		return this.get<AccrualTypesApiResponse>('', params)
+		return this.get<AccrualTypesListApiResponse>('', params)
 	}
 
-	public async getById(typeGuid: string) {
-		return this.get<AccrualTypeApiResponse>(`/${typeGuid}`)
+	public async getById(id: string) {
+		return this.get<AccrualTypeApiResponse>(`/${id}`)
 	}
 
 	public async create(data: CreateAccrualTypeData) {
 		return this.post<AccrualTypeApiResponse>('', data)
 	}
 
-	public async update(data: UpdateAccrualTypeData) {
-		return this.put<AccrualTypeApiResponse>(`/${data.type_guid}`, data)
+	public async update(id: string, data: UpdateAccrualTypeData) {
+		return this.put<AccrualTypeApiResponse>(`/${id}`, data)
 	}
 
-	public async deleteType(typeGuid: string) {
-		return this.delete(`/${typeGuid}`)
+	public async deleteType(id: string) {
+		return this.delete(`/${id}`)
 	}
 
 	public async getStats() {

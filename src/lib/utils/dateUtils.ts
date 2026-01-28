@@ -1,19 +1,32 @@
 export function formatDate(dateStr: string): string {
-	if (!dateStr) return ''
+	if (!dateStr) return "";
+
 	try {
-		const [day, month, year] = dateStr.split('.')
-		return `${day}.${month}.${year}`
+		// Handle ISO 8601 format (YYYY-MM-DDTHH:mm:ssZ)
+		if (dateStr.includes("T") || dateStr.includes("-")) {
+			const date = new Date(dateStr);
+			if (isNaN(date.getTime())) return dateStr;
+
+			const day = String(date.getDate()).padStart(2, "0");
+			const month = String(date.getMonth() + 1).padStart(2, "0");
+			const year = date.getFullYear();
+			return `${day}.${month}.${year}`;
+		}
+
+		// Handle dd.mm.yyyy format
+		const [day, month, year] = dateStr.split(".");
+		if (day && month && year) {
+			return `${day}.${month}.${year}`;
+		}
+
+		return dateStr;
 	} catch {
-		return dateStr
+		return dateStr;
 	}
 }
 
 export function getLocalDateTime(): string {
-	const now = new Date()
-	const year = now.getFullYear()
-	const month = String(now.getMonth() + 1).padStart(2, '0')
-	const day = String(now.getDate()).padStart(2, '0')
-	const hours = String(now.getHours()).padStart(2, '0')
-	const minutes = String(now.getMinutes()).padStart(2, '0')
-	return `${year}-${month}-${day}T${hours}:${minutes}`
+	const now = new Date();
+	// Return ISO string format that API expects: 2006-01-02T15:04:05Z07:00
+	return now.toISOString();
 }

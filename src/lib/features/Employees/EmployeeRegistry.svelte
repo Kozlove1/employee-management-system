@@ -1,53 +1,61 @@
 <script lang="ts">
-	import { getAppContainerStyle } from '$lib/utils'
-	import { mockDepartments } from './mocks/employeesMockData'
+import {
+	EmptyState,
+	ErrorMessage,
+	IconRow,
+	PaginationButton,
+	RefreshButton,
+	Skeleton
+} from '$lib/components/UI'
+import AccrualForm from '$lib/features/Accruals/Form/AccrualForm.svelte'
+import SearchFiltersPanel from '$lib/components/UI/SearchFiltersPanel.svelte'
 
 	import { accrualStore } from '$lib/features/Accruals/store/accrualStore.svelte'
+	import { departmentsStore } from '$lib/stores/departmentsStore.svelte'
+	import { getAppContainerStyle } from '$lib/utils'
+	import type { AccrualFormData } from '../Accruals/types'
+	import { EmployeeCard } from './components'
 	import { employeeStore } from './store/employeeStore.svelte'
 
-	import type { AccrualFormData } from '../Accruals/types'
+	const isLoading = $derived(employeeStore.getIsLoading())
+	const error = $derived(employeeStore.getError())
+	const apiEmployees = $derived(employeeStore.getApiEmployees())
+	const paginatedEmployees = $derived(employeeStore.paginatedEmployees)
+	const currentPage = $derived(employeeStore.getCurrentPage())
+	const totalPages = $derived(employeeStore.totalPages)
+	const totalCount = $derived(employeeStore.getTotalCount())
+	const isExactCount = $derived(employeeStore.getIsExactCount())
+	const searchTerm = $derived(employeeStore.getSearchTerm())
+	const selectedDepartment = $derived(employeeStore.getSelectedDepartment())
+	const activeOnly = $derived(employeeStore.getActiveOnly())
+	const itemsPerPage = $derived(employeeStore.getItemsPerPage())
 
-	import {
-		EmptyState,
-		ErrorMessage,
-		FilterSelect,
-		IconRow,
-		PaginationButton,
-		RefreshButton,
-		SearchInput,
-		Skeleton
-	} from '$lib/components/UI'
-	import AccrualForm from '$lib/features/Accruals/Form/AccrualForm.svelte'
-	import { EmployeeCard } from './components'
-
-	let isLoading = $derived(employeeStore.getIsLoading())
-
-	let error = $derived(employeeStore.getError())
-	let apiEmployees = $derived(employeeStore.getApiEmployees())
-	let filteredEmployees = $derived(employeeStore.filteredEmployees)
-	let paginatedEmployees = $derived(employeeStore.paginatedEmployees)
-	let currentPage = $derived(employeeStore.getCurrentPage())
-	let totalPages = $derived(employeeStore.totalPages)
-	let searchTerm = $derived(employeeStore.getSearchTerm())
-	let selectedDepartment = $derived(employeeStore.getSelectedDepartment())
-	let activeOnly = $derived(employeeStore.getActiveOnly())
+	let initialized = $state(false)
 
 	$effect(() => {
-		if (apiEmployees.length === 0 && !isLoading && !error) {
-			employeeStore.fetchEmployees()
+		if (!initialized) {
+			initialized = true
+			departmentsStore.initialize()
+			if (apiEmployees.length === 0 && !isLoading && !error) {
+				employeeStore.fetchEmployees()
+			}
 		}
 	})
 
-	function handleAccrualAdded() {
-		employeeStore.refreshData()
+	async function handleAccrualAdded() {
+		// Обновляем данные сотрудников и начислений
+		await Promise.all([
+			employeeStore.refreshData(),
+			accrualStore.fetchAccruals()
+		])
 	}
 
 	async function handleAccrualSubmit(data: AccrualFormData) {
 		try {
-			await accrualStore.createAccrual(data)
-			handleAccrualAdded()
+			// Создаем начисление без автоматического обновления (обновим вручную)
+			await accrualStore.createAccrual(data, { refreshAccruals: false })
+			await handleAccrualAdded()
 		} catch (error) {
-			console.error('Ошибка при создании начисления:', error)
 			throw error
 		}
 	}
@@ -78,79 +86,47 @@
 
 	<!-- Panel search and filters -->
 	<div class="mb-6 rounded-lg border border-neutral-200 bg-primary-50 p-6 shadow-sm">
-		<div class="flex flex-col items-center gap-4 lg:flex-row">
-			{#if isLoading}
-				<Skeleton type="search-panel" />
-			{:else}
-				<div class="min-w-0 flex-1">
-					<SearchInput
-						value={searchTerm}
-						placeholder="Поиск по имени или ID..."
-						bgColor="bg-primary-50"
-						borderColor="border-neutral-300"
-						rounded="rounded-md"
-						onChange={(value: string) => employeeStore.setSearchTerm(value)}
-					/>
-				</div>
-
-				<!-- Filter by departments -->
-				<div class="w-48 flex-shrink-0">
-					<FilterSelect
-						value={selectedDepartment}
-						options={[
-							{ value: '', label: 'Все подразделения' },
-							...mockDepartments.map((dept) => ({
-								value: dept.department_guid,
-								label: dept.department
-							}))
-						]}
-						bgColor="bg-primary-50"
-						onChange={(value: string) => employeeStore.setDepartmentFilter(value)}
-					/>
-				</div>
-
-				<!-- Filter only active - fixed width -->
-				<div class="flex flex-shrink-0 items-center">
-					<input
-						id="active-only"
-						type="checkbox"
-						checked={activeOnly}
-						onchange={(e) =>
-							employeeStore.setActiveOnlyFilter((e.target as HTMLInputElement).checked)}
-						class="checkbox"
-					/>
-					<label for="active-only" class="ml-2 block whitespace-nowrap text-sm text-neutral-900">
-						Только активные
-					</label>
-				</div>
-			{/if}
+		<SearchFiltersPanel
+			searchValue={searchTerm}
+			searchPlaceholder="Поиск по имени или ID..."
+			disabled={isLoading}
+			resetDisabled={isLoading}
+			onSearch={(value) => employeeStore.setSearchTerm(value)}
+			onReset={() => employeeStore.clearFilters()}
+			showDepartmentFilter={true}
+			departmentValue={selectedDepartment}
+			onDepartmentChange={(value: string) => employeeStore.setDepartmentFilter(value)}
+			showActiveOnly={true}
+			activeOnlyValue={activeOnly}
+			onActiveOnlyChange={(value: boolean) => employeeStore.setActiveOnlyFilter(value)}
+			showItemsPerPage={true}
+			itemsPerPageValue={itemsPerPage}
+			onItemsPerPageChange={(value: number) => employeeStore.setItemsPerPage(value)}
+			customFilters={true}
+		>
 			<RefreshButton onClick={() => employeeStore.refreshData()} {isLoading} variant="info" />
-		</div>
+		</SearchFiltersPanel>
 
 		<!-- Pagination and statistics -->
 		<div class="mt-4">
-			{#if isLoading}
-				<Skeleton type="pagination-stats" />
-			{:else}
-				<div class="flex flex-col items-center justify-between sm:flex-row">
-					<div class="mb-2 flex flex-row gap-2 text-sm text-neutral-500 sm:mb-0">
-						<div>
-							Найдено {filteredEmployees.length} из {apiEmployees.length} сотрудников
-						</div>
-						<div class="text-neutral-500">•</div>
-						<div>
-							Показано {paginatedEmployees.length}
-						</div>
+			<div class="flex flex-col items-center justify-between sm:flex-row">
+				<div class="mb-2 flex flex-row gap-2 text-sm text-neutral-500 sm:mb-0">
+					<div>
+						Найдено {isExactCount ? totalCount : `${totalCount}+`} сотрудников
 					</div>
-
-					<PaginationButton
-						{currentPage}
-						{totalPages}
-						onPrevPage={() => employeeStore.prevPage()}
-						onNextPage={() => employeeStore.nextPage()}
-					/>
+					<div class="text-neutral-500">•</div>
+					<div>
+						Показано {paginatedEmployees.length} на странице {currentPage} из {totalPages}
+					</div>
 				</div>
-			{/if}
+
+				<PaginationButton
+					{currentPage}
+					{totalPages}
+					onPrevPage={() => employeeStore.prevPage()}
+					onNextPage={() => employeeStore.nextPage()}
+				/>
+			</div>
 		</div>
 	</div>
 
@@ -171,8 +147,8 @@
 	{:else}
 		<!-- Employee cards -->
 		<div class="grid grid-cols-1 gap-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
-			{#each paginatedEmployees as employee (employee.employee_guid)}
-				<EmployeeCard {employee} onAccrualAdded={handleAccrualAdded} />
+			{#each paginatedEmployees as employee (employee.employee_guid || employee.ident || `${employee.employee}-${employee.department_guid}`)}
+				<EmployeeCard {employee} />
 			{/each}
 		</div>
 	{/if}
