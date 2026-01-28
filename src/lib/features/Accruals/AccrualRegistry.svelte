@@ -102,7 +102,7 @@
 		<div class="p-6">
 			<SearchFiltersPanel
 				searchValue={searchTerm}
-				searchPlaceholder="Поиск по сотруднику или комментарию"
+				searchPlaceholder="Поиск по комментарию"
 				disabled={isLoading}
 				resetDisabled={isLoading}
 				onSearch={(value) => accrualStore.setSearchTerm(value)}
