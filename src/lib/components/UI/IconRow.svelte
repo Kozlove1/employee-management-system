@@ -11,6 +11,7 @@
 		LogOut,
 		Mail,
 		Menu,
+		MessageSquareText,
 		Plus,
 		Search,
 		Tags,
@@ -34,6 +35,7 @@
 		| 'menu'
 		| 'crown'
 		| 'tags'
+		| 'comment'
 		| 'x'
 		| 'filter'
 		| 'plus'
@@ -56,6 +58,7 @@
 		menu: Menu,
 		crown: Crown,
 		tags: Tags,
+		comment: MessageSquareText,
 		x: X,
 		filter: Funnel,
 		plus: Plus,

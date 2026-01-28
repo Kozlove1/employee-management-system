@@ -1,4 +1,5 @@
 <script lang="ts">
+	import IconRow from '$lib/components/UI/IconRow.svelte'
 	import { SquarePen, Trash2 } from '@lucide/svelte'
 	import type { AccrualWithDetails } from '../types'
 
@@ -29,7 +30,7 @@
 
 <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
 	<div class="flex items-center justify-between">
-		<div class="flex items-center space-x-4">
+		<div class="flex items-start space-x-4">
 			<div class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-500">
 				<span class="text-sm font-medium text-white">
 					{#if accrual.employee_name}
@@ -47,18 +48,51 @@
 				<h3 class="text-sm font-medium text-gray-900">
 					{accrual.employee_name || 'Сотрудник не указан'}
 				</h3>
-				<p class="text-sm text-gray-500">{accrual.type_name || 'Тип не указан'}</p>
-				<div class="mt-1 flex items-center text-xs text-gray-400">
-					<svg class="mr-1 h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-						/>
-					</svg>
-					{accrual.date ? formatDate(accrual.date) : 'Дата не указана'}
+				<div class="mt-0.5 space-y-0.5">
+					<IconRow
+						icon="building"
+						title={accrual.department_name || 'Подразделение не указано'}
+						titleSize="s"
+						titleColor="text-gray-500"
+						iconSize="s"
+						backgroundColor=""
+					/>
+					<IconRow
+						icon="briefcase"
+						title={accrual.position_name || accrual.post || 'Должность не указана'}
+						titleSize="s"
+						titleColor="text-gray-500"
+						iconSize="s"
+						backgroundColor=""
+					/>
 				</div>
+				<div
+					class="mt-1 inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700"
+				>
+					{accrual.type_name || 'Тип не указан'}
+				</div>
+				<div class="mt-1 space-y-0.5">
+					<IconRow
+						icon="calendar"
+						title={accrual.date ? formatDate(accrual.date) : 'Дата не указана'}
+						titleSize="s"
+						titleColor="text-gray-500"
+						iconSize="s"
+						backgroundColor=""
+					/>
+				</div>
+				{#if accrual.comment}
+					<div class="mt-2">
+						<IconRow
+							icon="comment"
+							title={accrual.comment}
+							titleSize="s"
+							titleColor="text-gray-800"
+							iconSize="s"
+							backgroundColor=""
+						/>
+					</div>
+				{/if}
 			</div>
 		</div>
 

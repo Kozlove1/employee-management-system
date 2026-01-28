@@ -1,71 +1,79 @@
 <script lang="ts">
-import { ActionButton, EmptyState, IconRow, PaginationButton, RefreshButton, Skeleton } from '$lib/components/UI'
-import { authStore } from '$lib/features/Auth'
-import { employeeStore } from '$lib/features/Employees/store/employeeStore.svelte'
-import { accrualTypesStore } from '$lib/features/TypesOfAccruals/store/accrualTypesStore.svelte'
-import { AccrualListItem, StatisticsCards } from './components'
-import AccrualForm from './Form/AccrualForm.svelte'
-import { accrualFormStore } from './store/accrualFormStore.svelte'
-import { accrualStore } from './store/accrualStore.svelte'
-import SearchFiltersPanel from '$lib/components/UI/SearchFiltersPanel.svelte'
-import type { AccrualFormData, AccrualWithDetails } from './types'
+	import {
+		ActionButton,
+		EmptyState,
+		IconRow,
+		PaginationButton,
+		RefreshButton,
+		Skeleton
+	} from '$lib/components/UI'
+	import SearchFiltersPanel from '$lib/components/UI/SearchFiltersPanel.svelte'
+	import { authStore } from '$lib/features/Auth'
+	import { employeeStore } from '$lib/features/Employees/store/employeeStore.svelte'
+	import { accrualTypesStore } from '$lib/features/TypesOfAccruals/store/accrualTypesStore.svelte'
+	import { AccrualListItem, StatisticsCards } from './components'
+	import AccrualForm from './Form/AccrualForm.svelte'
+	import { accrualFormStore } from './store/accrualFormStore.svelte'
+	import { accrualStore } from './store/accrualStore.svelte'
+	import type { AccrualFormData, AccrualWithDetails } from './types'
 
-// Reactive state from stores
-const isLoading = $derived(accrualStore.getIsLoading())
-const error = $derived(accrualStore.getError())
-const filteredAccruals = $derived(accrualStore.filteredAccruals)
-const searchTerm = $derived(accrualStore.getSearchTerm())
-const selectedEmployee = $derived(accrualStore.getSelectedEmployee())
-const selectedType = $derived(accrualStore.getSelectedType())
-const selectedDepartment = $derived(accrualStore.getSelectedDepartment())
-const sortOrder = $derived(accrualStore.getSortOrder())
-const stats = $derived(accrualStore.stats)
-const currentPage = $derived(accrualStore.getCurrentPage())
-const totalPages = $derived(accrualStore.totalPages)
-const totalCount = $derived(accrualStore.getTotalCount())
-const accrualsCount = $derived(accrualStore.getAccruals().length)
+	// Reactive state from stores
+	const isLoading = $derived(accrualStore.getIsLoading())
+	const error = $derived(accrualStore.getError())
+	const filteredAccruals = $derived(accrualStore.filteredAccruals)
+	const searchTerm = $derived(accrualStore.getSearchTerm())
+	const selectedEmployee = $derived(accrualStore.getSelectedEmployee())
+	const selectedType = $derived(accrualStore.getSelectedType())
+	const selectedDepartment = $derived(accrualStore.getSelectedDepartment())
+	const sortOrder = $derived(accrualStore.getSortOrder())
+	const stats = $derived(accrualStore.getStats())
+	const isStatsLoading = $derived(accrualStore.getIsStatsLoading())
+	const currentPage = $derived(accrualStore.getCurrentPage())
+	const totalPages = $derived(accrualStore.totalPages)
+	const totalCount = $derived(accrualStore.getTotalCount())
+	const accrualsCount = $derived(accrualStore.getAccruals().length)
 
-// Statistics data
-const statisticsValues = $derived({
-	totalEmployees: employeeStore.getActiveEmployeesCount(),
-	monthlyAccruals: stats.monthlyCount,
-	totalAccrualTypes: accrualTypesStore.getTotalCount(),
-	totalAmount: stats.monthlyAmount
-})
+	// Statistics data
+	const statisticsValues = $derived({
+		totalEmployees: employeeStore.getActiveEmployeesCount(),
+		monthlyAccruals: stats?.monthly_accruals ?? 0,
+		totalAccrualTypes: accrualTypesStore.getTotalCount(),
+		totalAmount: stats?.total_amount ?? 0
+	})
 
-// Filter options
-const employeeOptions = $derived(employeeStore.employeeOptions)
-const typeOptions = $derived(accrualTypesStore.typeOptions)
+	// Filter options
+	const employeeOptions = $derived(employeeStore.employeeOptions)
+	const typeOptions = $derived(accrualTypesStore.typeOptions)
 
-// Initialize on mount
-$effect(() => {
-	if (authStore.isAuthenticated && !isLoading && !error && accrualsCount === 0) {
-		accrualStore.initialize()
+	// Initialize on mount
+	$effect(() => {
+		if (authStore.isAuthenticated && !isLoading && !error && accrualsCount === 0) {
+			accrualStore.initialize()
+		}
+	})
+
+	// Form handlers
+	async function handleFormSubmit(data: AccrualFormData) {
+		const currentAccrual = accrualFormStore.getCurrentAccrual()
+		if (currentAccrual) {
+			await accrualStore.updateAccrual(currentAccrual.accrual_guid, data)
+		} else {
+			await accrualStore.createAccrual(data)
+		}
 	}
-})
 
-// Form handlers
-async function handleFormSubmit(data: AccrualFormData) {
-	const currentAccrual = accrualFormStore.getCurrentAccrual()
-	if (currentAccrual) {
-		await accrualStore.updateAccrual(currentAccrual.accrual_guid, data)
-	} else {
-		await accrualStore.createAccrual(data)
+	function handleEditAccrual(accrual: AccrualWithDetails) {
+		accrualFormStore.openForEdit(accrual)
 	}
-}
 
-function handleEditAccrual(accrual: AccrualWithDetails) {
-	accrualFormStore.openForEdit(accrual)
-}
-
-async function handleDeleteAccrual(accrualGuid: string) {
-	await accrualStore.deleteAccrual(accrualGuid)
-}
+	async function handleDeleteAccrual(accrualGuid: string) {
+		await accrualStore.deleteAccrual(accrualGuid)
+	}
 </script>
 
 <div class="space-y-6">
 	<!-- Statistics Cards -->
-	{#if isLoading && accrualsCount === 0}
+	{#if isStatsLoading}
 		<div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
 			<Skeleton type="stat-card" count={4} />
 		</div>
@@ -94,7 +102,7 @@ async function handleDeleteAccrual(accrualGuid: string) {
 		<div class="p-6">
 			<SearchFiltersPanel
 				searchValue={searchTerm}
-				searchPlaceholder="Поиск по сотруднику, типу или комментарию..."
+				searchPlaceholder="Поиск по сотруднику или комментарию"
 				disabled={isLoading}
 				resetDisabled={isLoading}
 				onSearch={(value) => accrualStore.setSearchTerm(value)}

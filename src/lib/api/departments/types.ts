@@ -40,4 +40,3 @@ export interface DepartmentSearchParams extends PaginationParams, BaseFilterPara
 	// page, limit, sort, order (из PaginationParams)
 	// search, date_from, date_to, active_only (из BaseFilterParams)
 }
-

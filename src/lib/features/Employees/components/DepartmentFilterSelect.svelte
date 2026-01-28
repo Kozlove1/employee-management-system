@@ -32,7 +32,7 @@
 	let dropdownMenuRef: HTMLDivElement | null = $state(null)
 	// biome-ignore lint/style/useConst: bind:this requires let, not const
 	let buttonRef: HTMLDivElement | null = $state(null)
-	
+
 	let dropdownPosition = $state<'bottom' | 'top'>('bottom')
 	let dropdownLeft = $state<number | null>(null)
 	let isPositionCalculated = $state(false)
@@ -48,6 +48,12 @@
 		}))
 	])
 
+	const filteredOptions = $derived(
+		searchTerm.trim()
+			? options.filter((opt) => opt.label.toLowerCase().includes(searchTerm.toLowerCase()))
+			: options
+	)
+
 	const selectedOption = $derived(options.find((opt) => opt.value === value))
 
 	function calculateDropdownPosition() {
@@ -55,32 +61,32 @@
 			isPositionCalculated = false
 			return
 		}
-		
+
 		const buttonRect = buttonRef.getBoundingClientRect()
 		const dropdownRect = dropdownMenuRef.getBoundingClientRect()
 		const viewportHeight = window.innerHeight
 		const viewportWidth = window.innerWidth
-		
+
 		// Проверяем, есть ли место внизу
 		const spaceBelow = viewportHeight - buttonRect.bottom
 		const spaceAbove = buttonRect.top
-		
+
 		// Определяем вертикальную позицию
 		if (spaceBelow < dropdownRect.height && spaceAbove > spaceBelow) {
 			dropdownPosition = 'top'
 		} else {
 			dropdownPosition = 'bottom'
 		}
-		
+
 		// Определяем горизонтальную позицию
 		const dropdownWidth = dropdownRect.width || buttonRect.width
 		const centerX = buttonRect.left + buttonRect.width / 2
-		
+
 		// Если dropdown шире кнопки, центрируем относительно кнопки
 		if (dropdownWidth > buttonRect.width) {
 			const leftEdge = centerX - dropdownWidth / 2
 			const rightEdge = centerX + dropdownWidth / 2
-			
+
 			// Если выходит за правый край
 			if (rightEdge > viewportWidth) {
 				dropdownLeft = viewportWidth - dropdownWidth - 8 // 8px отступ от края
@@ -96,10 +102,10 @@
 		} else {
 			dropdownLeft = null
 		}
-		
+
 		isPositionCalculated = true
 	}
-	
+
 	function toggleDropdown() {
 		if (disabled) return
 		isOpen = !isOpen
@@ -138,8 +144,6 @@
 		const input = e.target as HTMLInputElement
 		const value = input.value
 		searchTerm = value
-		// Вызываем поиск через API (если пусто, загружаются все департаменты)
-		departmentsStore.searchDepartments(value)
 	}
 
 	function handleClickOutside(event: MouseEvent) {
@@ -154,7 +158,7 @@
 			document.addEventListener('click', handleClickOutside)
 			window.addEventListener('resize', calculateDropdownPosition)
 			window.addEventListener('scroll', calculateDropdownPosition, true)
-			
+
 			return () => {
 				document.removeEventListener('click', handleClickOutside)
 				window.removeEventListener('resize', calculateDropdownPosition)
@@ -177,7 +181,9 @@
 				toggleDropdown()
 			}
 		}}
-		class="w-full rounded-md border border-neutral-300 px-3 py-2 text-left text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 {bgColor} flex items-center justify-between shadow-sm transition-colors {disabled ? 'cursor-not-allowed opacity-50 bg-gray-100' : 'cursor-pointer hover:bg-neutral-50'}"
+		class="w-full rounded-md border border-neutral-300 px-3 py-2 text-left text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 {bgColor} flex items-center justify-between shadow-sm transition-colors {disabled
+			? 'cursor-not-allowed bg-gray-100 opacity-50'
+			: 'cursor-pointer hover:bg-neutral-50'}"
 		title={selectedOption?.label}
 	>
 		<span class="block flex-1 truncate">
@@ -204,7 +210,14 @@
 	{#if isOpen}
 		<div
 			bind:this={dropdownMenuRef}
-			class="absolute z-50 {dropdownWidth} rounded-md border border-neutral-300 bg-white shadow-lg {dropdownPosition === 'top' ? 'bottom-full mb-1' : 'top-full mt-1'} {dropdownLeft !== null ? '' : 'left-1/2 -translate-x-1/2'} {isPositionCalculated ? 'opacity-100' : 'opacity-0 pointer-events-none'}"
+			class="absolute z-50 {dropdownWidth} rounded-md border border-neutral-300 bg-white shadow-lg {dropdownPosition ===
+			'top'
+				? 'bottom-full mb-1'
+				: 'top-full mt-1'} {dropdownLeft !== null
+				? ''
+				: 'left-1/2 -translate-x-1/2'} {isPositionCalculated
+				? 'opacity-100'
+				: 'pointer-events-none opacity-0'}"
 			style={dropdownLeft !== null ? `left: ${dropdownLeft}px; transform: none;` : ''}
 		>
 			<!-- Поле поиска -->
@@ -226,10 +239,10 @@
 			<div class="max-h-60 overflow-y-auto">
 				{#if isLoading}
 					<div class="px-3 py-2 text-center text-sm text-neutral-500">Загрузка...</div>
-				{:else if options.length === 0}
+				{:else if filteredOptions.length === 0}
 					<div class="px-3 py-2 text-center text-sm text-neutral-500">Ничего не найдено</div>
 				{:else}
-					{#each options as option (option.value)}
+					{#each filteredOptions as option (option.value)}
 						<button
 							type="button"
 							onclick={() => selectOption(option.value)}

@@ -28,6 +28,8 @@
 	const itemsPerPage = $derived(accrualTypesStore.getItemsPerPage())
 	const searchTerm = $derived(accrualTypesStore.getSearchTerm())
 	const sortOrder = $derived(accrualTypesStore.getSortOrder() === 'desc' ? 'newest' : 'oldest')
+	const stats = $derived(accrualTypesStore.getStats())
+	const isStatsLoading = $derived(accrualTypesStore.getIsStatsLoading())
 
 	$effect(() => {
 		if (types.length === 0 && !isLoading && !error) {
@@ -41,14 +43,6 @@
 			return types.filter((type) => (type.ammo_coins_amount ?? 0) > 0)
 		}
 		return types
-	})
-
-	const stats = $derived.by(() => {
-		return {
-			total: types.length,
-			withFixedAmount: types.filter((t) => (t.ammo_coins_amount ?? 0) > 0).length,
-			withVariableAmount: types.filter((t) => (t.ammo_coins_amount ?? 0) === 0).length
-		}
 	})
 
 	async function handleAddType(data: TypeOfAccrualFormData) {
@@ -107,7 +101,7 @@
 		/>
 	{/if}
 
-	{#if isLoading}
+	{#if isStatsLoading}
 		<div class="grid grid-cols-2 gap-4 lg:grid-cols-3">
 			<Skeleton type="stat-card" />
 			<Skeleton type="stat-card" />
@@ -117,21 +111,21 @@
 		<div class="grid grid-cols-2 gap-4 lg:grid-cols-3">
 			<StatCard
 				title="Всего типов"
-				value={String(stats.total)}
+				value={String(stats?.total_types ?? 0)}
 				subtitle="Типов начислений"
 				icon="award"
 				color="blue"
 			/>
 			<StatCard
 				title="С фиксированной суммой"
-				value={String(stats.withFixedAmount)}
+				value={String(stats?.types_with_fixed_amount ?? 0)}
 				subtitle="АК автоматически"
 				icon="coins"
 				color="green"
 			/>
 			<StatCard
 				title="С переменной суммой"
-				value={String(stats.withVariableAmount)}
+				value={String(stats?.types_with_variable_amount ?? 0)}
 				subtitle="Сумма вручную"
 				icon="chart"
 				color="gray"
@@ -206,7 +200,7 @@
 			>
 				<RefreshButton onClick={() => accrualTypesStore.refresh()} {isLoading} variant="info" />
 			</SearchFiltersPanel>
-			
+
 			<div class="mt-4">
 				<div class="flex flex-col items-center justify-between sm:flex-row">
 					<div class="mb-2 flex flex-row gap-2 text-sm text-neutral-500 sm:mb-0">
