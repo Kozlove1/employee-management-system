@@ -2,6 +2,7 @@
 	import {
 		ActionButton,
 		EmptyState,
+		ErrorMessage,
 		IconRow,
 		PaginationButton,
 		RefreshButton,
@@ -45,9 +46,10 @@
 	const employeeOptions = $derived(employeeStore.employeeOptions)
 	const typeOptions = $derived(accrualTypesStore.typeOptions)
 
-	// Initialize on mount
+	let initialized = $state(false)
 	$effect(() => {
-		if (authStore.isAuthenticated && !isLoading && !error && accrualsCount === 0) {
+		if (authStore.isAuthenticated && !initialized) {
+			initialized = true
 			accrualStore.initialize()
 		}
 	})
@@ -72,6 +74,14 @@
 </script>
 
 <div class="space-y-6">
+	{#if error}
+		<ErrorMessage
+			message={error}
+			onRetry={() => accrualStore.refresh()}
+			onDismiss={() => accrualStore.clearError()}
+		/>
+	{/if}
+
 	<!-- Statistics Cards -->
 	{#if isStatsLoading}
 		<div class="grid grid-cols-2 gap-4 lg:grid-cols-4">

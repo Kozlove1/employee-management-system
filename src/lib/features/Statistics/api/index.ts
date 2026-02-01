@@ -1,6 +1,8 @@
-// Экспорт API сервисов для модуля Statistics
 export { statisticsApi } from './statisticsApi'
 export type {
-    AccrualTypeStatsApiResponse, CombinedStatisticsResponse, DepartmentStatsApiResponse, EmployeeStatsApiResponse, StatisticsFilterParams, StatisticsSummaryApiResponse
+	AccrualStatisticsRaw,
+	EmployeeStatsRaw,
+	StatisticsFilterParams,
 } from './types'
+export { mapAccrualStatisticsRaw, mapEmployeeStatsRaw } from './types'
 

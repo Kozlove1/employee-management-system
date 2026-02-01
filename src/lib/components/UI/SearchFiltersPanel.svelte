@@ -1,5 +1,6 @@
 <script lang="ts">
 	import DepartmentFilterSelect from '$lib/features/Employees/components/DepartmentFilterSelect.svelte'
+	import type { Snippet } from 'svelte'
 	import FilterSelect from './FilterSelect.svelte'
 	import SearchInput from './SearchInput.svelte'
 
@@ -62,8 +63,9 @@
 		// Disabled state for all filters
 		disabled?: boolean
 
-		// Custom slot for additional filters
+		// Custom content for additional filters
 		customFilters?: boolean
+		children?: Snippet
 	}
 
 	const {
@@ -127,8 +129,9 @@
 		// Disabled state
 		disabled = false,
 
-		// Custom slot
-		customFilters = false
+		// Custom content
+		customFilters = false,
+		children
 	}: Props = $props()
 
 	function handleReset() {
@@ -179,7 +182,7 @@
 				id="active-only"
 				type="checkbox"
 				checked={activeOnlyValue}
-				disabled={disabled}
+				{disabled}
 				onchange={(event) => onActiveOnlyChange?.((event.target as HTMLInputElement).checked)}
 				class="checkbox disabled:cursor-not-allowed disabled:opacity-50"
 			/>
@@ -190,7 +193,7 @@
 	<!-- Filters Row -->
 	{#if showEmployeeFilter || showDepartmentFilter || showTypeFilter || showCustomTypeFilter || showSortFilter || showItemsPerPage || customFilters}
 		<div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 flex-1">
+			<div class="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
 				{#if showEmployeeFilter}
 					<FilterSelect
 						value={employeeValue}
@@ -250,9 +253,9 @@
 				{/if}
 			</div>
 
-			{#if customFilters}
+			{#if customFilters && children}
 				<div class="flex-shrink-0">
-					<slot />
+					{@render children()}
 				</div>
 			{/if}
 		</div>
