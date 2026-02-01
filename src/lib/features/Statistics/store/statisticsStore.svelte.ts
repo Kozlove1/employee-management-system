@@ -1,6 +1,40 @@
 import type { EmployeeStats } from '$lib/types/shared'
-import { statisticsApi } from '../api/statisticsApi'
+import {
+	mapAccrualStatisticsRaw,
+	mapEmployeeStatsRaw,
+	statisticsApi,
+} from '../api'
+import type { AccrualStatisticsRaw, EmployeeStatsRaw } from '../api/types'
 import type { AccrualTypeStats } from '../types'
+
+const ARRAY_KEYS = [
+	'data',
+	'list',
+	'items',
+	'result',
+	'employee_stats',
+	'accrual_type_stats',
+	'employees',
+	'accruals',
+]
+
+/** Извлекает массив из response.data: массив или объект с одним из известных ключей */
+function extractArray(data: unknown): unknown[] {
+	if (Array.isArray(data)) return data
+	if (data && typeof data === 'object') {
+		const obj = data as Record<string, unknown>
+		for (const key of ARRAY_KEYS) {
+			const val = obj[key]
+			if (Array.isArray(val)) return val
+		}
+		// Любой ключ, чьё значение — массив
+		for (const key of Object.keys(obj)) {
+			const val = obj[key]
+			if (Array.isArray(val)) return val
+		}
+	}
+	return []
+}
 
 class StatisticsStore {
 	private topEmployees = $state<EmployeeStats[]>([])
@@ -69,16 +103,44 @@ class StatisticsStore {
 		this.clearError()
 
 		try {
-			const response = await statisticsApi.getCombinedStats()
+			const [employeesRes, accrualsRes] = await Promise.all([
+				statisticsApi.getEmployeeStats({ limit: this.topEmployeesCount }),
+				statisticsApi.getAccrualStats({ limit: this.topAccrualTypesCount }),
+			])
 
-			if (response.status === 'success') {
-				this.topEmployees = response.data.top_employees?.slice(0, this.topEmployeesCount) || []
-				this.topAccrualTypes =
-					response.data.top_accrual_types?.slice(0, this.topAccrualTypesCount) || []
+			const employeesOk = employeesRes.status === 'success'
+			const accrualsOk = accrualsRes.status === 'success'
+
+			if (employeesOk) {
+				const rawArr = extractArray(employeesRes.data)
+				const mapped = rawArr
+					.map((r) => mapEmployeeStatsRaw(r as EmployeeStatsRaw))
+					.sort((a, b) => (b.total_balance ?? 0) - (a.total_balance ?? 0))
+					.slice(0, this.topEmployeesCount)
+				this.topEmployees = mapped
 			} else {
-				this.setError(response.message || 'Ошибка загрузки статистики')
 				this.topEmployees = []
+			}
+
+			if (accrualsOk) {
+				const rawArr = extractArray(accrualsRes.data)
+				const mapped = rawArr
+					.map((r) => mapAccrualStatisticsRaw(r as AccrualStatisticsRaw))
+					.sort((a, b) => b.total_count - a.total_count)
+					.slice(0, this.topAccrualTypesCount)
+				this.topAccrualTypes = mapped
+			} else {
 				this.topAccrualTypes = []
+			}
+
+			if (!employeesOk || !accrualsOk) {
+				const msg =
+					!employeesOk && !accrualsOk
+						? 'Не удалось загрузить статистику'
+						: !employeesOk
+							? (employeesRes.message ?? 'Ошибка загрузки сотрудников')
+							: (accrualsRes.message ?? 'Ошибка загрузки типов начислений')
+				this.setError(msg)
 			}
 		} catch (err) {
 			this.setError(

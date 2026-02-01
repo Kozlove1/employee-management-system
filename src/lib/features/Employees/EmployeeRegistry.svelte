@@ -19,7 +19,6 @@ import SearchFiltersPanel from '$lib/components/UI/SearchFiltersPanel.svelte'
 
 	const isLoading = $derived(employeeStore.getIsLoading())
 	const error = $derived(employeeStore.getError())
-	const apiEmployees = $derived(employeeStore.getApiEmployees())
 	const paginatedEmployees = $derived(employeeStore.paginatedEmployees)
 	const currentPage = $derived(employeeStore.getCurrentPage())
 	const totalPages = $derived(employeeStore.totalPages)
@@ -36,9 +35,7 @@ import SearchFiltersPanel from '$lib/components/UI/SearchFiltersPanel.svelte'
 		if (!initialized) {
 			initialized = true
 			departmentsStore.initialize()
-			if (apiEmployees.length === 0 && !isLoading && !error) {
-				employeeStore.fetchEmployees()
-			}
+			employeeStore.fetchEmployees()
 		}
 	})
 

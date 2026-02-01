@@ -31,8 +31,10 @@
 	const stats = $derived(accrualTypesStore.getStats())
 	const isStatsLoading = $derived(accrualTypesStore.getIsStatsLoading())
 
+	let initialized = $state(false)
 	$effect(() => {
-		if (types.length === 0 && !isLoading && !error) {
+		if (!initialized) {
+			initialized = true
 			accrualTypesStore.initialize()
 		}
 	})

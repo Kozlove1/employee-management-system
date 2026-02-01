@@ -9,7 +9,7 @@
 
 	$effect(() => {
 		if (isAuthenticated) {
-			goto('/')
+			goto('/accruals')
 		}
 	})
 

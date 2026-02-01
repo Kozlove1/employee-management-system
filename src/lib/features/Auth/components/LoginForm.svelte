@@ -1,12 +1,9 @@
 <script lang="ts">
-	import { goto } from '$app/navigation'
-	import { page } from '$app/state'
 	import { ErrorMessage, LoadingSpinner, Logo } from '$lib/components/UI'
 	import { authStore } from '../store/authStore.svelte'
 
 	let isLoading = $derived(authStore.getIsLoading())
 	let error = $derived(authStore.getError())
-	let isAuthenticated = $derived(authStore.isAuthenticated)
 
 	let email = $state('')
 	let password = $state('')
@@ -35,16 +32,7 @@
 	async function handleSubmit(event: Event) {
 		event.preventDefault()
 		authStore.clearError()
-
-		// if (!validateForm()) return
-
-
 		await authStore.login({ email, password })
-
-		if (isAuthenticated) {
-			const redirectTo = page.url.searchParams.get('redirect') || '/accruals'
-			goto(redirectTo)
-		}
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
