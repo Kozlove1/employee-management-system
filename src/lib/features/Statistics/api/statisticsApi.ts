@@ -1,38 +1,36 @@
-import { ApiService } from '$lib/api'
+import { apiClient } from '$lib/api'
 import { API_ENDPOINTS } from '$lib/api/endpoints'
 
 import type {
-    AccrualTypeStatsApiResponse,
-    CombinedStatisticsResponse,
-    DepartmentStatsApiResponse,
-    EmployeeStatsApiResponse,
-    StatisticsFilterParams,
-    StatisticsSummaryApiResponse,
+	AccrualStatisticsRaw,
+	EmployeeStatsRaw,
+	StatisticsFilterParams,
 } from './types'
 
-class StatisticsApiService extends ApiService {
-	constructor() {
-		super(API_ENDPOINTS.STATISTICS.BASE)
-	}
-	public async getSummary(params?: StatisticsFilterParams) {
-		return this.get<StatisticsSummaryApiResponse>('', params)
-	}
-
-	public async getEmployeeStats(params?: StatisticsFilterParams) {
-		return this.get<EmployeeStatsApiResponse>('/employees', params)
-	}
-
-	public async getAccrualStats(params?: StatisticsFilterParams) {
-		return this.get<AccrualTypeStatsApiResponse>('/accruals', params)
-	}
-
-	public async getDepartmentStats(params?: StatisticsFilterParams) {
-		return this.get<DepartmentStatsApiResponse>('/departments', params)
-	}
-
-	public async getCombinedStats(params?: StatisticsFilterParams) {
-		return this.get<CombinedStatisticsResponse>('/combined', params)
-	}
+function buildQuery(params?: StatisticsFilterParams): string {
+	if (!params) return ''
+	const entries = Object.entries(params).filter(
+		([_, v]) => v !== undefined && v !== null && v !== ''
+	) as [string, string | number | boolean][]
+	if (entries.length === 0) return ''
+	const q = new URLSearchParams()
+	entries.forEach(([k, v]) => q.set(k, String(v)))
+	const s = q.toString()
+	return s ? `?${s}` : ''
 }
 
-export const statisticsApi = new StatisticsApiService()
+/** Backend: GET /employees/stats — envelope { status, data: EmployeeStatsRaw[] } */
+export async function getEmployeeStats(params?: StatisticsFilterParams) {
+	return apiClient.get<EmployeeStatsRaw[]>(
+		`${API_ENDPOINTS.EMPLOYEES.STATS}${buildQuery(params)}`
+	)
+}
+
+/** Backend: GET /accruals/stats — envelope { status, data: AccrualStatisticsRaw[] } */
+export async function getAccrualStats(params?: StatisticsFilterParams) {
+	return apiClient.get<AccrualStatisticsRaw[]>(
+		`${API_ENDPOINTS.ACCRUALS.STATS}${buildQuery(params)}`
+	)
+}
+
+export const statisticsApi = { getEmployeeStats, getAccrualStats }
